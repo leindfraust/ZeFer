@@ -3,8 +3,8 @@ import { authConfig } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/db";
 import { getServerSession } from "next-auth";
 import cloudinarySignature from "@/lib/cloudinarySignature";
-
-export async function POST(req: Request) {
+//Promise<any> is a temporary fix
+export async function POST(req: Request): Promise<any> {
     const body = await req.formData()
     const img = body.get('imgFile') as Blob
     const id = body.get('id') as string

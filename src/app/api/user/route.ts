@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { authConfig } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/db";
 import { getServerSession } from "next-auth";
-
-export async function PATCH(req: Request) {
+//Promise<any> is a temporary fix
+export async function PATCH(req: Request): Promise<any>  {
     const body = await req.json()
     const session = await getServerSession(authConfig)
     try {

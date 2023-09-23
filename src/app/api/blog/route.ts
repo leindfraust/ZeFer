@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/db";
 import { JSONContent } from "@tiptap/react";
 import cloudinarySignature from "@/lib/cloudinarySignature";
-
-export async function POST(req: NextRequest) {
+//Promise<any> is a temporary fix
+export async function POST(req: NextRequest): Promise<any> {
     const body = await req.formData()
     const image_total = body.get('image_total') ? body.get('image_total') as unknown as number : 0 as number
     const images = () => {

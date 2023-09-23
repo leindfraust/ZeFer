@@ -1,5 +1,4 @@
 import prisma from "@/db";
-import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import type { JSONContent } from "@tiptap/react";
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
@@ -16,7 +15,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 
-export async function generateMetadata({ params }: Params): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
     const { slug } = params
     const blog = await prisma.blog.findUnique({
         where: { id: slug }
@@ -30,7 +29,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 
-export default async function BlogPage({ params }: Params) {
+export default async function BlogPage({ params }: { params: { slug: string } }) {
     const { slug } = params
     const blog = await prisma.blog.findUnique({
         where: { id: slug }

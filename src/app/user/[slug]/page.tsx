@@ -1,6 +1,5 @@
 import { authConfig } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
-import type { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { notFound } from "next/navigation"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBirthdayCake, faBlog, faBriefcase, faEye, faEyeSlash, faLocationPin, faPeopleGroup } from "@fortawesome/free-solid-svg-icons";
@@ -13,7 +12,7 @@ import { Fragment } from "react";
 import Link from "next/link";
 import { Metadata } from "next";
 
-export async function generateMetadata({ params }: Params): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
     const { slug } = params
     const user = await prisma.user.findFirst({
         where: {
@@ -38,7 +37,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     }
 }
 
-export default async function ProfilePage({ params }: Params) {
+export default async function ProfilePage({ params }: { params: { slug: string } }) {
     const session = await getServerSession(authConfig)
     const { slug } = params
     const user = await prisma.user.findFirst({

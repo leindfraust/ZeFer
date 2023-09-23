@@ -15,6 +15,30 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [require("daisyui"), require("@tailwindcss/typography"), require("tailwind-scrollbar")],
+  daisyui: {
+    themes: ["light", "dark", {
+      mytheme: {
+      
+"primary": "#ef23b9",
+      
+"secondary": "#f94d6a",
+      
+"accent": "#dd9568",
+      
+"neutral": "#14161F",
+      
+"base-100": "#E9E3ED",
+      
+"info": "#8FC4E5",
+      
+"success": "#64EDD1",
+      
+"warning": "#C98A03",
+      
+"error": "#F15037",
+      },
+    },],
+  },
 }
 export default config

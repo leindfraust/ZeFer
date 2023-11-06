@@ -2,14 +2,21 @@
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons/faPenToSquare'
-import { EditUserDetailsProps, UserSocials } from '@/types/user'
+import { UserSocials } from '@/types/user'
 import { useRouter } from 'next/navigation'
 import { FormContext } from '@/types/formContext'
 import { FormProvider, useForm } from 'react-hook-form'
 import Input from '@/components/Input'
 import { Fragment, useRef } from 'react'
+import { User } from '@prisma/client'
 
-export default function EditName({ username, name, bio, address, occupation, email, socials, viewsVisibility, }: EditUserDetailsProps) {
+type Social = {
+    name: string
+    url: string
+}
+export default function EditName({ username, name, bio, address, occupation, email, viewsVisibility, }: User, { socials }: { socials: Social[] }) {
+
+
     const router = useRouter()
     const socialForms: FormContext[] = [
         {

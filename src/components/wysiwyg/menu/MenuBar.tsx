@@ -1,15 +1,12 @@
 import type { MenuItemProps } from "@/types/menu"
 import type { EditorContentProps } from "@tiptap/react"
-import { faBold, faItalic, faStrikethrough, faCode, faMarker, faHeading, faParagraph, faListUl, faListOl, faListCheck, faFileCode, faQuoteLeft, faRulerHorizontal, faArrowDown, faArrowsSpin, faRotateLeft, faRotateRight, faLink, faImage } from "@fortawesome/free-solid-svg-icons"
-import { faYoutube } from '@fortawesome/free-brands-svg-icons'
+import { faBold, faItalic, faStrikethrough, faCode, faMarker, faHeading, faListUl, faListOl, faListCheck, faFileCode, faQuoteLeft, faRulerHorizontal, faLink, faImage } from "@fortawesome/free-solid-svg-icons"
 import MenuItems from "./MenuItems"
 import { Fragment, useState, useRef } from "react"
 
 export default function MenuBar({ editor }: EditorContentProps) {
     const [insertedLink, setInsertedLink] = useState<string>('')
-    const [youtube, setYoutube] = useState<string>('')
     const link_modal = useRef<HTMLDialogElement>(null)
-    const youtube_modal = useRef<HTMLDialogElement>(null)
 
     function insertImage(event: React.ChangeEvent<HTMLInputElement>) {
         if (!event.target.files) return
@@ -36,18 +33,18 @@ export default function MenuBar({ editor }: EditorContentProps) {
         link_modal.current?.close()
     }
 
-    function insertYoutube() {
-        if (!youtube) return
-        editor?.chain().focus().setYoutubeVideo({ src: youtube }).run()
-        youtube_modal.current?.close()
-    }
-
     const items: MenuItemProps[] = [
         {
             icon: faBold,
             title: 'Bold',
             action: () => editor?.chain().focus().toggleBold().run(),
             isActive: () => editor?.isActive('bold'),
+        },
+        {
+            icon: faHeading,
+            title: 'Heading 1',
+            action: () => editor?.chain().focus().toggleHeading({ level: 2 }).run(),
+            isActive: () => editor?.isActive('heading', { level: 2 }),
         },
         {
             icon: faItalic,
@@ -67,12 +64,6 @@ export default function MenuBar({ editor }: EditorContentProps) {
             action: () => promptLinkModal()
         },
         {
-            icon: faCode,
-            title: 'Code',
-            action: () => editor?.chain().focus().toggleCode().run(),
-            isActive: () => editor?.isActive('code'),
-        },
-        {
             icon: faMarker,
             title: 'Highlight',
             action: () => editor?.chain().focus().toggleHighlight().run(),
@@ -80,18 +71,6 @@ export default function MenuBar({ editor }: EditorContentProps) {
         },
         {
             type: 'divider',
-        },
-        {
-            icon: faHeading,
-            title: 'Heading 1',
-            action: () => editor?.chain().focus().toggleHeading({ level: 2 }).run(),
-            isActive: () => editor?.isActive('heading', { level: 2 }),
-        },
-        {
-            icon: faParagraph,
-            title: 'Paragraph',
-            action: () => editor?.chain().focus().setParagraph().run(),
-            isActive: () => editor?.isActive('paragraph'),
         },
         {
             icon: faListUl,
@@ -110,6 +89,12 @@ export default function MenuBar({ editor }: EditorContentProps) {
             title: 'Task List',
             action: () => editor?.chain().focus().toggleTaskList().run(),
             isActive: () => editor?.isActive('taskList'),
+        },
+        {
+            icon: faCode,
+            title: 'Code',
+            action: () => editor?.chain().focus().toggleCode().run(),
+            isActive: () => editor?.isActive('code'),
         },
         {
             icon: faFileCode,
@@ -132,49 +117,15 @@ export default function MenuBar({ editor }: EditorContentProps) {
             action: () => editor?.chain().focus().setHorizontalRule().run(),
         },
         {
-            type: 'divider',
-        },
-        {
             icon: faImage,
             title: 'Insert Image',
             action: () => document.getElementById('insertImage')?.click(),
         },
-        {
-            icon: faYoutube,
-            title: 'Insert Youtube link',
-            action: () => youtube_modal.current?.show()
-        },
-        {
-            type: 'divider',
-        },
-        {
-            icon: faArrowDown,
-            title: 'Hard Break',
-            action: () => editor?.chain().focus().setHardBreak().run(),
-        },
-        {
-            icon: faArrowsSpin,
-            title: 'Clear Format',
-            action: () => editor?.chain().focus().clearNodes().unsetAllMarks()
-                .run(),
-        },
-        {
-            type: 'divider',
-        },
-        {
-            icon: faRotateLeft,
-            title: 'Undo',
-            action: () => editor?.chain().focus().undo().run(),
-        },
-        {
-            icon: faRotateRight,
-            title: 'Redo',
-            action: () => editor?.chain().focus().redo().run(),
-        },
     ]
 
     return (
-        <div className="flex xl:justify-center bg-base-200 overflow-auto p-2 ">
+        <div className="sticky top-0 z-10 overflow-auto bg-base-200">
+
             <dialog ref={link_modal} className="modal">
                 <div className="modal-box">
                     <div className="flex justify-center flex-wrap space-y-4 p-4">
@@ -189,33 +140,22 @@ export default function MenuBar({ editor }: EditorContentProps) {
                     </div>
                 </div>
             </dialog>
-            <dialog ref={youtube_modal} className="modal">
-                <div className="modal-box">
-                    <div className="flex justify-center flex-wrap space-y-4 p-4">
-                        <input type="text" placeholder="URL..." className="input input-bordered w-full max-w-xs" onChange={(e) => setYoutube(e.currentTarget.value)} value={youtube} />
-                        <button className="btn" onClick={insertYoutube}>Insert Youtube Link</button>
-                    </div>
-                    <div className="modal-action">
-                        <form method="dialog">
-                            {/* if there is a button in form, it will close the modal */}
-                            <button className="btn">Close</button>
-                        </form>
-                    </div>
-                </div>
-            </dialog>
+
             <input
                 type="file"
                 id='insertImage'
                 accept='image/png, image/jpeg'
                 onChange={insertImage}
+                value={''}
                 hidden
             />
-            {items.map((item, index) => (
-                <Fragment key={index}>
-                    {item.type === 'divider' ? <div className="divider divider-horizontal" /> : <MenuItems {...item} />}
-                </Fragment>
-            ))}
+            <div className="flex items-center lg:justify-center overflow-auto">
+                {items.map((item, index) => (
+                    <Fragment key={index}>
+                        {item.type === 'divider' ? <div className="divider divider-horizontal" /> : <MenuItems {...item} />}
+                    </Fragment>
+                ))}
+            </div>
         </div>
-
     )
 }

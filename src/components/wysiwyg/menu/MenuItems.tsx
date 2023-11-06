@@ -5,7 +5,7 @@ import type { MenuItemProps } from "@/types/menu";
 export default function MenuItems({ icon, title, action, isActive }: MenuItemProps) {
 
     return (<>
-        <button className={`btn ${isActive && isActive() ? 'btn-active' : ''}`}
+        <button className={`btn btn-ghost ${isActive && isActive() ? 'btn-active' : ''}`}
             onClick={action}
             title={title}>
             <FontAwesomeIcon icon={icon as IconDefinition} />

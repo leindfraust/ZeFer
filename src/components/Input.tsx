@@ -7,7 +7,7 @@ export default function Input({ name, type, placeholder, required, value }: Form
 
     const { register, formState: { errors } } = useFormContext();
 
-    return (<div className="form-control w-full max-w-xs">
+    return (<div className="form-control w-full">
         <label htmlFor={name} className="label">
             <span className="label-text">{name} {required.value && <span className="text-red-500">*</span>}</span>
         </label>
@@ -20,7 +20,7 @@ export default function Input({ name, type, placeholder, required, value }: Form
                     value: value,
                     required: required
                 })}
-                className="input input-bordered w-full max-w-xs" />
+                className="input input-bordered w-full" />
         ) : (
             <textarea className=" textarea textarea-bordered w-full" {...register(name, {
                 value: value,

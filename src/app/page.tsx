@@ -14,16 +14,20 @@ import { User } from '@prisma/client';
 
 export default async function Home() {
   const session = await getServerSession(authConfig)
-
-  const user = await prisma.user.findUnique({
-    where: { id: session?.user.id ?? '' },
-    select: {
-      name: true,
-      image: true,
-      id: true,
-      username: true
+  const getUser = async () => {
+    if (session) {
+      const user = await prisma.user.findUnique({
+        where: { id: session?.user.id ?? '' },
+        select: {
+          name: true,
+          image: true,
+          id: true,
+          username: true
+        }
+      })
+      return user
     }
-  }) as User
+  }
 
   const tagsRanking = await prisma.tagsRanking.findFirst({
     orderBy: {
@@ -32,7 +36,7 @@ export default async function Home() {
     take: 1
   })
   return (<>
-    <Navigation {...user} />
+    <Navigation {...await getUser() as User} />
     <div className="hero min-h-[60vh] bg-base-200">
       <div className="hero-content text-center">
         <div className="max-w-md space-y-4">

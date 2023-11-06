@@ -1,0 +1,15 @@
+import { authConfig } from "@/app/api/auth/[...nextauth]/route";
+import ProfileSettingsComponent from "@/components/settings/profile";
+import prisma from "@/db";
+import { User } from "@prisma/client";
+import { getServerSession } from "next-auth";
+
+
+export default async function ProfileSettings() {
+    const session = await getServerSession(authConfig)
+    const user = await prisma.user.findUnique({
+        where: { id: session?.user.id }
+    }) as User
+
+    return (<ProfileSettingsComponent {...user} />)
+}

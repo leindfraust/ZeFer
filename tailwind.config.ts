@@ -17,7 +17,7 @@ const config: Config = {
   },
   plugins: [require("daisyui"), require("@tailwindcss/typography"), require("tailwind-scrollbar")],
   daisyui: {
-    themes: ["light", "dark", {
+    themes: ["dark", "light", {
       mytheme: {
       
 "primary": "#ef23b9",

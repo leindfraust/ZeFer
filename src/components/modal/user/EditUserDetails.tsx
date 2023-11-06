@@ -9,7 +9,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import Input from '@/components/Input'
 import { Fragment, useRef } from 'react'
 
-export default function EditName({ vanityUrl, name, bio, address, occupation, email, socials, viewsVisibility, }: EditUserDetailsProps) {
+export default function EditName({ username, name, bio, address, occupation, email, socials, viewsVisibility, }: EditUserDetailsProps) {
     const router = useRouter()
     const socialForms: FormContext[] = [
         {
@@ -46,11 +46,11 @@ export default function EditName({ vanityUrl, name, bio, address, occupation, em
     const user_modal_edit = useRef<HTMLDialogElement>(null)
     const submissions = useForm()
 
-    const vanityUrl_validation: FormContext = {
-        name: vanityUrl ? vanityUrl : 'VanityURL',
+    const username_validation: FormContext = {
+        name: username ? username : 'username',
         type: 'text',
         placeholder: 'Your unique vanity url',
-        value: vanityUrl ? vanityUrl : '',
+        value: username ? username : '',
         required: {
             value: false,
             message: 'This field is not required'
@@ -122,7 +122,7 @@ export default function EditName({ vanityUrl, name, bio, address, occupation, em
         const update = await fetch('/api/user', {
             method: "PATCH",
             body: JSON.stringify({
-                vanityUrl: data.VanityURL,
+                username: data.username,
                 name: data.Name,
                 bio: data.Bio,
                 address: data.Address,
@@ -145,7 +145,7 @@ export default function EditName({ vanityUrl, name, bio, address, occupation, em
             <form method="dialog" className="modal-box">
                 <div className="container p-4 justify-center flex flex-wrap space-y-4">
                     <FormProvider {...submissions}>
-                        <Input {...vanityUrl_validation} />
+                        <Input {...username_validation} />
                         <Input {...name_validation} />
                         <Input {...bio_validation} />
                         <Input {...address_validation} />

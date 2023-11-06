@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { TagRank } from "@/types/tag";
 import prisma from "@/db";
 
-export async function GET(req?: NextRequest): Promise<any> {
-    const url = new URL(req?.url ?? '')
+export async function GET(req: NextRequest): Promise<any> {
+    const url = new URL(req.url)
     const keyword = url && url.searchParams.get('q')
     const tagRankings = await prisma.tagsRanking.findFirst({
         orderBy: {

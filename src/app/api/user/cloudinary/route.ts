@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { authConfig } from "@/app/api/auth/[...nextauth]/route";
 import prisma from "@/db";
 import { getServerSession } from "next-auth";
-import cloudinarySignature from "@/lib/cloudinarySignature";
+import cloudinarySignature from "@/utils/cloudinarySignature";
 //Promise<any> is a temporary fix
 export async function POST(req: Request): Promise<any> {
     const body = await req.formData()
@@ -11,7 +11,7 @@ export async function POST(req: Request): Promise<any> {
 
     const formData = new FormData()
     const timestamp = new Date().getTime();
-    const folder = 'blogdevfy/user'
+    const folder = 'postdevfy/user'
     formData.append('file', img)
     formData.append('api_key', process.env.NEXT_CLOUDINARY_API as string)
     formData.append('folder', folder)

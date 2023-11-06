@@ -29,14 +29,9 @@ export async function POST(req: NextRequest): Promise<any> {
             }
         })
         if (pastDraft?.draft) {
-            await prisma.user.update({
+            await prisma.postDraft.delete({
                 where: {
-                    id: session?.user.id
-                },
-                data: {
-                    draft: {
-                        delete: true
-                    }
+                    userId: session?.user.id
                 }
             })
         }
@@ -96,7 +91,9 @@ export async function POST(req: NextRequest): Promise<any> {
                     }
                 }
                 await prisma.postDraft.update({
-                    where: { id: draft.id },
+                    where: {
+                        userId: session?.user.id
+                    },
                     data: {
                         content: content
                     }
@@ -120,7 +117,7 @@ export async function POST(req: NextRequest): Promise<any> {
             })
             if (cloudinary.ok) {
                 const coverImage = await prisma.postDraft.update({
-                    where: { id: draft.id },
+                    where: { userId: session?.user.id },
                     data: {
                         coverImage: `https://res.cloudinary.com/leindfraust/image/upload/w_1920,h_1080,c_scale/v${timestamp}/${folder}/${draft.id}_cover.jpg` //always output coverImage of 1920 1080
                     }

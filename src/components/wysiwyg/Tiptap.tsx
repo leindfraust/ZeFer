@@ -33,7 +33,7 @@ export default function Tiptap({ userId, username, tags, postEdit, postDraft }: 
     const [searchTag, setSearchTag] = useState<string>('')
     const [inputTags, setInputTags] = useState<string[]>(editOrDraft?.tags ?? [])
     const [tagList, setTagList] = useState<string[]>([...tags])
-
+    const updateTimeout = useRef<NodeJS.Timeout | undefined>()
     const modal_coverImage = useRef<HTMLDialogElement>(null)
     const modal_tag = useRef<HTMLDialogElement>(null)
 
@@ -136,7 +136,6 @@ export default function Tiptap({ userId, username, tags, postEdit, postDraft }: 
     })
 
     useEffect(() => {
-        let updateTimeout: NodeJS.Timeout | undefined
         const savePostDraft = async () => {
             const formData = new FormData
             const json = editor?.getJSON()
@@ -183,16 +182,16 @@ export default function Tiptap({ userId, username, tags, postEdit, postDraft }: 
                     message: 'Something went wrong, please try again later.'
                 })
             }
-            updateTimeout = undefined
+            updateTimeout.current = undefined
         }
         const editorsUpdating = () => {
-            if (!postEdit) {
+            if (!postEdit && !publishState) {
                 if (editorTitle?.getText() || editorDescription?.getText() || editor?.getText()) {
-                    if (!updateTimeout || updateTimeout === undefined) {
-                        updateTimeout = setTimeout(() => savePostDraft(), 5000)
+                    if (!updateTimeout.current || updateTimeout.current === undefined) {
+                        updateTimeout.current = setTimeout(() => savePostDraft(), 5000)
                     } else {
-                        clearTimeout(updateTimeout)
-                        updateTimeout = setTimeout(() => savePostDraft(), 5000)
+                        clearTimeout(updateTimeout.current)
+                        updateTimeout.current = setTimeout(() => savePostDraft(), 5000)
                     }
                 }
             }
@@ -212,7 +211,10 @@ export default function Tiptap({ userId, username, tags, postEdit, postDraft }: 
         editor?.on('update', () => {
             editorsUpdating()
         });
-    }, [postDraft?.coverImage, postEdit, coverImageFile, editor, editorDescription, editorTitle, inputTags])
+        if (publishState) {
+            clearTimeout(updateTimeout.current)
+        }
+    }, [postDraft?.coverImage, postEdit, coverImageFile, editor, editorDescription, editorTitle, inputTags, publishState])
 
     function addCoverImage(event: React.ChangeEvent<HTMLInputElement>) {
         if (!event.target.files) return
@@ -290,6 +292,7 @@ export default function Tiptap({ userId, username, tags, postEdit, postDraft }: 
                 body: formData
             })
             if (!uploadPost.ok) {
+                setPublishState(false)
                 setPostError({
                     ok: uploadPost.ok,
                     status: uploadPost.status,
@@ -302,7 +305,6 @@ export default function Tiptap({ userId, username, tags, postEdit, postDraft }: 
                 })
             }
         }
-        setPublishState(() => false)
 
     }
 
@@ -326,6 +328,7 @@ export default function Tiptap({ userId, username, tags, postEdit, postDraft }: 
             }
         }
         if (Object.keys(requiredItems).length !== 0) {
+            setPublishState(false)
             setPostError({
                 ok: false,
                 status: 499,

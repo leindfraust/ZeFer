@@ -180,14 +180,9 @@ export async function POST(req: NextRequest): Promise<any> {
             }
         })
         if (pastDraft?.draft) {
-            await prisma.user.update({
+            await prisma.postDraft.delete({
                 where: {
-                    id: session?.user.id
-                },
-                data: {
-                    draft: {
-                        delete: true
-                    }
+                    userId: session?.user.id
                 }
             })
         }

@@ -16,7 +16,7 @@ export default async function Tags() {
     
     const tags = getTags?.data as TagRank[]
 
-    return (<div className="mx-auto mt-12 mb-12 lg:mr-28 lg:ml-28">
+    return (<div className="mx-auto mt-12 mb-12 lg:mr-28 lg:ml-28 p-4 lg:p-0">
         <h1 className="text-5xl font-bold">Tags</h1>
         <div className="flex flex-wrap gap-2 mt-8">
             {tags && tags.map((tag: TagRank, index: number) => (

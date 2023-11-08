@@ -4,8 +4,9 @@ import Image from "next/image";
 import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PostBookmark from "./actions/PostBookmark";
+import { Fragment } from "react";
 
-export default function PostContainer({ coverImage, title, titleId, description, author, userId, authorUsername, authorImage, readPerMinute, published }: Post) {
+export default function PostContainer({ coverImage, title, titleId, description, author, userId, authorUsername, authorImage, readPerMinute, published, tags }: Post) {
     return (
         <div className="flex flex-wrap justify-end p-2 lg:block">
             <Link href={`/${authorUsername ? authorUsername : userId}/${titleId}`}>
@@ -16,6 +17,11 @@ export default function PostContainer({ coverImage, title, titleId, description,
                         )}
                         <h2 className="text-lg lg:text-xl font-bold">{title}</h2>
                         <p className="text-sm lg:text-md">{description}</p>
+                        {tags && tags.map(tag => (
+                            <Fragment key={tag}>
+                                <p className="badge badge-sm badge-neutral">{tag}</p>
+                            </Fragment>
+                        ))}
                         <div className="flex gap-2 items-center">
                             <div className="avatar">
                                 <div className="rounded-full">

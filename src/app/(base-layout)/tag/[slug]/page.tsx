@@ -46,17 +46,17 @@ export default async function TagPosts({ params }: { params: { slug: string } })
         notFound()
     }
     return (
-        <div className="mt-12 mb-12 lg:mr-28 lg:ml-28 mx-auto">
-            <div className="grid grid-cols-2">
-                <div className="flex items-center gap-4">
+        <div className="mt-12 mb-12 lg:mr-28 lg:ml-28 p-4 lg:p-0 mx-auto">
+            <div className="flex flex-wrap lg:grid lg:grid-cols-2">
+                <div className="flex flex-wrap items-center gap-4">
                     <h1 className="text-5xl font-bold">
                         #{tag.tag}
                     </h1>
                     <TagFollowButton tag={tag.tag} isLoggedIn={session ? true : false} />
                 </div>
                 <div className="container">
-                    <h2 className="text-lg text-right">{tag.usage} Posts</h2>
-                    <h2 className="text-lg text-right">{tag.followers} Followers</h2>
+                    <h2 className="text-lg lg:text-right">{tag.usage} Posts</h2>
+                    <h2 className="text-lg lg:text-right">{tag.followers} Followers</h2>
                 </div>
             </div>
             <div className="lg:flex justify-center mt-16">

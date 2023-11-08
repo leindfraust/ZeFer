@@ -4,6 +4,16 @@ import { authConfig } from "@/app/api/auth/[...nextauth]/route"
 import prisma from "@/db"
 import { getServerSession } from "next-auth"
 
+export async function getTagRankings() {
+    const tagsRanking = await prisma.tagsRanking.findFirst({
+        orderBy: {
+            createdAt: 'desc'
+        },
+        take: 1
+    })
+    return tagsRanking
+}
+
 export async function updateInterest(tag: string) {
     const session = await getServerSession(authConfig)
     try {

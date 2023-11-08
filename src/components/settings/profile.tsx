@@ -145,7 +145,7 @@ export default function ProfileSettingsComponent({ username, name, bio, address,
 
 
     return (<>
-        <div className="mx-auto w-9/12 justify-center space-y-6">
+        <div className="mx-auto lg:w-9/12 justify-center space-y-6">
             <FormProvider {...submissions}>
                 <div className='shadow-lg p-12 rounded-md space-y-2'>
                     <h3 className='text-2xl font-bold'>Profile Information</h3>

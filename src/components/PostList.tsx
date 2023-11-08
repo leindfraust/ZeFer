@@ -59,46 +59,46 @@ export default function PostList({ keyword, tag, userId, published }: { keyword?
         if (!feed) setFeed(searchParams.get('feed') as 'relevance' | 'latest' | 'most-popular')
         replace(`${pathName}?${keyword ? `q=${keyword}&` : ''}feed=${feed ?? 'latest'}`, { scroll: false })
         refetch()
-    }, [searchParams, refetch, keyword, replace, pathName, feed])
+    }, [feed, keyword, pathName, refetch, replace, searchParams])
 
     useEffect(() => {
         // if the last element is in view and there is a next page, fetch the next page
         if (inView && hasNextPage && !isFetching) {
             fetchNextPage();
         }
-    }, [hasNextPage, inView, fetchNextPage, refetch, isFetching]);
+    }, [fetchNextPage, hasNextPage, inView, isFetching]);
 
-    return (<div className="space-y-6">
-
-        {!userId && data?.pageParams.filter(param => param !== '').length !== 0 && !isLoading && !isFetching && (
+    return (<>
+        {data?.pageParams.filter(param => param !== '').length !== 0 && (
             <div className={`flex items-center ${keyword ? 'justify-end' : 'justify-start'} space-x-4`}>
                 <h3 className={`text-xl cursor-pointer hover:underline ${feed === 'latest' ? 'underline' : ''}`} onClick={() => setFeed('latest')}>Latest</h3>
                 <h3 className={`text-xl cursor-pointer hover:underline ${feed === 'most-popular' ? 'underline' : ''}`} onClick={() => setFeed('most-popular')}>Most Popular</h3>
             </div>
         )}
-
-        {isSuccess && !isLoading && !isRefetching ? data?.pages.map(page =>
-            page.data && page.data.map((post: Post, index: string) => (
-                <Fragment key={post.id}>
-                    {page.data.length === index + 1 ? (
-                        <div ref={ref}>
-                            <PostContainer {...post} />
-                        </div>
-                    ) : (
-                        <div>
-                            <PostContainer {...post} />
-                        </div>
-                    )}
-                </Fragment>
-            ))) : (
-            <PostContainerLoader />
-        )}
-        {isFetchingNextPage && (<PostContainerLoader />)}
-        {keyword && data?.pageParams.filter(param => param !== '').length === 0 && !isLoading && !isFetching && (
-            <h3 className="text-xl">No results were found.</h3>
-        )}
-        {data?.pageParams.filter(param => param !== '').length !== 0 && !hasNextPage && !isLoading && !isFetching && (
-            <div className=" divider divider-vertical text-sm max-w-md mx-auto">End of Results</div>
-        )}
-    </div>)
+        <div className="space-y-6">
+            {isSuccess && !isLoading && !isRefetching ? data?.pages.map(page =>
+                page.data && page.data.map((post: Post, index: string) => (
+                    <Fragment key={post.id}>
+                        {page.data.length === index + 1 ? (
+                            <div ref={ref}>
+                                <PostContainer {...post} />
+                            </div>
+                        ) : (
+                            <div>
+                                <PostContainer {...post} />
+                            </div>
+                        )}
+                    </Fragment>
+                ))) : (
+                <PostContainerLoader />
+            )}
+            {isFetchingNextPage && (<PostContainerLoader />)}
+            {keyword && data?.pageParams.filter(param => param !== '').length === 0 && !isLoading && !isFetching && (
+                <h3 className="text-xl">No results were found.</h3>
+            )}
+            {data?.pageParams.filter(param => param !== '').length !== 0 && !hasNextPage && !isLoading && !isFetching && (
+                <div className=" divider divider-vertical text-sm max-w-md mx-auto">End of Results</div>
+            )}
+        </div>
+    </>)
 }

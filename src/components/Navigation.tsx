@@ -5,39 +5,35 @@ import Image from 'next/image';
 import Link from 'next/link'
 import ThemeSwitcher from './ThemeSwitcher';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { User } from '@prisma/client';
+import SideMenu from './menu/SideMenu';
+import SearchBar from './SearchBar';
 
 
 export default function Navigation({ name, image, id, username }: User) {
-    const router = useRouter()
-    const pathName = usePathname()
-    const searchParams = useSearchParams()
-    const [searchKeyword, setSearchKeyword] = useState<string>(searchParams.get('q') ?? '')
-
-    function searchKeywordFn() {
-        if (searchKeyword) {
-            if (pathName.includes('/search')) {
-                router.replace(`${pathName}?q=${searchKeyword}`)
-            } else {
-                router.push(`/search/posts?q=${searchKeyword}`)
-            }
-        }
-    }
-
     return (<>
         <div className="navbar bg-base-200 sticky top-0 z-20">
+            <div className="flex-none z-20">
+                <div className="drawer">
+                    <input id="sidemenu-drawer" type="checkbox" className="drawer-toggle" />
+                    <div className="drawer-content">
+                        <label htmlFor="sidemenu-drawer" className="lg:hidden btn btn-square btn-ghost">
+                            <FontAwesomeIcon icon={faBars} />
+                        </label>
+                    </div>
+                    <div className="drawer-side">
+                        <label htmlFor="sidemenu-drawer" aria-label="close sidebar" className="drawer-overlay !cursor-default"></label>
+                        <div className='p-4 w-80 min-h-full bg-base-200 text-base-content'>
+                            <SideMenu />
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div className="flex-1">
                 <Link href={'/'} className="btn btn-ghost normal-case text-xl">ZeFer</Link>
-                <div className="form-control hidden lg:block">
-                    <div className="input-group">
-                        <input type="text" placeholder="Search…" className="input input-bordered" onKeyDown={(e) => e.key === 'Enter' && searchKeywordFn()} onChange={(e) => setSearchKeyword(e.currentTarget.value)} value={searchKeyword} />
-                        <button className="btn btn-neutral" onClick={searchKeywordFn}>
-                            <FontAwesomeIcon icon={faSearch} size='lg' />
-                        </button>
-                    </div>
+                <div className='hidden lg:block'>
+                    <SearchBar />
                 </div>
             </div>
             {name && image && id ? (

@@ -12,7 +12,6 @@ export default function PostSlugWatcher({ children, postId }: { children: React.
 
 
     useEffect(() => {
-
         setTimeout(async () => {
             const addViewCount = await addPostView(postId)
             if (addViewCount) isViewCounted.current = true
@@ -30,7 +29,7 @@ export default function PostSlugWatcher({ children, postId }: { children: React.
             }, 30000)
         }
         const handleScroll = async () => {
-            if (isViewCounted) {
+            if (isViewCounted.current) {
                 if (!readTimeCountdown.current || readTimeCountdown.current === undefined) {
                     isActivelyReading.current = true
                     userInactivityCountdown()
@@ -52,8 +51,20 @@ export default function PostSlugWatcher({ children, postId }: { children: React.
         window.addEventListener("scroll", handleScroll);
 
         return () => {
-            window.removeEventListener("scroll", handleScroll);
-        };
+            function clearAllTimeoutsAndIntervals() {
+                var highestTimeoutId = setTimeout(";");
+                for (let i = 0; i < highestTimeoutId; i++) {
+                    clearTimeout(i);
+                }
+
+                var highestIntervalId = setInterval(";");
+                for (let i = 0; i < highestIntervalId; i++) {
+                    clearInterval(i);
+                }
+            }
+            clearAllTimeoutsAndIntervals()
+
+        }
     }, [postId]);
 
     return (

@@ -1,11 +1,11 @@
-import NextAuth, { NextAuthOptions } from "next-auth"
+import NextAuth, { AuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import GithubProvider from "next-auth/providers/github"
 import type { Adapter } from "next-auth/adapters"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import prisma from "@/db"
 
-export const authConfig: NextAuthOptions = {
+export const authConfig: AuthOptions = {
     adapter: PrismaAdapter(prisma) as Adapter,
     secret: process.env.NEXTAUTH_SECRET as string,
     session: {

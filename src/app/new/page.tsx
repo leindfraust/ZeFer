@@ -1,6 +1,6 @@
 import Tiptap from "@/components/wysiwyg/Tiptap";
 import { getServerSession } from "next-auth";
-import { authConfig } from "../api/auth/[...nextauth]/route";
+import { authConfig } from "@/utils/authConfig";
 import prisma from "@/db";
 import { PostDraft } from "@prisma/client";
 

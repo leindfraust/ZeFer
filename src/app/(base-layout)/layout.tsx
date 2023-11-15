@@ -1,6 +1,6 @@
 import Navigation from '@/components/Navigation';
 
-import { authConfig } from '../api/auth/[...nextauth]/route';
+import { authConfig } from '@/utils/authConfig';
 import { getServerSession } from 'next-auth';
 import prisma from '@/db';
 import { User } from '@prisma/client';

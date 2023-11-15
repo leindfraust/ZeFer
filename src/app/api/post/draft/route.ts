@@ -3,7 +3,7 @@ import cloudinarySignature from "@/utils/cloudinarySignature"
 import { JSONContent } from "@tiptap/react"
 import { getServerSession } from "next-auth"
 import { NextRequest, NextResponse } from "next/server"
-import { authConfig } from "../../auth/[...nextauth]/route"
+import { authConfig } from "@/utils/authConfig"
 
 export async function POST(req: NextRequest): Promise<any> {
     const body = await req.formData()

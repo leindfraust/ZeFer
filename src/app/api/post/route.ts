@@ -201,7 +201,6 @@ export async function POST(req: NextRequest): Promise<any> {
                 title: (body.get('title') as string).trim(),
                 titleId: `${(body.get('title') as string).replace(/[^a-zA-Z0-9 ]/g, "").trim().split(" ").join("-")}-${generateRandomCode()}`,
                 description: (body.get('description') as string).trim(),
-                series: body.get('series') as string,
                 tags: [...JSON.parse(body.get('tags') as string)],
                 content: JSON.parse(body.get('content') as string),
                 readPerMinute: parseInt(body.get('readPerMinute') as string),

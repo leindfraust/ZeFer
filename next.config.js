@@ -1,21 +1,38 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: {
-        domains: ['res.cloudinary.com'],
-        remotePatterns: [
-            {
-                protocol: 'https',
-                hostname: 'avatars.githubusercontent.com',
-                port: '',
-                pathname: '/u/**'
-            }, {
-                protocol: 'https',
-                hostname: 'lh3.googleusercontent.com',
-                port: '',
-                pathname: '/a/**'
-            }
-        ]
-    },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+        port: '',
+        pathname: '/u/**'
+      }, {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        port: '',
+        pathname: '/a/**'
+      }
+    ]
+  },
+  async redirects() {
+    return [
+      {
+        source: '/manage',
+        destination: '/manage/posts',
+        permanent: true
+      },
+      {
+        source: '/settings',
+        destination: '/settings/profile',
+        permanent: true
+      }
+    ]
+  }
 }
 
 module.exports = nextConfig

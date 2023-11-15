@@ -24,9 +24,9 @@ export default function SearchBar() {
 
     return (<>
         <div className="form-control">
-            <div className="input-group">
-                <input type="text" placeholder="Search…" className="input input-bordered" onKeyDown={(e) => e.key === 'Enter' && searchKeywordFn()} onChange={(e) => setSearchKeyword(e.currentTarget.value)} value={searchKeyword} />
-                <button className="btn btn-neutral" onClick={searchKeywordFn}>
+            <div className="join">
+                <input type="text" placeholder="Search…" className="input input-bordered w-10/12 join-item" onKeyDown={(e) => e.key === 'Enter' && searchKeywordFn()} onChange={(e) => setSearchKeyword(e.currentTarget.value)} value={searchKeyword} />
+                <button className="btn btn-neutral join-item" onClick={searchKeywordFn}>
                     <FontAwesomeIcon icon={faSearch} size='lg' />
                 </button>
             </div>

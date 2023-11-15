@@ -79,6 +79,25 @@ export async function GET(req: NextRequest): Promise<any> {
     }
 }
 
+export async function PUT(req: NextRequest): Promise<any> {
+    const url = new URL(req.url)
+    const postId = url.searchParams.get("postId") as string
+    const publish = url.searchParams.get('publish') as 'true' | 'false'
+
+    try {
+        const publishOrUnpublishPost = await prisma.post.update({
+            where: { id: postId },
+            data: {
+                published: publish === 'true' ? true : false
+            }
+        })
+        if (publishOrUnpublishPost) return NextResponse.json({ status: 200 })
+    } catch (err) {
+        console.log(err)
+        return NextResponse.json({ err }, { status: 500 })
+    }
+}
+
 export async function DELETE(req: NextRequest): Promise<any> {
     const url = new URL(req.url)
 

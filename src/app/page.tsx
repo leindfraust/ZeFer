@@ -3,7 +3,6 @@ import QueryWrapper from "@/components/QueryWrapper"
 import prisma from "@/db"
 import { getServerSession } from "next-auth"
 import Link from "next/link"
-import { Fragment } from "react"
 import { authConfig } from "@/utils/authConfig"
 import Navigation from "@/components/Navigation"
 import { User } from '@prisma/client';

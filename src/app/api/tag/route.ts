@@ -1,9 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import prisma from "@/db";
 
-export async function GET(req?: NextRequest): Promise<any> {
-    const url = req && new URL(req?.url)
-    const keyword = url && url.searchParams.get('q')
+export async function GET(): Promise<any> {
 
     const default_tags = [
         "travel",
@@ -51,14 +49,7 @@ export async function GET(req?: NextRequest): Promise<any> {
             tags.push(...tag.tags)
         }
 
-        const response = () => {
-            if (keyword) {
-                return Array.from(new Set(tags)).filter(tag => tag.includes(keyword)).sort()
-            }
-            return Array.from(new Set(tags)).sort()
-        }
-
-        return NextResponse.json(response(), { status: 200 })
+        return NextResponse.json(Array.from(new Set(tags)).sort(), { status: 200 })
     } catch (err) {
         return NextResponse.json([err], { status: 500 })
     }

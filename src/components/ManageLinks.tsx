@@ -1,16 +1,23 @@
 'use client'
 
+import Link from "next/link";
 import { usePathname } from "next/navigation"
-import { useState } from "react"
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react"
 
 export default function ManageLinks() {
+    const router = useRouter()
     const pathName = usePathname()
     const extractedPath = pathName.substring(pathName.lastIndexOf('/') + 1);
     const [selectedLink, setSelectedLink] = useState<string>(extractedPath)
 
     function selectLink(e: React.ChangeEvent<HTMLSelectElement>) {
-        if (extractedPath === e.currentTarget.value) setSelectedLink(e.currentTarget.value)
+        if (extractedPath !== e.currentTarget.value) router.push(`/manage/${e.currentTarget.value}`)
     }
+
+    useEffect(() => {
+        if (extractedPath) setSelectedLink(extractedPath)
+    }, [extractedPath])
 
     function activeLink(link: string) {
         if (extractedPath === link) return 'active'
@@ -18,10 +25,10 @@ export default function ManageLinks() {
 
     return (<>
         <ul className="hidden lg:block menu menu-lg rounded-box">
-            <li><a className={activeLink('posts')}>Posts</a></li>
-            <li><a className={activeLink('series')}>Series</a></li>
-            <li><a className={activeLink('following')}>Following</a></li>
-            <li><a className={activeLink('organization')}>Organization</a></li>
+            <li><Link href={'/manage/posts'} className={activeLink('posts')}>Posts</Link></li>
+            <li><Link href={'/manage/series'} className={activeLink('series')}>Series</Link></li>
+            <li><Link href={'/manage/following'} className={activeLink('following')}>Following</Link></li>
+            <li><Link href={'/manage/organization'} className={activeLink('organization')}>Organization</Link></li>
         </ul>
         <select className="select select-bordered font-bold text-lg w-full max-w-xs lg:hidden" value={selectedLink} onChange={selectLink}>
             <option value='posts'>Posts</option>

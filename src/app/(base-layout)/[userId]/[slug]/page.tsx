@@ -85,19 +85,21 @@ export default async function PostPage({ params }: { params: { userId: string, s
                     <Link href={'/manage'} className="text-sm">Manage</Link>
                 </div>
             )}
-            <p className="text-sm">This is a part of the following series: &nbsp;
-                {post.series.length !== 0 && post.series.map((series, index) => (
-                    <Fragment key={series.id}>
-                        {post.series.length !== index + 1 ? (
-                            <strong>
-                                <Link href={`/${userId}/series/${series.id}`}>{series.title}</Link>, and </strong>
+            {post.series.length !== 0 && (
+                <p className="text-sm">This is a part of the following series: &nbsp;
+                    {post.series.map((series, index) => (
+                        <Fragment key={series.id}>
+                            {post.series.length !== index + 1 ? (
+                                <strong>
+                                    <Link href={`/${userId}/series/${series.id}`}>{series.title}</Link>, and </strong>
 
-                        ) : (
-                            <strong><Link href={`/${userId}/series/${series.id}`}>{series.title}</Link></strong>
-                        )}
-                    </Fragment>
-                ))}
-            </p>
+                            ) : (
+                                <strong><Link href={`/${userId}/series/${series.id}`}>{series.title}</Link></strong>
+                            )}
+                        </Fragment>
+                    ))}
+                </p>
+            )}
             <Image src={post?.coverImage as string} height={1920} width={1080} alt={`cover image for ${post.title} `} />
             <div className="-space-y-6">
                 <h1>{post?.title}</h1>
@@ -107,7 +109,7 @@ export default async function PostPage({ params }: { params: { userId: string, s
                     <div className="flex space-x-4">
                         {post.tags.map((tag: string, index: number) => (
                             <Fragment key={index}>
-                                <Link href="/"><p className='text-sm'>#{tag}</p></Link>
+                                <Link href={`/tag/${tag}`}><p className='text-sm'>#{tag}</p></Link>
                             </Fragment>
                         ))}
                     </div>

@@ -44,24 +44,26 @@ model Session {
 }
 
 model User {
-  id              String     @id @default(cuid())
-  username        String?    @unique
+  id              String               @id @default(cuid())
+  username        String?              @unique
   name            String?
   bio             String?
   address         String?
   occupation      String?
-  email           String?    @unique
+  email           String?              @unique
   emailVerified   DateTime?
   image           String
   views           Int?
-  bookMarks       Post[]     @relation("Bookmarks") //this hasn't migrated yet because it will fail
+  readingHistory  PostReadingHistory[]
+  bookMarks       Post[]               @relation("Bookmarks") //this hasn't migrated yet because it will fail
   pinned          String? //refer to postId only
   interests       String[]
+  series          PostSeries[]
   socials         Json[] //refer to UserSocials type in types/user.ts
-  followedBy      User[]     @relation("UserFollows")
-  following       User[]     @relation("UserFollows")
-  viewsVisibility Boolean    @default(true)
-  createdAt       DateTime   @default(now())
+  followedBy      User[]               @relation("UserFollows")
+  following       User[]               @relation("UserFollows")
+  viewsVisibility Boolean              @default(true)
+  createdAt       DateTime             @default(now())
   accounts        Account[]
   sessions        Session[]
   draft           PostDraft?
@@ -81,29 +83,31 @@ model VerificationToken {
 }
 
 model Post {
-  id              String         @id @default(cuid())
-  userId          String
-  author          String
-  authorUsername  String?
-  authorImage     String
-  coverImage      String?
-  title           String
-  titleId         String         @unique
-  isBookmarkedBy  User[]         @relation("Bookmarks")
-  reactions       PostReaction[]
-  comments        PostComment[]
-  description     String
-  content         Json
-  series          String?
-  tags            String[]
-  views           PostView[]
-  readPerMinute   Int
-  new             Boolean        @default(true)
-  viewsVisibility Boolean        @default(true)
-  published       Boolean        @default(false)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  user            User           @relation(fields: [userId, author, authorImage], references: [id, name, image])
+  id                   String               @id @default(cuid())
+  userId               String
+  author               String
+  authorUsername       String?
+  authorImage          String
+  coverImage           String?
+  title                String
+  titleId              String               @unique
+  isBookmarkedBy       User[]               @relation("Bookmarks")
+  reactions            PostReaction[]
+  comments             PostComment[]
+  description          String
+  content              Json
+  series               PostSeries[]
+  tags                 String[]
+  postReadingHistories PostReadingHistory[]
+  postReadingLength    PostReadingLength[]
+  views                PostView[]
+  readPerMinute        Int
+  new                  Boolean              @default(true)
+  viewsVisibility      Boolean              @default(true)
+  published            Boolean              @default(false)
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  user                 User                 @relation(fields: [userId, author, authorImage], references: [id, name, image])
 
   @@schema("posts")
 }
@@ -121,12 +125,49 @@ model PostDraft {
   @@schema("posts")
 }
 
+model PostSeries {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  authorId    String
+  posts       Post[]
+  author      User    @relation(fields: [authorId], references: [id])
+
+  @@schema("posts")
+}
+
 model PostView {
   id        String   @id @default(uuid())
-  userId    String
   postId    String
   createdAt DateTime @default(now())
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@schema("posts")
+}
+
+//This is for registered users only
+model PostReadingHistory {
+  id              String            @id @default(uuid())
+  userId          String
+  postId          String
+  readingLengthId String            @unique
+  readingLength   PostReadingLength @relation(fields: [readingLengthId], references: [id])
+  post            Post              @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user            User              @relation(fields: [userId], references: [id])
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@unique([userId, postId])
+  @@schema("posts")
+}
+
+model PostReadingLength {
+  id                 String              @id @default(uuid())
+  postId             String
+  readingLength      Int
+  postReadingHistory PostReadingHistory?
+  post               Post                @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt          DateTime            @default(now())
 
   @@schema("posts")
 }

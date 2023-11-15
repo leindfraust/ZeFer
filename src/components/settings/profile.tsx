@@ -79,6 +79,10 @@ export default function ProfileSettingsComponent({ username, name, bio, address,
         type: 'textarea',
         value: bio ? bio : '',
         placeholder: 'Describe who you are...',
+        maxLength: {
+            value: 500,
+            message: 'You are exceeding the required limit.'
+        },
         required: {
             value: false,
             message: ''

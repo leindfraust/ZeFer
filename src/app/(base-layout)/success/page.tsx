@@ -1,4 +1,4 @@
-import { authConfig } from "@/app/api/auth/[...nextauth]/route"
+import { authConfig } from "@/utils/authConfig"
 import PostCard from "@/components/post/PostCard"
 import prisma from "@/db"
 import { getServerSession } from "next-auth"

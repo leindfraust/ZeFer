@@ -3,7 +3,7 @@ import prisma from "@/db"
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { authConfig } from "@/app/api/auth/[...nextauth]/route";
+import { authConfig } from "@/utils/authConfig";
 import Tiptap from "@/components/wysiwyg/Tiptap";
 import { PostEdit } from "@/types/post";
 import { JSONContent } from "@tiptap/react";

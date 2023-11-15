@@ -1,4 +1,4 @@
-import { authConfig } from "@/app/api/auth/[...nextauth]/route";
+import { authConfig } from "@/utils/authConfig";
 import ProfileSettingsComponent from "@/components/settings/profile";
 import prisma from "@/db";
 import { User } from "@prisma/client";

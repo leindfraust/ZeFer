@@ -10,7 +10,7 @@ import PostList from "@/components/PostList";
 import Image from "next/image";
 import QueryWrapper from "@/components/QueryWrapper";
 import { getServerSession } from "next-auth";
-import { authConfig } from "@/app/api/auth/[...nextauth]/route";
+import { authConfig } from "@/utils/authConfig";
 import UserFollowButton from "@/components/user/actions/UserFollowButton";
 
 export async function generateMetadata({ params }: { params: { userId: string } }): Promise<Metadata> {

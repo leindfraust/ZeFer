@@ -4,7 +4,7 @@ import prisma from "@/db"
 import { getServerSession } from "next-auth"
 import Link from "next/link"
 import { Fragment } from "react"
-import { authConfig } from "./api/auth/[...nextauth]/route"
+import { authConfig } from "@/utils/authConfig"
 import Navigation from "@/components/Navigation"
 import { User } from '@prisma/client';
 import SideMenu from "@/components/menu/SideMenu"

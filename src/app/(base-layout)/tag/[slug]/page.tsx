@@ -1,4 +1,4 @@
-import { authConfig } from "@/app/api/auth/[...nextauth]/route";
+import { authConfig } from "@/utils/authConfig";
 import PostList from "@/components/PostList";
 import QueryWrapper from "@/components/QueryWrapper";
 import PeopleContainer from "@/components/people/PeopleContainer";

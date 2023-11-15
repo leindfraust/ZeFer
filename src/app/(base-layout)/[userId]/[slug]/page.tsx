@@ -16,7 +16,7 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { Fragment } from "react";
 import { getServerSession } from "next-auth";
-import { authConfig } from "@/app/api/auth/[...nextauth]/route";
+import { authConfig } from "@/utils/authConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark, faComment, faEllipsis, faHeart, faShare, } from "@fortawesome/free-solid-svg-icons";
 import PostSlugWatcher from "@/components/PostSlugWatcher";

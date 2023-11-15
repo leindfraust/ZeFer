@@ -3,7 +3,7 @@ import prisma from "@/db";
 import { TagRank } from "@/types/tag";
 import { Fragment } from "react";
 import { getServerSession } from "next-auth"
-import { authConfig } from "@/app/api/auth/[...nextauth]/route"
+import { authConfig } from "@/utils/authConfig"
 
 export default async function Tags() {
     const session = await getServerSession(authConfig)

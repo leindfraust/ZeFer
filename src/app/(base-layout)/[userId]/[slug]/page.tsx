@@ -19,19 +19,20 @@ import { getServerSession } from "next-auth";
 import { authConfig } from "@/app/api/auth/[...nextauth]/route";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark, faComment, faEllipsis, faHeart, faShare, } from "@fortawesome/free-solid-svg-icons";
+import PostSlugWatcher from "@/components/PostSlugWatcher";
 
 export async function generateMetadata({ params }: { params: { userId: string, slug: string } }): Promise<Metadata> {
     const { userId, slug } = params
-    const post = await prisma.post.findFirst({
+    const post = await prisma.post.findUnique({
         where: {
+            titleId: slug,
+            published: true,
             OR: [
                 {
                     userId: userId,
-                    titleId: slug
                 },
                 {
-                    authorUsername: userId,
-                    titleId: slug
+                    authorUsername: userId
                 }
             ]
         }
@@ -48,7 +49,7 @@ export async function generateMetadata({ params }: { params: { userId: string, s
 export default async function PostPage({ params }: { params: { userId: string, slug: string } }) {
     const prose = 'min-h-screen prose prose-sm sm:prose lg:prose-lg mx-auto mt-12 mb-12 mr-4 ml-4 sm:mr-auto sm:ml-auto max-w-md focus:outline-none'
     const { slug, userId } = params
-    const post = await prisma.post.findFirst({
+    const post = await prisma.post.findUnique({
         where: {
             titleId: slug,
             published: true,
@@ -60,40 +61,43 @@ export default async function PostPage({ params }: { params: { userId: string, s
                     authorUsername: userId
                 }
             ]
+        },
+        include: {
+            series: true
         }
     })
     if (!post) return notFound()
 
-    setTimeout(async () => {
-
-        await prisma.postView.create({
-            data: {
-                userId: userId,
-                post: {
-                    connect: { id: post.id }
-                }
-            }
-        })
-
-    }, 15000)
-
     const session = await getServerSession(authConfig)
-    const isLoggedIn = await session?.user.id === post.userId
+    const isPublisher = await session?.user.id === post.userId
 
     const user = await prisma.user.findUnique({
         where: { id: session?.user.id ?? '' }
     })
 
     const postContent = generateHTML(post?.content as JSONContent, [TaskList, TaskItem, HighLight, StarterKit, TiptapImage, TiptapLink, Youtube, CharacterCount])
-    return (<>
+    return (<PostSlugWatcher postId={post.id}>
         <section className={prose}>
-            {isLoggedIn && (
+            {isPublisher && (
                 <div className="flex justify-end">
                     <Link href={`/${user?.username || user?.id}/${post.titleId}/edit`} className="text-sm">Edit</Link>
                     <div className="divider divider-horizontal"></div>
-                    <Link href={'/'} className="text-sm">Manage</Link>
+                    <Link href={'/manage'} className="text-sm">Manage</Link>
                 </div>
             )}
+            <p className="text-sm">This is a part of the following series: &nbsp;
+                {post.series.length !== 0 && post.series.map((series, index) => (
+                    <Fragment key={series.id}>
+                        {post.series.length !== index + 1 ? (
+                            <strong>
+                                <Link href={`/${userId}/series/${series.id}`}>{series.title}</Link>, and </strong>
+
+                        ) : (
+                            <strong><Link href={`/${userId}/series/${series.id}`}>{series.title}</Link></strong>
+                        )}
+                    </Fragment>
+                ))}
+            </p>
             <Image src={post?.coverImage as string} height={1920} width={1080} alt={`cover image for ${post.title} `} />
             <div className="-space-y-6">
                 <h1>{post?.title}</h1>
@@ -157,5 +161,5 @@ export default async function PostPage({ params }: { params: { userId: string, s
         `)}
             </article>
         </section>
-    </>)
+    </PostSlugWatcher>)
 }

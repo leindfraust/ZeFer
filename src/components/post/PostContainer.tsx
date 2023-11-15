@@ -17,11 +17,13 @@ export default function PostContainer({ coverImage, title, titleId, description,
                         )}
                         <h2 className="text-lg lg:text-xl font-bold">{title}</h2>
                         <p className="text-sm lg:text-md">{description}</p>
-                        {tags && tags.map(tag => (
-                            <Fragment key={tag}>
-                                <p className="badge badge-sm badge-neutral">{tag}</p>
-                            </Fragment>
-                        ))}
+                        <div className="flex gap-4">
+                            {tags && tags.map(tag => (
+                                <Fragment key={tag}>
+                                    <p className="badge badge-sm badge-neutral">{tag}</p>
+                                </Fragment>
+                            ))}
+                        </div>
                         <div className="flex gap-2 items-center">
                             <div className="avatar">
                                 <div className="rounded-full">

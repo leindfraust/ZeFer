@@ -20,6 +20,7 @@ export async function GET(req: NextRequest): Promise<any> {
         interface PrismaQuery {
             include: {},
             where: {
+                NOT: {},
                 published: boolean;
                 title?: {},
                 description?: {},
@@ -37,6 +38,9 @@ export async function GET(req: NextRequest): Promise<any> {
                 views: true
             },
             where: {
+                NOT: {
+                    coverImage: null //this is a safety mechanism as that all posts requires a coverImage
+                },
                 published: published === 'true' ? true : published === 'false' ? false : true //strict checking of false so when published params is anything but true or false, it always returns true
             },
             //when orderBy is not defined as latest or most-popular, default to latest

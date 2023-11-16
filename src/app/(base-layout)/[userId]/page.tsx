@@ -126,7 +126,11 @@ export default async function ProfilePage({ params }: { params: { userId: string
                     <ViewsVisibility />
                 </div>
                 {session && session.user.id !== user.id && (
-                    <UserFollowButton userId={user.id} initialFollowStatus={checkIfUserAlreadyFollowed} />
+                    <div className="flex justify-center mt-2 lg:flex-none lg:mt-0">
+                        <div className="lg:block lg:absolute top-5 right-5">
+                            <UserFollowButton userId={user.id} initialFollowStatus={checkIfUserAlreadyFollowed} />
+                        </div>
+                    </div>
                 )}
             </div>
             <div className="flex flex-wrap mx-auto lg:flex-nowrap md:space-x-12 md:space-y-0">

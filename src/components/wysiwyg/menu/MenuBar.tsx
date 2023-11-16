@@ -124,7 +124,7 @@ export default function MenuBar({ editor }: EditorContentProps) {
     ]
 
     return (
-        <div className="sticky top-0 z-10 overflow-auto bg-base-200">
+        <div className="sticky top-0 z-10 overflow-auto bg-base-100">
 
             <dialog ref={link_modal} className="modal">
                 <div className="modal-box">

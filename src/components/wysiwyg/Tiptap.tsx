@@ -353,7 +353,7 @@ export default function Tiptap({ userId, username, tags, postEdit, postDraft }: 
                 <EditorContent editor={editor} className='mb-24' />
             </>
         )}
-        <div className=' fixed bottom-0 bg-base-200 w-screen rounded-lg bg-opacity-50 hover:bg-opacity-100'>
+        <div className=' fixed bottom-0 bg-base-100 w-screen rounded-lg bg-opacity-50 hover:bg-opacity-100'>
             <div className="flex flex-wrap justify-center p-2">
                 <div className="flex items-center overflow-auto space-x-4">
                     <button className='btn btn-info' onClick={() => modal_tag.current?.showModal()}>Add tags</button>

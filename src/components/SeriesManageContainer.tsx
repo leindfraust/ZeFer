@@ -74,6 +74,7 @@ export default function SeriesManageContainer() {
             method: 'PUT',
             body: formData
         })
+        modalSeries.current?.close()
         return post
     })
 
@@ -151,15 +152,13 @@ export default function SeriesManageContainer() {
                     <Input {...seriesDescription_validation} />
                 </FormProvider>
                 <div className="modal-action">
+                    <button className="btn btn-info" onClick={() => editingSeries ? mutationEditSeries.mutate() : mutationCreateSeries.mutate()}>Submit</button>
                     <form method="dialog">
-                        <div className="flex gap-4">
-                            <button className="btn btn-info" onClick={() => editingSeries ? mutationEditSeries.mutate() : mutationCreateSeries.mutate()}>Submit</button>
-                            <button className="btn" onClick={() => {
-                                setEditingSeries(false)
-                                submissions.setValue("Title", "")
-                                submissions.setValue("Description", "")
-                            }}>Close</button>
-                        </div>
+                        <button className="btn" onClick={() => {
+                            setEditingSeries(false)
+                            submissions.setValue("Title", "")
+                            submissions.setValue("Description", "")
+                        }}>Close</button>
                     </form>
                 </div>
             </div>

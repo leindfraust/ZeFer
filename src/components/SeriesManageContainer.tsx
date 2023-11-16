@@ -17,9 +17,11 @@ export default function SeriesManageContainer() {
     const modalSeries = useRef<HTMLDialogElement>(null)
     const modalWarnDeleteSeries = useRef<HTMLDialogElement>(null)
     const modalAddPostToSeries = useRef<HTMLDialogElement>(null)
-    const modalDeletePostToSeries = useRef<HTMLDialogElement>(null)
+    const modalRemovePostToSeries = useRef<HTMLDialogElement>(null)
     const [editingSeries, setEditingSeries] = useState<boolean>(false)
     const [actionSeriesId, setActionSeriesId] = useState<string>('')
+    const [modalActionAddPostSeries, setModalActionAddPostSeries] = useState<PostSeries | undefined>()
+    const [modalActionRemoveSeries, setModalActionRemovePostSeries] = useState<PostSeries | undefined>()
 
     const getSeries = async () => {
         const response = await fetch('/api/post/manage/series')
@@ -60,6 +62,7 @@ export default function SeriesManageContainer() {
             method: 'POST',
             body: formData
         })
+        modalSeries.current?.close()
         return post
     })
 
@@ -70,7 +73,7 @@ export default function SeriesManageContainer() {
         const formData = new FormData()
         formData.append('title', data.Title)
         formData.append('description', data.Description)
-        const post = await fetch(`/api/post/manage/series${params}`, {
+        const post = await fetch(`/api/post/manage/series?${params}`, {
             method: 'PUT',
             body: formData
         })
@@ -98,6 +101,16 @@ export default function SeriesManageContainer() {
         modalSeries.current?.show()
     }
 
+    useEffect(() => {
+        if (modalActionAddPostSeries) {
+            modalAddPostToSeries.current?.show()
+        }
+        if (modalActionRemoveSeries) {
+            modalRemovePostToSeries.current?.show()
+        }
+    }, [modalActionAddPostSeries, modalActionRemoveSeries])
+
+
     const mutationCreateSeries = useMutation({
         mutationFn: () => createSeries()
     })
@@ -117,8 +130,9 @@ export default function SeriesManageContainer() {
 
     useEffect(() => {
         if (mutationCreateSeries.isSuccess) refetch()
+        if (mutationEditSeries.isSuccess) refetch()
         if (mutationDeleteSeries.isSuccess) refetch()
-    }, [mutationCreateSeries.isSuccess, mutationDeleteSeries.isSuccess, refetch])
+    }, [mutationCreateSeries.isSuccess, mutationDeleteSeries.isSuccess, mutationEditSeries.isSuccess, refetch])
 
     return (<div className="container">
 
@@ -177,43 +191,54 @@ export default function SeriesManageContainer() {
                                 <p>{series.description}</p>
                             </div>
                         </div>
-                        <div className="flex justify-end gap-4  p-4">
-                            <button className="btn btn-outline" onClick={() => modalAddPostToSeries.current?.show()}>Add a Post</button>
-                            <dialog className="modal" ref={modalAddPostToSeries}>
-                                <div className="modal-box">
-                                    <h3 className="text-xl">Add a Post to <strong>{series.title}</strong></h3>
-                                    <QueryWrapper>
-                                        <SeriesManagePostContainer {...series} action="add" />
-                                    </QueryWrapper>
-                                    <div className="modal-action">
-                                        <form method="dialog">
-                                            <div className="flex gap-4">
-                                                <button className="btn" onClick={() => refetch()}>Close</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </dialog>
-                            <button className="btn btn-outline btn-error" onClick={() => modalDeletePostToSeries.current?.show()}>Remove a Post</button>
-                            <dialog className="modal" ref={modalDeletePostToSeries}>
-                                <div className="modal-box">
-                                    <h3 className="text-xl">Remove a Post to <strong>{series.title}</strong></h3>
-                                    <QueryWrapper>
-                                        <SeriesManagePostContainer {...series} action="remove" />
-                                    </QueryWrapper>
-                                    <div className="modal-action">
-                                        <form method="dialog">
-                                            <div className="flex gap-4">
-                                                <button className="btn" onClick={() => refetch()}>Close</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </dialog>
+                        <div className="flex justify-end gap-4 p-4">
+                            <button className="btn btn-outline" onClick={() => setModalActionAddPostSeries(series)}>Add a Post</button>
+                            <button className="btn btn-outline btn-error" onClick={() => setModalActionRemovePostSeries(series)}>Remove a Post</button>
                         </div>
                     </div>
                 </Fragment>
             ))}
+            {modalActionAddPostSeries && (
+                <dialog className="modal" ref={modalAddPostToSeries}>
+                    <div className="modal-box">
+                        <h3 className="text-xl">Add a Post to <strong>{modalActionAddPostSeries.title}</strong> id: {modalActionAddPostSeries.id}</h3>
+                        <QueryWrapper>
+                            <SeriesManagePostContainer {...modalActionAddPostSeries} action="add" />
+                        </QueryWrapper>
+                        <div className="modal-action">
+                            <form method="dialog">
+                                <div className="flex gap-4">
+                                    <button className="btn" onClick={() => {
+                                        setModalActionAddPostSeries(undefined)
+                                        refetch()
+                                    }
+                                    }>Close</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </dialog>)}
+
+            {modalActionRemoveSeries && (<dialog className="modal" ref={modalRemovePostToSeries}>
+                <div className="modal-box">
+                    <h3 className="text-xl">Remove a Post to <strong>{modalActionRemoveSeries.title}</strong> id: {modalActionRemoveSeries.id}</h3>
+                    <QueryWrapper>
+                        <SeriesManagePostContainer {...modalActionRemoveSeries} action="remove" />
+                    </QueryWrapper>
+                    <div className="modal-action">
+                        <form method="dialog">
+                            <div className="flex gap-4">
+                                <button className="btn" onClick={() => {
+                                    setModalActionRemovePostSeries(undefined)
+                                    refetch()
+                                }
+                                }>Close</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </dialog>)}
+
         </div>
 
         {data === undefined || (data as Array<typeof data>).length === 0 && !isLoading && !isRefetching && (<>

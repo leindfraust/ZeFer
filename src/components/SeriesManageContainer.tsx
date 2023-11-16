@@ -201,7 +201,7 @@ export default function SeriesManageContainer() {
             {modalActionAddPostSeries && (
                 <dialog className="modal" ref={modalAddPostToSeries}>
                     <div className="modal-box">
-                        <h3 className="text-xl">Add a Post to <strong>{modalActionAddPostSeries.title}</strong> id: {modalActionAddPostSeries.id}</h3>
+                        <h3 className="text-xl">Add a Post to <strong>{modalActionAddPostSeries.title}</strong></h3>
                         <QueryWrapper>
                             <SeriesManagePostContainer {...modalActionAddPostSeries} action="add" />
                         </QueryWrapper>
@@ -221,7 +221,7 @@ export default function SeriesManageContainer() {
 
             {modalActionRemoveSeries && (<dialog className="modal" ref={modalRemovePostToSeries}>
                 <div className="modal-box">
-                    <h3 className="text-xl">Remove a Post to <strong>{modalActionRemoveSeries.title}</strong> id: {modalActionRemoveSeries.id}</h3>
+                    <h3 className="text-xl">Remove a Post to <strong>{modalActionRemoveSeries.title}</strong></h3>
                     <QueryWrapper>
                         <SeriesManagePostContainer {...modalActionRemoveSeries} action="remove" />
                     </QueryWrapper>

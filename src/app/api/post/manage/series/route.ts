@@ -12,6 +12,9 @@ export async function GET(): Promise<any> {
             },
             include: {
                 posts: true
+            },
+            orderBy: {
+                updatedAt: 'desc'
             }
         })
         return NextResponse.json({ data: getSeries }, { status: 200 })

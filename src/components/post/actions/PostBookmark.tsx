@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import type { SizeProp } from "@fortawesome/fontawesome-svg-core";
 
-export default function PostBookmark({ titleId, faSize }: { titleId: string, faSize: SizeProp }) {
+export default function PostBookmark({ titleId, faSize }: { titleId: string, faSize?: SizeProp }) {
     const [bookmarkStatus, setBookmarkStatus] = useState<boolean>()
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
 
@@ -40,9 +40,9 @@ export default function PostBookmark({ titleId, faSize }: { titleId: string, faS
     }
     return (<>
         {isLoggedIn ? (
-            <button onClick={updateBookmarkStatus}><FontAwesomeIcon icon={!bookmarkStatus ? FaRegBookmark : faBookmark} size={faSize} width={20} /></button>
+            <FontAwesomeIcon icon={!bookmarkStatus ? FaRegBookmark : faBookmark} size={faSize} width={20} className="cursor-pointer" onClick={updateBookmarkStatus} />
         ) : (
-            <button onClick={() => signIn()}><FontAwesomeIcon icon={!bookmarkStatus ? FaRegBookmark : faBookmark} width={20} size={faSize} /></button>
+            <FontAwesomeIcon icon={!bookmarkStatus ? FaRegBookmark : faBookmark} width={20} size={faSize} className="cursor-pointer" onClick={() => signIn()} />
         )}
     </>)
 }

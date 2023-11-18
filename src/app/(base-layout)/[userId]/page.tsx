@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBirthdayCake, faBlog, faBriefcase, faEye, faEyeSlash, faLocationPin, faPeopleGroup } from "@fortawesome/free-solid-svg-icons";
+import { faBirthdayCake, faBlog, faBriefcase, faLocationPin, faPeopleGroup } from "@fortawesome/free-solid-svg-icons";
 import prisma from "@/db";
 import type { UserSocials } from "@/types/user";
 import { Fragment } from "react";
@@ -73,24 +73,6 @@ export default async function ProfilePage({ params }: { params: { userId: string
         notFound()
     }
 
-    function ViewsVisibility() {
-        if (user?.viewsVisibility) {
-            if (user.views !== null) {
-                return (
-                    <div className="relative text-sm">
-                        <FontAwesomeIcon icon={faEye} /> {user?.views}
-                    </div>
-                )
-            }
-        } else {
-            return (
-                <div className="relative text-sm">
-                    <FontAwesomeIcon icon={faEyeSlash} />
-                </div>
-            )
-        }
-    }
-
     async function checkUserIfFollowing() {
         if (session) {
             const checkUserFollowed = await prisma.user.findUnique({
@@ -123,7 +105,6 @@ export default async function ProfilePage({ params }: { params: { userId: string
                         <p className="text-lg">{user?.bio}</p>
                         <p className="text-xs ">{user.address && (<><FontAwesomeIcon icon={faLocationPin} /> {user.address}, &nbsp; </>)} <FontAwesomeIcon icon={faBirthdayCake} />&nbsp; Joined on {new Date(user?.createdAt).toDateString()}</p>
                     </div>
-                    <ViewsVisibility />
                 </div>
                 {session && session.user.id !== user.id && (
                     <div className="flex justify-center mt-2 lg:flex-none lg:mt-0">

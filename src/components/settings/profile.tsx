@@ -9,7 +9,7 @@ import { Fragment } from 'react'
 import { User } from '@prisma/client'
 import DisplayImage from '../cloudinary/user/DisplayImage'
 
-export default function ProfileSettingsComponent({ username, name, bio, address, occupation, email, socials, viewsVisibility, id, image }: User) {
+export default function ProfileSettingsComponent({ username, name, bio, address, occupation, email, socials, id, image }: User) {
     const router = useRouter()
     const socialData = [...socials] as UserSocials[]
     const uploadImgProps = {
@@ -137,8 +137,7 @@ export default function ProfileSettingsComponent({ username, name, bio, address,
                 address: data.Address,
                 occupation: data.Occupation,
                 email: data.Email,
-                socials: socials,
-                viewsVisibility
+                socials: socials
             })
         })
         if (update.ok) {

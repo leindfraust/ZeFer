@@ -44,30 +44,29 @@ model Session {
 }
 
 model User {
-  id              String               @id @default(cuid())
-  username        String?              @unique
-  name            String?
-  bio             String?
-  address         String?
-  occupation      String?
-  email           String?              @unique
-  emailVerified   DateTime?
-  image           String
-  views           Int?
-  readingHistory  PostReadingHistory[]
-  bookMarks       Post[]               @relation("Bookmarks") //this hasn't migrated yet because it will fail
-  pinned          String? //refer to postId only
-  interests       String[]
-  series          PostSeries[]
-  socials         Json[] //refer to UserSocials type in types/user.ts
-  followedBy      User[]               @relation("UserFollows")
-  following       User[]               @relation("UserFollows")
-  viewsVisibility Boolean              @default(true)
-  createdAt       DateTime             @default(now())
-  accounts        Account[]
-  sessions        Session[]
-  draft           PostDraft?
-  post            Post[]
+  id             String               @id @default(cuid())
+  username       String?              @unique
+  name           String?
+  bio            String?
+  address        String?
+  occupation     String?
+  email          String?              @unique
+  emailVerified  DateTime?
+  image          String
+  views          Int?
+  readingHistory PostReadingHistory[]
+  bookMarks      Post[]               @relation("Bookmarks")
+  pinned         String? //refer to postId only
+  interests      String[]
+  series         PostSeries[]
+  socials        Json[] //refer to UserSocials type in types/user.ts
+  followedBy     User[]               @relation("UserFollows")
+  following      User[]               @relation("UserFollows")
+  createdAt      DateTime             @default(now())
+  accounts       Account[]
+  sessions       Session[]
+  draft          PostDraft?
+  post           Post[]
 
   @@unique([id, name, image])
   @@schema("users")
@@ -102,8 +101,6 @@ model Post {
   postReadingLength    PostReadingLength[]
   views                PostView[]
   readPerMinute        Int
-  new                  Boolean              @default(true)
-  viewsVisibility      Boolean              @default(true)
   published            Boolean              @default(false)
   createdAt            DateTime             @default(now())
   updatedAt            DateTime             @updatedAt
@@ -126,12 +123,13 @@ model PostDraft {
 }
 
 model PostSeries {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   title       String
   description String?
   authorId    String
   posts       Post[]
-  author      User    @relation(fields: [authorId], references: [id])
+  author      User     @relation(fields: [authorId], references: [id])
+  updatedAt   DateTime @updatedAt @default(now())
 
   @@schema("posts")
 }

@@ -156,7 +156,7 @@ export default function Tiptap({ userId, username, tags, postEdit, postDraft }: 
                 formData.append("coverImage", coverImageFile as File)
             } else {
                 const draftImg = await fetch(postDraft?.coverImage as string).then(file => file.blob()).then(blob => new File([blob], 'img_cover', { type: "image/png" }));
-                formData.append("coverImage", draftImg)
+                if (draftImg) formData.append("coverImage", draftImg)
             }
             if ((await images()).length !== 0) {
                 // append a form data of image_total given the total length of the array

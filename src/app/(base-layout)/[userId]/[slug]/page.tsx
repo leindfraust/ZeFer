@@ -18,8 +18,9 @@ import { Fragment } from "react";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/utils/authConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBookmark, faComment, faEllipsis, faHeart, faShare, } from "@fortawesome/free-solid-svg-icons";
+import { faComment, faEllipsis, faHeart, faShare, } from "@fortawesome/free-solid-svg-icons";
 import PostSlugWatcher from "@/components/PostSlugWatcher";
+import PostBookmark from "@/components/post/actions/PostBookmark";
 
 export async function generateMetadata({ params }: { params: { userId: string, slug: string } }): Promise<Metadata> {
     const { userId, slug } = params
@@ -101,7 +102,7 @@ export default async function PostPage({ params }: { params: { userId: string, s
                 </p>
             )}
             <Image src={post?.coverImage as string} height={1920} width={1080} alt={`cover image for ${post.title} `} />
-            <div className="-space-y-6">
+            <div className="lg:-space-y-6 -space-y-4">
                 <h1>{post?.title}</h1>
                 <h4 className="!text-slate-600">{post?.description}</h4>
                 <br />
@@ -151,7 +152,7 @@ export default async function PostPage({ params }: { params: { userId: string, s
                         </div>
                     </div>
                     <div className="flex gap-4">
-                        <FontAwesomeIcon icon={faBookmark} title="Bookmark" />
+                        <PostBookmark titleId={post.titleId} />
                         <FontAwesomeIcon icon={faShare} title="Share" />
                         <FontAwesomeIcon icon={faEllipsis} title="More" />
                     </div>

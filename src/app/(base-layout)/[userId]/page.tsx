@@ -146,7 +146,7 @@ export default async function ProfilePage({ params }: { params: { userId: string
                 </div>
                 <div className="w-full">
                     <QueryWrapper>
-                        <PostList tag="" userId={userId} />
+                        <PostList userId={userId} />
                     </QueryWrapper>
                 </div>
             </div>

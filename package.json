@@ -1,5 +1,5 @@
 {
-  "name": "blogdevfy",
+  "name": "zefer",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -44,6 +44,7 @@
     "next": "14.0.3",
     "next-auth": "^4.24.5",
     "next-cloudinary": "^5.7.0",
+    "openai": "^4.20.0",
     "postcss": "8.4.31",
     "react": "18.2.0",
     "react-dom": "18.2.0",

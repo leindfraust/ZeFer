@@ -21,6 +21,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { PostEdit } from "@/types/post";
 import { PostDraft } from "@prisma/client";
+import { cn } from "@/utils/cn";
+import { validateTag } from "@/utils/actions/tag";
 
 export default function Tiptap({
     userId,
@@ -50,11 +52,11 @@ export default function Tiptap({
     );
     const [tagList, setTagList] = useState<string[]>([...tags]);
     const modal_coverImage = useRef<HTMLDialogElement>(null);
-    const modal_tag = useRef<HTMLDialogElement>(null);
     const updateTimeout = useRef<NodeJS.Timeout>();
+    const [tagValidateResult, setTagValidateResult] = useState<boolean>();
 
     const prose =
-        "prose prose-sm sm:prose lg:prose-lg xl:prose-xl mx-auto mt-12 mb-12 mr-4 ml-4 sm:mr-auto sm:ml-auto max-w-md focus:outline-none";
+        "prose prose-sm sm:prose lg:prose-lg xl:prose-xl mx-auto mt-8 mb-8 mr-4 ml-4 sm:mr-auto sm:ml-auto max-w-md focus:outline-none";
 
     function PreviewEditor() {
         const renderHtml = editor?.getHTML() as string;
@@ -305,10 +307,22 @@ export default function Tiptap({
     }
 
     function addTag(tag: string) {
-        setInputTags([...inputTags, tag]);
-        setTagList([...tagList.filter((tagName) => tagName !== tag)]);
-        const elem = document.activeElement as HTMLElement;
-        elem?.blur();
+        if (inputTags.length < 4) {
+            setInputTags([...inputTags, tag]);
+            setTagList([...tagList.filter((tagName) => tagName !== tag)]);
+            const elem = document.activeElement as HTMLElement;
+            elem?.blur();
+        }
+    }
+
+    async function validateTagAddition() {
+        const validate = await validateTag(searchTag);
+        if (validate) {
+            addTag(searchTag);
+            setTagValidateResult(true);
+        } else {
+            setTagValidateResult(false);
+        }
     }
 
     function removeTag(tag: string) {
@@ -444,19 +458,99 @@ export default function Tiptap({
                 <>
                     <EditorContent editor={editorTitle} />
                     <EditorContent editor={editorDescription} />
-                    <MenuBar editor={editor} className={prose} />
+                    <div className={cn("!mb-2", prose)}>
+                        <div className="dropdown container z-50">
+                            <input
+                                type="text"
+                                placeholder="Add tags"
+                                onChange={(e) => {
+                                    setTagValidateResult(undefined);
+                                    setSearchTag(e.currentTarget.value);
+                                }}
+                                className="input input-ghost"
+                            />
+                            <ul
+                                tabIndex={0}
+                                className="dropdown-content menu max-h-[24rem] overflow-auto shadow bg-base-200 rounded-box"
+                            >
+                                <span className="flex flex-wrap">
+                                    {tagList.length !== 0 &&
+                                    tagList.filter((tag) =>
+                                        tag
+                                            .toLowerCase()
+                                            .includes(searchTag.toLowerCase())
+                                    ).length !== 0 ? (
+                                        tagList
+                                            .filter((tag) =>
+                                                tag
+                                                    .toLowerCase()
+                                                    .includes(
+                                                        searchTag.toLowerCase()
+                                                    )
+                                            )
+                                            .sort()
+                                            .map(
+                                                (
+                                                    tag: string,
+                                                    index: number
+                                                ) => (
+                                                    <Fragment key={index}>
+                                                        <li
+                                                            onClick={() =>
+                                                                addTag(tag)
+                                                            }
+                                                        >
+                                                            <a>{tag}</a>
+                                                        </li>
+                                                    </Fragment>
+                                                )
+                                            )
+                                    ) : (
+                                        <li>
+                                            <a onClick={validateTagAddition}>
+                                                {" "}
+                                                {tagValidateResult === undefined
+                                                    ? "Add your tag"
+                                                    : !tagValidateResult
+                                                    ? "Tag contains malicious or nonsense word. Try again."
+                                                    : "Add your tag"}
+                                            </a>
+                                        </li>
+                                    )}
+                                </span>
+                            </ul>
+                            <div className="flex flex-wrap items-center gap-4">
+                                {inputTags &&
+                                    inputTags.map(
+                                        (tag: string, index: number) => (
+                                            <Fragment key={index}>
+                                                <div className="flex flex-wrap items-center space-x-2">
+                                                    <p className="text-lg rounded link-primary">
+                                                        #{tag}
+                                                    </p>
+                                                    <p
+                                                        className="text-red-400 cursor-pointer"
+                                                        onClick={() =>
+                                                            removeTag(tag)
+                                                        }
+                                                    >
+                                                        x
+                                                    </p>
+                                                </div>
+                                            </Fragment>
+                                        )
+                                    )}
+                                <p className="text-sm">Up to 4 tags only</p>
+                            </div>
+                        </div>
+                    </div>
+                    <MenuBar editor={editor} className={cn("!mt-2", prose)} />
                     <EditorContent editor={editor} className="mb-24" />
                 </>
             )}
             <div className=" fixed bottom-0 bg-base-100 w-screen rounded-lg bg-opacity-50 hover:bg-opacity-100">
                 <div className="flex flex-wrap justify-center p-2">
                     <div className="flex items-center overflow-auto space-x-4">
-                        <button
-                            className="btn btn-info"
-                            onClick={() => modal_tag.current?.showModal()}
-                        >
-                            Add tags
-                        </button>
                         <label
                             htmlFor="coverImage"
                             className={`btn ${coverImage ? "btn-info" : ""}`}
@@ -527,78 +621,6 @@ export default function Tiptap({
                         </div>
                     </dialog>
                 )}
-
-                <dialog ref={modal_tag} className="modal">
-                    <div className="modal-box overflow-auto space-y-4">
-                        <div className="flex justify-center">
-                            <div className="dropdown">
-                                <input
-                                    type="text"
-                                    placeholder="Add tags"
-                                    onChange={(e) =>
-                                        setSearchTag(e.currentTarget.value)
-                                    }
-                                    className="input max-w-sm input-ghost"
-                                />
-                                <ul
-                                    tabIndex={0}
-                                    className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-                                >
-                                    {tagList.length !== 0 &&
-                                        tagList
-                                            .filter((tag) =>
-                                                tag
-                                                    .toLowerCase()
-                                                    .includes(
-                                                        searchTag.toLowerCase()
-                                                    )
-                                            )
-                                            .sort()
-                                            .map(
-                                                (
-                                                    tag: string,
-                                                    index: number
-                                                ) => (
-                                                    <Fragment key={index}>
-                                                        <li
-                                                            onClick={() =>
-                                                                addTag(tag)
-                                                            }
-                                                        >
-                                                            <a>{tag}</a>
-                                                        </li>
-                                                    </Fragment>
-                                                )
-                                            )}
-                                </ul>
-                            </div>
-                        </div>
-                        <div className="flex flex-wrap">
-                            {inputTags &&
-                                inputTags.map((tag: string, index: number) => (
-                                    <Fragment key={index}>
-                                        <div className="flex flex-wrap items-center -space-x-2">
-                                            <p className="text-lg rounded p-4 link-primary">
-                                                #{tag}
-                                            </p>
-                                            <p
-                                                className="text-red-400 cursor-pointer"
-                                                onClick={() => removeTag(tag)}
-                                            >
-                                                x
-                                            </p>
-                                        </div>
-                                    </Fragment>
-                                ))}
-                        </div>
-                        <div className="modal-action">
-                            <form method="dialog">
-                                {/* if there is a button in form, it will close the modal */}
-                                <button className="btn">Close</button>
-                            </form>
-                        </div>
-                    </div>
-                </dialog>
             </div>
         </>
     );

@@ -3,6 +3,7 @@
 import { authConfig } from "@/utils/authConfig"
 import prisma from "@/db"
 import { getServerSession } from "next-auth"
+import OpenAI from "openai"
 
 export async function getTagRankings() {
     const tagsRanking = await prisma.tagsRanking.findFirst({
@@ -65,5 +66,22 @@ export async function ifTagFollowing(tag: string) {
         }
     })
     if (tagFollowed) return true
+    return false
+}
+
+export async function validateTag(tag: string) {
+    const openai = new OpenAI({
+        apiKey: process.env.OPEN_AI_KEY
+    })
+
+    const validate = await openai.chat.completions.create({
+        messages: [{
+            role: 'assistant',
+            content: `You are a helpful assistant and I want you to validate the following keyword for tag creation. Follow the rules: 1. A tag must not contain any malicious word in any languages. 2. You will only output true or false. Now validate the tag: ${tag}`
+        }],
+        model: "gpt-3.5-turbo",
+    })
+    const result = validate.choices[0].message.content
+    if (result?.toLowerCase().includes("true")) return true
     return false
 }

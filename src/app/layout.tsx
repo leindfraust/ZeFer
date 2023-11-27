@@ -12,6 +12,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
     title: "ZeFer",
     description: "Tell your story to the world.",
+    openGraph: {
+        images: "/zefer-text-with-logo",
+    },
 };
 
 export default async function RootLayout({

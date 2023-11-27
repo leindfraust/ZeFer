@@ -84,14 +84,15 @@ export async function PATCH(req: Request): Promise<any> {
         const user = await prisma.user.update({
             where: { id: session?.user.id },
             data: {
-                ...body
+                ...body,
+                username: body.username.trim()
             }
         })
         const updatePosts = await prisma.post.updateMany({
             where: { userId: session?.user.id },
             data: {
                 author: body.name,
-                authorUsername: body.username
+                authorUsername: body.username.trim()
             }
         })
         if (user && updatePosts) {

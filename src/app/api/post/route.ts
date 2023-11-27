@@ -33,9 +33,12 @@ export async function GET(req: NextRequest): Promise<any> {
 
         const prismaQuery: PrismaQuery = {
             include: {
-                reactions: true,
-                comments: true,
-                views: true
+                _count: {
+                    select: {
+                        reactions: true,
+                        comments: true
+                    }
+                }
             },
             where: {
                 NOT: {
@@ -109,7 +112,6 @@ export async function GET(req: NextRequest): Promise<any> {
             }),
             take: 1
         })
-
 
         if (posts.length === 0) {
             return NextResponse.json({

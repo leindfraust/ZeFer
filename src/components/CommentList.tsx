@@ -22,7 +22,6 @@ export default function CommentList({ titleId }: { titleId: string }) {
     useEffect(() => {
         socket.emit("initializeSocketPostRoom", titleId);
         socket.on("refetchComments", () => {
-            console.log("should refetch");
             refetch();
         });
 
@@ -41,6 +40,7 @@ export default function CommentList({ titleId }: { titleId: string }) {
         <>
             <div className="space-y-4">
                 {data &&
+                    data.length !== 0 &&
                     data.map((comment) => (
                         <Fragment key={comment.id}>
                             {!comment.postCommentReplyId && (
@@ -53,6 +53,10 @@ export default function CommentList({ titleId }: { titleId: string }) {
                             )}
                         </Fragment>
                     ))}
+
+                {data?.length === 0 && (
+                    <p className="text-xl">No comments yet.</p>
+                )}
             </div>
         </>
     );

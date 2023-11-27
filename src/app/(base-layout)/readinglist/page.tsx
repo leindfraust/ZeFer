@@ -24,7 +24,7 @@ export default async function ReadingList() {
 
     return (
         <>
-            <div className="mt-12 mb-12 lg:mr-28 lg:ml-28 mx-auto">
+            <div className="mt-12 mb-12 ml-4 mr-4 lg:mr-28 lg:ml-28 mx-auto">
                 <h1 className="text-2xl font-bold text-info">Reading List</h1>
                 <div className="mt-4">
                     {session && readingList?.bookMarks.length !== 0 ? (

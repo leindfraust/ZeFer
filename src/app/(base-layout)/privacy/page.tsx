@@ -1,7 +1,7 @@
 export default function PrivacyPage() {
     return (
         <>
-            <div className="mt-12 mb-12 lg:mr-28 lg:ml-28 mx-auto space-y-4">
+            <div className="mt-12 mb-12 mr-4 ml-4 lg:mr-28 lg:ml-28 mx-auto space-y-4">
                 <h1 className="text-4xl font-bold">Privacy Policy</h1>
                 <p className="text-xl">
                     <strong>ZeFer</strong> is a platform where we prioritize the

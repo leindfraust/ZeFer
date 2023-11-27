@@ -1,7 +1,7 @@
 export default function COCPage() {
     return (
         <>
-            <div className="mt-12 mb-12 lg:mr-28 lg:ml-28 mx-auto space-y-4">
+            <div className="mt-12 mb-12  ml-4 mr-4 lg:mr-28 lg:ml-28 mx-auto space-y-4">
                 <h1 className="text-4xl font-bold">Code of Conduct</h1>
                 <p className="text-xl">
                     Welcome to <strong>&apos;ZeFer&apos;</strong>! To ensure a

@@ -69,7 +69,7 @@ export default function ProfileSettingsComponent({
             },
         },
     ];
-    const submissions = useForm();
+    const form = useForm();
 
     const username_validation: FormContext = {
         name: "Username",
@@ -137,7 +137,7 @@ export default function ProfileSettingsComponent({
         },
     };
 
-    const updateDetails = submissions.handleSubmit(async (data) => {
+    const updateDetails = form.handleSubmit(async (data) => {
         let socials: UserSocials[] = [];
         socialForms.forEach((social) =>
             socials.push({
@@ -159,13 +159,25 @@ export default function ProfileSettingsComponent({
         });
         if (update.ok) {
             router.refresh();
+        } else {
+            const error = await update.json();
+            const errorFields = (await error.error.meta.target) as string[];
+            errorFields.forEach((field: string) => {
+                const fieldError =
+                    field.charAt(0).toUpperCase() + field.slice(1);
+                form.setError(fieldError, {
+                    type: "uniqueConstraint",
+                    message: `${fieldError} already registered.`,
+                });
+                form.setFocus(fieldError);
+            });
         }
     });
 
     return (
         <>
-            <div className="mx-auto w-9/12 justify-center space-y-6">
-                <FormProvider {...submissions}>
+            <div className="mx-auto lg:w-9/12 justify-center space-y-6">
+                <FormProvider {...form}>
                     <div className="shadow-lg p-12 rounded-md space-y-2">
                         <h3 className="text-2xl font-bold">
                             Profile Information

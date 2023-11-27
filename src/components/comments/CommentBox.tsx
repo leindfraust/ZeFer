@@ -16,7 +16,7 @@ import Image from "next/image";
 import { cn } from "@/utils/cn";
 import useSocket from "@/socket";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 type CommentBoxProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -31,6 +31,7 @@ export default function CommentBox({
     buttonChildren?: React.ReactNode;
 }) {
     const { data: session, status } = useSession();
+    const [submitState, setSubmitState] = useState<boolean>(false);
     const socket = useSocket();
     const editor = useEditor({
         extensions: [
@@ -67,6 +68,7 @@ export default function CommentBox({
     useEffect(() => {
         socket.on("clearContentCommentBox", () => {
             editor?.commands.clearContent();
+            setSubmitState(false);
         });
 
         return () => {
@@ -83,8 +85,8 @@ export default function CommentBox({
                 content: JSON.stringify(content),
                 commentReplyPostId: commentReplyPostId,
             };
+            setSubmitState(true);
             socket.emit("submitComment", comment);
-            // socket?.emit("testClientEmit", "hello");
         }
     }
 
@@ -117,8 +119,12 @@ export default function CommentBox({
                                 <button
                                     className="btn btn-outline"
                                     onClick={submitComment}
+                                    disabled={submitState}
                                 >
-                                    Submit
+                                    {submitState && (
+                                        <span className="loading loading-spinner"></span>
+                                    )}
+                                    {submitState ? "Submitting" : "Submit"}
                                 </button>
                                 {buttonChildren && <>{buttonChildren}</>}
                             </div>

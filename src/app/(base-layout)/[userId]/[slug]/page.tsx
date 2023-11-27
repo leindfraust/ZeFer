@@ -21,7 +21,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faComment,
     faEllipsis,
-    faHeart,
     faShare,
 } from "@fortawesome/free-solid-svg-icons";
 import PostSlugWatcher from "@/components/PostSlugWatcher";
@@ -30,6 +29,7 @@ import CommentBox from "@/components/comments/CommentBox";
 import QueryWrapper from "@/components/QueryWrapper";
 import CommentList from "@/components/CommentList";
 import NextAuthProvider from "@/components/provider/NextAuthProvider";
+import PostReactionButton from "@/components/reactions/actions/PostReactionButton";
 
 export async function generateMetadata({
     params,
@@ -83,6 +83,7 @@ export default async function PostPage({
         include: {
             _count: {
                 select: {
+                    reactions: true,
                     comments: true,
                 },
             },
@@ -223,11 +224,12 @@ export default async function PostPage({
                         <div className="flex-1">
                             <div className="flex items-center gap-2">
                                 <div className="flex items-center gap-2">
-                                    <FontAwesomeIcon
-                                        icon={faHeart}
-                                        title="Reactions"
+                                    <PostReactionButton
+                                        id={post.id}
+                                        initialReactionCount={
+                                            post._count.reactions
+                                        }
                                     />
-                                    <div>0</div>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <FontAwesomeIcon

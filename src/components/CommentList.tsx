@@ -1,17 +1,20 @@
 "use client";
 
-import { getPostComments } from "@/utils/actions/comments";
 import { useQuery } from "@tanstack/react-query";
 import { Fragment, useEffect } from "react";
 import CommentContainer from "./comments/CommentContainer";
 import useSocket from "@/socket";
-import QueryWrapper from "./QueryWrapper";
+import { PostComment } from "@prisma/client";
 
 export default function CommentList({ titleId }: { titleId: string }) {
     const socket = useSocket();
     const getComments = async () => {
-        const data = await getPostComments(titleId);
-        return data;
+        const params = new URLSearchParams({
+            titleId: titleId,
+        });
+        const res = await fetch(`/api/comment?${params}`);
+        const data = await res.json();
+        return data.data as PostComment[];
     };
 
     const { data, refetch } = useQuery({
@@ -30,12 +33,6 @@ export default function CommentList({ titleId }: { titleId: string }) {
         };
     }, [refetch, socket, titleId]);
 
-    useEffect(() => {
-        if (socket.disconnected) {
-            socket.connect();
-        }
-    }, [socket]);
-
     return (
         <>
             <div className="space-y-4">
@@ -44,12 +41,10 @@ export default function CommentList({ titleId }: { titleId: string }) {
                     data.map((comment) => (
                         <Fragment key={comment.id}>
                             {!comment.postCommentReplyId && (
-                                <QueryWrapper>
-                                    <CommentContainer
-                                        {...comment}
-                                        titleId={titleId}
-                                    />
-                                </QueryWrapper>
+                                <CommentContainer
+                                    {...comment}
+                                    titleId={titleId}
+                                />
                             )}
                         </Fragment>
                     ))}

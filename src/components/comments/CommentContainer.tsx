@@ -61,7 +61,7 @@ export default function CommentContainer({
         return () => {
             socket.off("refetchReplies");
         };
-    }, [commentBoxDisplay, id, socket, titleId]);
+    }, [id, socket]);
 
     return (
         <div className="container space-x-6">

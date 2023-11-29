@@ -1,7 +1,7 @@
 "use client";
 
 import type { FormContext } from "@/types/formContext";
-import { useFormContext } from "react-hook-form";
+import { RegisterOptions, useFormContext } from "react-hook-form";
 
 export default function Input({
     name,
@@ -10,7 +10,8 @@ export default function Input({
     required,
     value,
     maxLength,
-}: FormContext) {
+    onChange,
+}: FormContext & RegisterOptions) {
     const {
         register,
         watch,
@@ -32,6 +33,7 @@ export default function Input({
                     {...register(name, {
                         value: value,
                         required: required,
+                        onChange: onChange,
                     })}
                     className="input input-bordered w-full"
                 />

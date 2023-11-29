@@ -3,7 +3,7 @@
 import { UserSocials } from "@/types/user";
 import { useRouter } from "next/navigation";
 import { FormContext } from "@/types/formContext";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, RegisterOptions, useForm } from "react-hook-form";
 import Input from "@/components/Input";
 import { Fragment } from "react";
 import { User } from "@prisma/client";
@@ -71,7 +71,7 @@ export default function ProfileSettingsComponent({
     ];
     const form = useForm();
 
-    const username_validation: FormContext = {
+    const username_validation: RegisterOptions & FormContext = {
         name: "Username",
         type: "text",
         placeholder: "Your unique username",
@@ -80,6 +80,8 @@ export default function ProfileSettingsComponent({
             value: false,
             message: "This field is not required",
         },
+        onChange: (e) =>
+            form.setValue("Username", e.target.value.replace(/\s/g, "")),
     };
 
     const name_validation: FormContext = {

@@ -22,7 +22,7 @@ export const authConfig: AuthOptions = {
                     name: profile.name,
                     email: profile.email,
                     image: profile.picture,
-                    username: profile.given_name.trim().toLowerCase() + generateRandom4DigitNumber()
+                    username: profile.given_name.replace(/\s/g, '').toLowerCase() + generateRandom4DigitNumber()
                 }
             },
         }),
@@ -35,7 +35,7 @@ export const authConfig: AuthOptions = {
                     name: profile.name ?? profile.login,
                     email: profile.email,
                     image: profile.avatar_url,
-                    username: profile.login.trim().toLowerCase() + generateRandom4DigitNumber()
+                    username: profile.login.replace(/\s/g, '').toLowerCase() + generateRandom4DigitNumber()
                 }
             },
         })

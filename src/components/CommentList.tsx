@@ -5,6 +5,7 @@ import { Fragment, useEffect } from "react";
 import CommentContainer from "./comments/CommentContainer";
 import useSocket from "@/socket";
 import { PostComment } from "@prisma/client";
+import QueryWrapper from "./QueryWrapper";
 
 export default function CommentList({ titleId }: { titleId: string }) {
     const socket = useSocket();
@@ -41,10 +42,12 @@ export default function CommentList({ titleId }: { titleId: string }) {
                     data.map((comment) => (
                         <Fragment key={comment.id}>
                             {!comment.postCommentReplyId && (
-                                <CommentContainer
-                                    {...comment}
-                                    titleId={titleId}
-                                />
+                                <QueryWrapper>
+                                    <CommentContainer
+                                        {...comment}
+                                        titleId={titleId}
+                                    />
+                                </QueryWrapper>
                             )}
                         </Fragment>
                     ))}

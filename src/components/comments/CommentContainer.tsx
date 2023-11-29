@@ -19,6 +19,7 @@ import CommentBox from "./CommentBox";
 import { getPostReplyComments } from "@/utils/actions/comments";
 import useSocket from "@/socket";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 
 export default function CommentContainer({
     id,
@@ -31,7 +32,6 @@ export default function CommentContainer({
     titleId,
 }: PostComment & { titleId: string }) {
     const socket = useSocket();
-    const [commentReplies, setCommentReplies] = useState<PostComment[]>();
 
     const [commentBoxDisplay, setCommentBoxDisplay] = useState<boolean>(false);
     const prose = "prose prose-sm sm:prose lg:prose-lg";
@@ -46,22 +46,26 @@ export default function CommentContainer({
         CharacterCount,
     ]);
 
+    const getReplyComments = async () => {
+        const data = await getPostReplyComments(id);
+        return data;
+    };
+
+    const { data, refetch } = useQuery({
+        queryKey: ["replyComments", id],
+        queryFn: getReplyComments,
+    });
+
     useEffect(() => {
-        const getReplyComments = async () => {
-            const data = await getPostReplyComments(id);
-            setCommentReplies(() => data);
-            return data;
-        };
-        getReplyComments();
         socket.on("refetchReplies", () => {
             setCommentBoxDisplay(() => false);
-            getReplyComments();
+            refetch();
         });
 
         return () => {
             socket.off("refetchReplies");
         };
-    }, [id, socket]);
+    }, [id, refetch, socket]);
 
     return (
         <div className="container space-x-6">
@@ -107,9 +111,7 @@ export default function CommentContainer({
                                     icon={faComment}
                                     onClick={() => setCommentBoxDisplay(true)}
                                 />
-                                <p className="text-sm">
-                                    {commentReplies?.length}
-                                </p>
+                                <p className="text-sm">{data?.length}</p>
                             </div>
                         </div>
                     )}
@@ -131,8 +133,8 @@ export default function CommentContainer({
                 </div>
             </div>
             <div className="mt-4 mb-4">
-                {commentReplies?.length !== 0 &&
-                    commentReplies?.map((reply) => (
+                {data?.length !== 0 &&
+                    data?.map((reply) => (
                         <Fragment key={reply.id}>
                             <CommentContainer {...reply} titleId={titleId} />
                         </Fragment>

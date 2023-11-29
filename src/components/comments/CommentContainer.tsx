@@ -16,7 +16,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { Fragment, useEffect, useState } from "react";
 import CommentBox from "./CommentBox";
-import { getPostReplyComments } from "@/utils/actions/comments";
 import useSocket from "@/socket";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
@@ -47,8 +46,12 @@ export default function CommentContainer({
     ]);
 
     const getReplyComments = async () => {
-        const data = await getPostReplyComments(id);
-        return data;
+        const params = new URLSearchParams({
+            commentId: id,
+        });
+        const response = await fetch(`/api/comment/reply?${params}`);
+        const data = await response.json();
+        return data.data as PostComment[];
     };
 
     const { data, refetch } = useQuery({
@@ -58,7 +61,7 @@ export default function CommentContainer({
 
     useEffect(() => {
         socket.on("refetchReplies", () => {
-            setCommentBoxDisplay(() => false);
+            setCommentBoxDisplay(false);
             refetch();
         });
 

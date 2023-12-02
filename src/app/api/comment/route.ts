@@ -15,7 +15,8 @@ export async function GET(req: NextRequest) {
 
     const getPostComments = await prisma.postComment.findMany({
         include: {
-            postCommentReplies: true
+            postCommentReplies: true,
+            reactions: true
         },
         where: { postId: getPost.id },
         orderBy: {

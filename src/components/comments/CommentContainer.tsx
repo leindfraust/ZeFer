@@ -1,6 +1,6 @@
 "use client";
 
-import { PostComment } from "@prisma/client";
+import { CommentReaction, PostComment } from "@prisma/client";
 import CharacterCount from "@tiptap/extension-character-count";
 import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
@@ -13,12 +13,14 @@ import StarterKit from "@tiptap/starter-kit";
 import Image from "next/image";
 import parse from "html-react-parser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComment, faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faComment } from "@fortawesome/free-solid-svg-icons";
 import { Fragment, useEffect, useState } from "react";
 import CommentBox from "./CommentBox";
 import useSocket from "@/socket";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
+import CommentReactionButton from "../reactions/actions/CommentReactionButton";
+import { useSession } from "next-auth/react";
 
 export default function CommentContainer({
     id,
@@ -29,7 +31,9 @@ export default function CommentContainer({
     content,
     createdAt,
     titleId,
-}: PostComment & { titleId: string }) {
+    reactions,
+}: PostComment & { titleId: string; reactions?: CommentReaction[] }) {
+    const { data: session, status } = useSession();
     const socket = useSocket();
 
     const [commentBoxDisplay, setCommentBoxDisplay] = useState<boolean>(false);
@@ -105,8 +109,17 @@ export default function CommentContainer({
                     {!commentBoxDisplay && (
                         <div className="flex justify-start gap-4 mt-4">
                             <div className="flex items-center gap-2">
-                                <FontAwesomeIcon icon={faHeart} />
-                                <p className="text-sm">0</p>
+                                <CommentReactionButton
+                                    id={id}
+                                    initialReactionCount={
+                                        reactions?.length ?? 0
+                                    }
+                                    isLoggedIn={
+                                        session && status === "authenticated"
+                                            ? true
+                                            : false
+                                    }
+                                />
                             </div>
                             <div className="flex items-center gap-2">
                                 <FontAwesomeIcon

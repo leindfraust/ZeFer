@@ -1,12 +1,13 @@
 "use client";
 
 import {
-    getInitialPostReaction,
+    getUserInitialPostReaction,
     deletePostReaction,
     updateCreatePostReaction,
 } from "@/utils/actions/reactions";
 import { checkUserLoggedIn } from "@/utils/actions/user";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as FaRegHeart } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { signIn } from "next-auth/react";
 import { useState, useEffect } from "react";
@@ -32,7 +33,7 @@ export default function PostReactionButton({
 
     useEffect(() => {
         if (isLoggedIn) {
-            getInitialPostReaction(id).then((response) => {
+            getUserInitialPostReaction(id).then((response) => {
                 const value = response?.valueOf();
 
                 if (typeof value !== "boolean") {
@@ -65,7 +66,7 @@ export default function PostReactionButton({
             {isLoggedIn ? (
                 <>
                     <FontAwesomeIcon
-                        icon={faHeart}
+                        icon={postReaction !== undefined ? faHeart : FaRegHeart}
                         title="Reactions"
                         className="cursor-pointer"
                         onClick={updatePostReaction}
@@ -75,7 +76,7 @@ export default function PostReactionButton({
             ) : (
                 <>
                     <FontAwesomeIcon
-                        icon={faHeart}
+                        icon={postReaction !== undefined ? faHeart : FaRegHeart}
                         title="Reactions"
                         className="cursor-pointer"
                         onClick={() => signIn()}

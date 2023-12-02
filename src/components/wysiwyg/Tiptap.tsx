@@ -316,9 +316,11 @@ export default function Tiptap({
     }
 
     async function validateTagAddition() {
-        const validate = await validateTag(searchTag);
+        const validate = await validateTag(
+            searchTag.toLowerCase().replace(/\s/g, "")
+        );
         if (validate) {
-            addTag(searchTag);
+            addTag(searchTag.toLowerCase().replace(/\s/g, ""));
             setTagValidateResult(true);
         } else {
             setTagValidateResult(false);
@@ -465,7 +467,11 @@ export default function Tiptap({
                                 placeholder="Add tags"
                                 onChange={(e) => {
                                     setTagValidateResult(undefined);
-                                    setSearchTag(e.currentTarget.value);
+                                    setSearchTag(
+                                        e.currentTarget.value
+                                            .toLowerCase()
+                                            .replace(/\s/g, "")
+                                    );
                                 }}
                                 className="input input-ghost"
                             />
@@ -510,10 +516,10 @@ export default function Tiptap({
                                             <a onClick={validateTagAddition}>
                                                 {" "}
                                                 {tagValidateResult === undefined
-                                                    ? "Add your tag"
+                                                    ? "Click here to add your custom tag"
                                                     : !tagValidateResult
                                                     ? "Tag contains malicious or nonsense word. Try again."
-                                                    : "Add your tag"}
+                                                    : "Click here to add your custom tag"}
                                             </a>
                                         </li>
                                     )}

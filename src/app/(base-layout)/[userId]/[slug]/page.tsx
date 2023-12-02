@@ -20,8 +20,7 @@ import { authConfig } from "@/utils/authConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faComment,
-    faEllipsis,
-    faShare,
+    // faEllipsis,
 } from "@fortawesome/free-solid-svg-icons";
 import PostSlugWatcher from "@/components/PostSlugWatcher";
 import PostBookmark from "@/components/post/actions/PostBookmark";
@@ -30,6 +29,7 @@ import QueryWrapper from "@/components/QueryWrapper";
 import CommentList from "@/components/CommentList";
 import NextAuthProvider from "@/components/provider/NextAuthProvider";
 import PostReactionButton from "@/components/reactions/actions/PostReactionButton";
+import { PostShareButton } from "@/components/post/PostShareButton";
 
 export async function generateMetadata({
     params,
@@ -240,10 +240,10 @@ export default async function PostPage({
                                 </div>
                             </div>
                         </div>
-                        <div className="flex gap-4">
+                        <div className="flex items-center gap-4">
                             <PostBookmark titleId={post.titleId} />
-                            <FontAwesomeIcon icon={faShare} title="Share" />
-                            <FontAwesomeIcon icon={faEllipsis} title="More" />
+                            <PostShareButton userId={userId} titleId={slug} />
+                            {/* <FontAwesomeIcon icon={faEllipsis} title="More" /> */}
                         </div>
                     </div>
                 </div>

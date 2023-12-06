@@ -50,6 +50,13 @@ export function PostShareButton({
                             Share to Facebook
                         </a>
                     </li>
+                    <li>
+                        <a
+                            href={`https://twitter.com/intent/tweet?url=${shareLink}`}
+                        >
+                            Share to Twitter
+                        </a>
+                    </li>
                 </ul>
             </div>
         </>

@@ -1,21 +1,37 @@
-import { faWandMagic, faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useEffect, useState } from 'react'
-import { themeChange } from 'theme-change'
+"use client";
+
+import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useState } from "react";
+import { themeChange } from "theme-change";
 
 export default function ThemeSwitcher() {
-    const [theme, setTheme] = useState<string>('')
+    const [theme, setTheme] = useState<string>("");
     useEffect(() => {
-        themeChange(false)
-        setTheme(localStorage.getItem('theme') as string)
+        themeChange(false);
+        setTheme(localStorage.getItem("theme") as string);
         // 👆 false parameter is required for react project
-    }, [])
+    }, []);
 
-    return (<>
-        {theme === 'dark' ? (
-            <button className='btn btn-neutral' data-set-theme='light' onClick={() => setTheme('light')}><FontAwesomeIcon icon={faWandMagicSparkles} /></button>
-        ) : (
-            <button className='btn btn-neutral' data-set-theme='dark' onClick={() => setTheme('dark')}><FontAwesomeIcon icon={faWandMagic} /></button>
-        )}
-    </>)
+    return (
+        <>
+            {theme === "dark" ? (
+                <button
+                    className="btn btn-neutral"
+                    data-set-theme="light"
+                    onClick={() => setTheme("light")}
+                >
+                    <FontAwesomeIcon icon={faSun} />
+                </button>
+            ) : (
+                <button
+                    className="btn btn-neutral"
+                    data-set-theme="dark"
+                    onClick={() => setTheme("dark")}
+                >
+                    <FontAwesomeIcon icon={faMoon} />
+                </button>
+            )}
+        </>
+    );
 }

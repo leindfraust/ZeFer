@@ -1,7 +1,7 @@
 "use client";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import * as NProgress from "nprogress";
+import NProgress from "nprogress";
 import { useEffect } from "react";
 
 export function TopLoader() {
@@ -9,7 +9,7 @@ export function TopLoader() {
     const router = useRouter();
     const searchParams = useSearchParams();
     useEffect(() => {
-        if (NProgress.status) {
+        if (NProgress.status || NProgress.status === null) {
             NProgress.done();
             NProgress.remove();
         }

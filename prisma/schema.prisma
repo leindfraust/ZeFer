@@ -70,6 +70,7 @@ model User {
   post             Post[]
   commentReactions CommentReaction[]
   postReactions    PostReaction[]
+  notifications    UserNotifications[]
 
   @@unique([id, name, image])
   @@unique([id, name, username, image])
@@ -224,6 +225,20 @@ model PostReaction {
 
   @@unique([postId, userId])
   @@schema("posts")
+}
+
+model UserNotifications {
+  id        String   @id @default(uuid())
+  userId    String
+  from      String?
+  fromImage String?
+  message   String
+  actionUrl String
+  createdAt DateTime @default(now())
+  new       Boolean  @default(true)
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@schema("users")
 }
 
 model TagsRanking {

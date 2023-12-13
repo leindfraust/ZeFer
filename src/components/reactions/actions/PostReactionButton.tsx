@@ -11,14 +11,26 @@ import { faHeart as FaRegHeart } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { signIn } from "next-auth/react";
 import { useState, useEffect } from "react";
+import { Session } from "next-auth";
+import { usePathname } from "next/navigation";
+import { UserNotificationInputValidation } from "@/types/notification";
+import useSocket from "@/socket";
 
 export default function PostReactionButton({
+    authorId,
+    session,
+    title,
     id,
     initialReactionCount,
 }: {
+    authorId: string;
+    session: Session | null;
+    title: string;
     id: string;
     initialReactionCount: number;
 }) {
+    const socket = useSocket();
+    const pathname = usePathname();
     const [postReactionCount, setPostReactionCount] =
         useState<number>(initialReactionCount);
     const [postReaction, setPostReaction] = useState<string>();
@@ -58,6 +70,14 @@ export default function PostReactionButton({
             if (addOrEditPostReaction) {
                 setPostReaction("heart");
                 setPostReactionCount((prev) => prev + 1);
+                const reactionNotification: UserNotificationInputValidation = {
+                    userId: authorId,
+                    from: session?.user.name,
+                    fromImage: session?.user.image,
+                    message: `has reacted with ❤️ to your post ${title}`,
+                    actionUrl: pathname,
+                };
+                socket.emit("submitNotification", reactionNotification);
             }
         }
     }

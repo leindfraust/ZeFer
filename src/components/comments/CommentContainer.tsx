@@ -31,8 +31,13 @@ export default function CommentContainer({
     content,
     createdAt,
     titleId,
+    title,
     reactions,
-}: PostComment & { titleId: string; reactions?: CommentReaction[] }) {
+}: PostComment & {
+    titleId: string;
+    title: string;
+    reactions?: CommentReaction[];
+}) {
     const { data: session, status } = useSession();
     const socket = useSocket();
 
@@ -111,6 +116,9 @@ export default function CommentContainer({
                             <div className="flex items-center gap-2">
                                 <CommentReactionButton
                                     id={id}
+                                    userId={userId}
+                                    title={title}
+                                    session={session}
                                     initialReactionCount={
                                         reactions?.length ?? 0
                                     }
@@ -134,6 +142,8 @@ export default function CommentContainer({
                     <CommentBox
                         titleId={titleId}
                         commentReplyPostId={id}
+                        commentReplyPostTitle={title}
+                        commentReplyUserId={userId}
                         className={`mt-4 ${
                             commentBoxDisplay ? "block" : "hidden"
                         }`}
@@ -152,7 +162,11 @@ export default function CommentContainer({
                 {data?.length !== 0 &&
                     data?.map((reply) => (
                         <Fragment key={reply.id}>
-                            <CommentContainer {...reply} titleId={titleId} />
+                            <CommentContainer
+                                {...reply}
+                                titleId={titleId}
+                                title={title}
+                            />
                         </Fragment>
                     ))}
             </div>

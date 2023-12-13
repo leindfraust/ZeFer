@@ -10,19 +10,31 @@ import { faHeart as FaRegHeart } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { signIn } from "next-auth/react";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { Session } from "next-auth";
+import { UserNotificationInputValidation } from "@/types/notification";
+import useSocket from "@/socket";
 
 export default function CommentReactionButton({
     id,
+    userId,
+    title,
+    session,
     initialReactionCount,
     isLoggedIn,
 }: {
     id: string;
+    userId: string;
+    title: string;
+    session: Session | null;
     initialReactionCount: number;
     isLoggedIn: boolean;
 }) {
-    const [postReactionCount, setCommentReactionCount] =
+    const socket = useSocket();
+    const pathname = usePathname();
+    const [commentReactionCount, setCommentReactionCount] =
         useState<number>(initialReactionCount);
-    const [postReaction, setCommentReaction] = useState<string>();
+    const [commentReaction, setCommentReaction] = useState<string>();
 
     useEffect(() => {
         if (isLoggedIn) {
@@ -37,7 +49,7 @@ export default function CommentReactionButton({
     }, [id, isLoggedIn]);
 
     async function updateCommentReaction() {
-        if (typeof postReaction !== "undefined") {
+        if (typeof commentReaction !== "undefined") {
             const removeCommentReaction = await deleteCommentReaction(id);
             if (removeCommentReaction) {
                 setCommentReaction(undefined);
@@ -51,6 +63,14 @@ export default function CommentReactionButton({
             if (addOrEditCommentReaction) {
                 setCommentReaction("heart");
                 setCommentReactionCount((prev) => prev + 1);
+                const reactionNotification: UserNotificationInputValidation = {
+                    userId: userId,
+                    from: session?.user.name,
+                    fromImage: session?.user.image,
+                    message: `has reacted with ❤️ to your comment on ${title}`,
+                    actionUrl: pathname,
+                };
+                socket.emit("submitNotification", reactionNotification);
             }
         }
     }
@@ -59,22 +79,26 @@ export default function CommentReactionButton({
             {isLoggedIn ? (
                 <>
                     <FontAwesomeIcon
-                        icon={postReaction !== undefined ? faHeart : FaRegHeart}
+                        icon={
+                            commentReaction !== undefined ? faHeart : FaRegHeart
+                        }
                         title="Reactions"
                         className="cursor-pointer"
                         onClick={updateCommentReaction}
                     />
-                    <div>{postReactionCount}</div>
+                    <div>{commentReactionCount}</div>
                 </>
             ) : (
                 <>
                     <FontAwesomeIcon
-                        icon={postReaction !== undefined ? faHeart : FaRegHeart}
+                        icon={
+                            commentReaction !== undefined ? faHeart : FaRegHeart
+                        }
                         title="Reactions"
                         className="cursor-pointer"
                         onClick={() => signIn()}
                     />
-                    <div>{postReactionCount}</div>
+                    <div>{commentReactionCount}</div>
                 </>
             )}
         </>

@@ -225,6 +225,9 @@ export default async function PostPage({
                             <div className="flex items-center gap-2">
                                 <div className="flex items-center gap-2">
                                     <PostReactionButton
+                                        authorId={post.userId}
+                                        session={session}
+                                        title={post.title}
                                         id={post.id}
                                         initialReactionCount={
                                             post._count.reactions
@@ -252,9 +255,14 @@ export default async function PostPage({
                 <div className="not-prose">
                     <h2 className="text-3xl font-bold mb-8">Comments</h2>
                     <NextAuthProvider>
-                        <CommentBox titleId={slug} className="mb-4" />
+                        <CommentBox
+                            titleId={slug}
+                            title={post.title}
+                            authorId={post.userId}
+                            className="mb-4"
+                        />
                         <QueryWrapper>
-                            <CommentList titleId={slug} />
+                            <CommentList {...post} />
                         </QueryWrapper>
                     </NextAuthProvider>
                 </div>

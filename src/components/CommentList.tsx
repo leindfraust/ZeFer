@@ -4,10 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Fragment, useEffect } from "react";
 import CommentContainer from "./comments/CommentContainer";
 import useSocket from "@/socket";
-import { PostComment } from "@prisma/client";
+import { Post, PostComment } from "@prisma/client";
 import QueryWrapper from "./QueryWrapper";
 
-export default function CommentList({ titleId }: { titleId: string }) {
+export default function CommentList({ titleId, title }: Post) {
     const socket = useSocket();
     const getComments = async () => {
         const params = new URLSearchParams({
@@ -45,6 +45,7 @@ export default function CommentList({ titleId }: { titleId: string }) {
                                 <QueryWrapper>
                                     <CommentContainer
                                         {...comment}
+                                        title={title}
                                         titleId={titleId}
                                     />
                                 </QueryWrapper>

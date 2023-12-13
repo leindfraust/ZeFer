@@ -1,15 +1,17 @@
 "use client";
 
-import { signIn, signOut } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import ThemeSwitcher from "./ThemeSwitcher";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faBell } from "@fortawesome/free-solid-svg-icons";
 import { User } from "@prisma/client";
 import SideMenu from "./menu/SideMenu";
 import SearchBar from "./SearchBar";
 import { cn } from "@/utils/cn";
+import useSocket from "@/socket";
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 type NavigationProps = React.HTMLAttributes<HTMLDivElement>;
 export default function Navigation({
@@ -19,6 +21,42 @@ export default function Navigation({
     username,
     className,
 }: User & NavigationProps) {
+    const socket = useSocket();
+
+    const { data: session, status } = useSession();
+
+    const getNotifications = async () => {
+        const response = await fetch("/api/notification/count");
+        const json = await response.json();
+        const data = await json;
+        return (await data.data) as number;
+    };
+
+    const { data, refetch } = useQuery({
+        queryKey: ["notificationsCount"],
+        queryFn: getNotifications,
+    });
+
+    useEffect(() => {
+        socket.on("notifications", () => {
+            refetch();
+            const notifBell = new Audio("/audio/notification_bell.aac");
+            notifBell.play();
+        });
+
+        //need to connect to a socket of session id
+
+        return () => {
+            socket.off("notifications");
+        };
+    }, [refetch, socket]);
+
+    useEffect(() => {
+        if (status === "authenticated") {
+            socket.emit("initializeSocketNotificationRoom", session?.user.id);
+        }
+    }, [session?.user.id, socket, status]);
+
     return (
         <>
             <div
@@ -70,13 +108,26 @@ export default function Navigation({
                 {name && image && id ? (
                     <div className="flex-none">
                         <div className="dropdown dropdown-end mr-2">
-                            <ThemeSwitcher />
+                            <Link
+                                href={"/notifications"}
+                                className="btn relative"
+                            >
+                                <FontAwesomeIcon icon={faBell} size="xl" />
+                            </Link>
+                            {data && data > 0 ? (
+                                <p className="text-sm bg-error font-semibold text-white p-[1.5px] rounded-lg absolute top-1 right-2">
+                                    {data}
+                                </p>
+                            ) : null}
                         </div>
-                        <div className="dropdown dropdown-end mr-2">
+                        <div className="mr-2">
                             <Link href={"/new"}>
-                                <label tabIndex={0} className="btn btn-primary">
+                                <button
+                                    tabIndex={0}
+                                    className="btn btn-primary"
+                                >
                                     Create Post
-                                </label>
+                                </button>
                             </Link>
                         </div>
                         <div className="dropdown dropdown-end">

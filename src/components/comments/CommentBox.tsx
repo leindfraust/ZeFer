@@ -17,19 +17,30 @@ import { cn } from "@/utils/cn";
 import useSocket from "@/socket";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { UserNotificationInputValidation } from "@/types/notification";
 
 type CommentBoxProps = React.HTMLAttributes<HTMLDivElement>;
 
 export default function CommentBox({
     titleId,
+    title,
+    authorId,
     buttonChildren,
+    commentReplyPostTitle,
     commentReplyPostId,
+    commentReplyUserId,
     className,
 }: CommentBoxProps & {
     titleId: string;
+    title?: string;
+    authorId?: string;
+    commentReplyPostTitle?: string; //only used in notifications
+    commentReplyUserId?: string;
     commentReplyPostId?: string;
     buttonChildren?: React.ReactNode;
 }) {
+    const pathname = usePathname();
     const { data: session, status } = useSession();
     const [submitState, setSubmitState] = useState<boolean>(false);
     const socket = useSocket();
@@ -85,6 +96,27 @@ export default function CommentBox({
                 content: JSON.stringify(content),
                 commentReplyPostId: commentReplyPostId,
             };
+            if (commentReplyPostId && commentReplyUserId) {
+                const commentReplyNotification: UserNotificationInputValidation =
+                    {
+                        userId: commentReplyUserId,
+                        from: session?.user.name,
+                        fromImage: session?.user.image,
+                        message: `has replied to your comment on ${commentReplyPostTitle}`,
+                        actionUrl: pathname,
+                    };
+                socket.emit("submitNotification", commentReplyNotification);
+            }
+            if (authorId && title) {
+                const commentNotification: UserNotificationInputValidation = {
+                    userId: authorId,
+                    from: session?.user.name,
+                    fromImage: session?.user.image,
+                    message: `has commented on your post ${title}`,
+                    actionUrl: pathname,
+                };
+                socket.emit("submitNotification", commentNotification);
+            }
             setSubmitState(true);
             socket.emit("submitComment", comment);
         }

@@ -20,6 +20,7 @@ export default function PostList({
     userId?: string;
     published?: boolean;
 }) {
+    const [refetchAllowed, setRefetchAllowed] = useState<boolean>(false);
     const pathName = usePathname();
     const searchParams = useSearchParams();
     const [feed, setFeed] = useState<"relevance" | "latest" | "most-popular">(
@@ -83,8 +84,20 @@ export default function PostList({
             }`,
             { scroll: false }
         );
-        refetch();
-    }, [feed, keyword, pathName, refetch, replace, searchParams]);
+        if (refetchAllowed) refetch();
+    }, [
+        feed,
+        keyword,
+        pathName,
+        refetch,
+        refetchAllowed,
+        replace,
+        searchParams,
+    ]);
+
+    useEffect(() => {
+        if (feed !== "latest" && feed) setRefetchAllowed(true);
+    }, [feed]);
 
     useEffect(() => {
         // if the last element is in view and there is a next page, fetch the next page

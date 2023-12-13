@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import Navigation from "./Navigation";
 import Image from "next/image";
+import QueryWrapper from "./QueryWrapper";
+import NextAuthProvider from "./provider/NextAuthProvider";
 
 export default function ZeFerBgHomepage({
     isLoggedIn,
@@ -31,14 +33,18 @@ export default function ZeFerBgHomepage({
 
     return (
         <>
-            <Navigation
-                {...user}
-                className={
-                    !isLoggedIn && navBackgroundTransparent
-                        ? zeferCss.bgzefergradient
-                        : ""
-                }
-            />
+            <QueryWrapper>
+                <NextAuthProvider>
+                    <Navigation
+                        {...user}
+                        className={
+                            !isLoggedIn && navBackgroundTransparent
+                                ? zeferCss.bgzefergradient
+                                : ""
+                        }
+                    />
+                </NextAuthProvider>
+            </QueryWrapper>
             {!isLoggedIn && (
                 <div
                     ref={ref}

@@ -1,6 +1,10 @@
 "use client";
 
-import { faCheckCircle, faShare } from "@fortawesome/free-solid-svg-icons";
+import {
+    faCheckCircle,
+    faShareSquare,
+} from "@fortawesome/free-solid-svg-icons";
+import { faShareSquare as faRegShareSquare } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 
@@ -13,12 +17,13 @@ export function PostShareButton({
 }) {
     const shareLink: string = `https://zefer.vercel.app/${userId}/${titleId}`;
     const [linkCopyStatus, setLinkCopyStatus] = useState<boolean>(false);
+    const [postShareActed, setPostShareActed] = useState<boolean>(false);
     return (
         <>
             <div className="dropdown dropdown-left lg:dropdown-right">
                 <div tabIndex={0}>
                     <FontAwesomeIcon
-                        icon={faShare}
+                        icon={postShareActed ? faShareSquare : faRegShareSquare}
                         title="Share"
                         className="cursor-pointer"
                     />
@@ -33,6 +38,7 @@ export function PostShareButton({
                                 onClick={() => {
                                     navigator.clipboard.writeText(shareLink);
                                     setLinkCopyStatus(true);
+                                    setPostShareActed(true);
                                 }}
                             >
                                 {linkCopyStatus ? "Copied" : "Copy Link"}
@@ -45,14 +51,18 @@ export function PostShareButton({
                     </li>
                     <li>
                         <a
+                            onClick={() => setPostShareActed(true)}
                             href={`https://www.facebook.com/sharer/sharer.php?u=${shareLink}`}
+                            target="_blank"
                         >
                             Share to Facebook
                         </a>
                     </li>
                     <li>
                         <a
+                            onClick={() => setPostShareActed(true)}
                             href={`https://twitter.com/intent/tweet?url=${shareLink}`}
+                            target="_blank"
                         >
                             Share to Twitter
                         </a>

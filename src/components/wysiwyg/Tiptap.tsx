@@ -310,6 +310,7 @@ export default function Tiptap({
         if (inputTags.length < 4) {
             setInputTags([...inputTags, tag]);
             setTagList([...tagList.filter((tagName) => tagName !== tag)]);
+            setSearchTag("");
             const elem = document.activeElement as HTMLElement;
             elem?.blur();
         }
@@ -322,6 +323,9 @@ export default function Tiptap({
         if (validate) {
             addTag(searchTag.toLowerCase().replace(/\s/g, ""));
             setTagValidateResult(true);
+            setSearchTag("");
+            const elem = document.activeElement as HTMLElement;
+            elem?.blur();
         } else {
             setTagValidateResult(false);
         }
@@ -465,6 +469,7 @@ export default function Tiptap({
                             <input
                                 type="text"
                                 placeholder="Add tags"
+                                value={searchTag}
                                 onChange={(e) => {
                                     setTagValidateResult(undefined);
                                     setSearchTag(

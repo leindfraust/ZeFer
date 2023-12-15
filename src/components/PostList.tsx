@@ -110,7 +110,7 @@ export default function PostList({
         <>
             {data?.pageParams.filter((param) => param !== "").length !== 0 && (
                 <div
-                    className={`flex items-center ${
+                    className={`flex items-center mb-6 ${
                         keyword ? "justify-end" : "justify-start"
                     } space-x-4`}
                 >
@@ -132,7 +132,7 @@ export default function PostList({
                     </h3>
                 </div>
             )}
-            <div className="space-y-6">
+            <div className="space-y-4">
                 {isSuccess && !isLoading && !isRefetching ? (
                     data?.pages.map(
                         (page) =>

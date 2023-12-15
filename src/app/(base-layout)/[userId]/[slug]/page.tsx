@@ -22,6 +22,7 @@ import {
     faComment,
     // faEllipsis,
 } from "@fortawesome/free-solid-svg-icons";
+import { faComment as faRegComment } from "@fortawesome/free-regular-svg-icons";
 import PostSlugWatcher from "@/components/PostSlugWatcher";
 import PostBookmark from "@/components/post/actions/PostBookmark";
 import CommentBox from "@/components/comments/CommentBox";
@@ -208,12 +209,36 @@ export default async function PostPage({
                             new Date(post.createdAt).toDateString() ? (
                                 <p className=" text-xs">
                                     Posted on{" "}
-                                    {new Date(post.createdAt).toDateString()}
+                                    {new Date(
+                                        post.createdAt
+                                    ).toLocaleDateString(undefined, {
+                                        month: "short",
+                                        year:
+                                            new Date().getFullYear() ===
+                                            new Date(
+                                                post.createdAt
+                                            ).getFullYear()
+                                                ? undefined
+                                                : "numeric",
+                                        day: "numeric",
+                                    })}
                                 </p>
                             ) : (
                                 <p className=" text-xs">
                                     Updated at{" "}
-                                    {new Date(post.updatedAt).toDateString()}
+                                    {new Date(
+                                        post.updatedAt
+                                    ).toLocaleDateString(undefined, {
+                                        month: "short",
+                                        year:
+                                            new Date().getFullYear() ===
+                                            new Date(
+                                                post.createdAt
+                                            ).getFullYear()
+                                                ? undefined
+                                                : "numeric",
+                                        day: "numeric",
+                                    })}
                                 </p>
                             )}
                         </div>
@@ -236,7 +261,11 @@ export default async function PostPage({
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <FontAwesomeIcon
-                                        icon={faComment}
+                                        icon={
+                                            post._count.comments !== 0
+                                                ? faComment
+                                                : faRegComment
+                                        }
                                         title="Comments"
                                     />
                                     <div>{post._count.comments}</div>

@@ -6,6 +6,7 @@ let socketInstance: Socket | null = null;
 const useSocket = () => {
     if (!socketInstance) {
         socketInstance = io(URL, {
+            transports: ["websocket", "polling"],
             auth: {
                 token: process.env.NEXT_PUBLIC_SOCKET_SERVER_SECRET,
             },

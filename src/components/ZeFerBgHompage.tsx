@@ -4,9 +4,9 @@ import zeferCss from "../components/zefer.module.css";
 import { User } from "@prisma/client";
 import { useState, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
-import Navigation from "./Navigation";
+import Navigation from "./ui/Navigation";
 import Image from "next/image";
-import QueryWrapper from "./QueryWrapper";
+import QueryWrapper from "./provider/QueryWrapper";
 import NextAuthProvider from "./provider/NextAuthProvider";
 
 export default function ZeFerBgHomepage({
@@ -33,29 +33,44 @@ export default function ZeFerBgHomepage({
 
     return (
         <>
-            <QueryWrapper>
-                <NextAuthProvider>
-                    <Navigation
-                        {...user}
-                        className={
-                            !isLoggedIn && navBackgroundTransparent
-                                ? zeferCss.bgzefergradient
-                                : ""
-                        }
-                    />
-                </NextAuthProvider>
-            </QueryWrapper>
+            {isLoggedIn ? (
+                <QueryWrapper>
+                    <NextAuthProvider>
+                        <Navigation {...user} />
+                    </NextAuthProvider>
+                </QueryWrapper>
+            ) : (
+                <>
+                    {!navBackgroundTransparent && (
+                        <QueryWrapper>
+                            <NextAuthProvider>
+                                <Navigation {...user} />
+                            </NextAuthProvider>
+                        </QueryWrapper>
+                    )}
+                </>
+            )}
             {!isLoggedIn && (
                 <div
                     ref={ref}
                     className={`hero min-h-[60vh] ${zeferCss.bgzefergradient}`}
                 >
                     <div className="hero-content text-center">
+                        {!isLoggedIn && navBackgroundTransparent && (
+                            <QueryWrapper>
+                                <NextAuthProvider>
+                                    <Navigation
+                                        {...user}
+                                        className="bg-transparent top-0 fixed"
+                                    />
+                                </NextAuthProvider>
+                            </QueryWrapper>
+                        )}
                         <div className="max-w-md space-y-4">
                             <Image
                                 src={"/zefer-text.svg"}
-                                height={500}
                                 width={500}
+                                height={500}
                                 alt="zefer logo with text zefer"
                             />
                             <h1 className="text-xl lg:text-3xl text-white">

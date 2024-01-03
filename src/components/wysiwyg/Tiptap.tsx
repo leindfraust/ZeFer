@@ -23,6 +23,7 @@ import { PostEdit } from "@/types/post";
 import { PostDraft } from "@prisma/client";
 import { cn } from "@/utils/cn";
 import { validateTag } from "@/utils/actions/tag";
+import Modal from "../ui/Modal";
 
 export default function Tiptap({
     userId,
@@ -41,14 +42,14 @@ export default function Tiptap({
     const router = useRouter();
     const [postError, setPostError] = useState<StatusResponse>();
     const [coverImage, setCoverImage] = useState<string>(
-        editOrDraft?.coverImage ?? ""
+        editOrDraft?.coverImage ?? "",
     );
     const [coverImageFile, setCoverImageFile] = useState<File>();
     const [preview, setPreview] = useState<boolean>(false);
     const [publishState, setPublishState] = useState<boolean>(false);
     const [searchTag, setSearchTag] = useState<string>("");
     const [inputTags, setInputTags] = useState<string[]>(
-        editOrDraft?.tags ?? []
+        editOrDraft?.tags ?? [],
     );
     const [tagList, setTagList] = useState<string[]>([...tags]);
     const modal_coverImage = useRef<HTMLDialogElement>(null);
@@ -173,7 +174,7 @@ export default function Tiptap({
             const formData = new FormData();
             const json = editor?.getJSON();
             const editorImages = json?.content?.filter(
-                (image) => image.type === "image"
+                (image) => image.type === "image",
             );
 
             const images = async () => {
@@ -187,7 +188,7 @@ export default function Tiptap({
                                 (blob) =>
                                     new File([blob], `img_${index}`, {
                                         type: "image/png",
-                                    })
+                                    }),
                             );
                         images.push(fetchImg);
                     }
@@ -201,7 +202,9 @@ export default function Tiptap({
                     .then((file) => file.blob())
                     .then(
                         (blob) =>
-                            new File([blob], "img_cover", { type: "image/png" })
+                            new File([blob], "img_cover", {
+                                type: "image/png",
+                            }),
                     );
                 if (draftImg) formData.append("coverImage", draftImg);
             }
@@ -209,7 +212,7 @@ export default function Tiptap({
                 // append a form data of image_total given the total length of the array
                 formData.append(
                     "image_total",
-                    Object.keys(await images()).length as unknown as string
+                    Object.keys(await images()).length as unknown as string,
                 );
                 // iterate over the images and append them with their respective index and the image File itself
                 for (const [index, image] of Object.entries(await images())) {
@@ -219,7 +222,7 @@ export default function Tiptap({
             formData.append("title", editorTitle?.getText() as string);
             formData.append(
                 "description",
-                editorDescription?.getText() as string
+                editorDescription?.getText() as string,
             );
             formData.append("content", JSON.stringify(json));
             formData.append("tags", JSON.stringify(inputTags));
@@ -250,13 +253,13 @@ export default function Tiptap({
                     ) {
                         updateTimeout.current = setTimeout(
                             () => savePostDraft(),
-                            5000
+                            5000,
                         );
                     } else {
                         clearTimeout(updateTimeout.current);
                         updateTimeout.current = setTimeout(
                             () => savePostDraft(),
-                            5000
+                            5000,
                         );
                     }
                 }
@@ -318,7 +321,7 @@ export default function Tiptap({
 
     async function validateTagAddition() {
         const validate = await validateTag(
-            searchTag.toLowerCase().replace(/\s/g, "")
+            searchTag.toLowerCase().replace(/\s/g, ""),
         );
         if (validate) {
             addTag(searchTag.toLowerCase().replace(/\s/g, ""));
@@ -344,7 +347,7 @@ export default function Tiptap({
         setPublishState(true);
         const json = editor?.getJSON();
         const editorImages = json?.content?.filter(
-            (image) => image.type === "image"
+            (image) => image.type === "image",
         );
         const images = async () => {
             let images: File[] = [];
@@ -357,7 +360,7 @@ export default function Tiptap({
                             (blob) =>
                                 new File([blob], `img_${index}`, {
                                     type: "image/png",
-                                })
+                                }),
                         );
                     images.push(fetchImg);
                 }
@@ -365,7 +368,7 @@ export default function Tiptap({
             return images;
         };
         const readPerMinute = Math.round(
-            editor?.storage.characterCount.words() / 238
+            editor?.storage.characterCount.words() / 238,
         );
         const formData = new FormData();
         formData.append("coverImage", coverImageFile as File);
@@ -373,7 +376,7 @@ export default function Tiptap({
             // append a form data of image_total given the total length of the array
             formData.append(
                 "image_total",
-                Object.keys(await images()).length as unknown as string
+                Object.keys(await images()).length as unknown as string,
             );
             // iterate over the images and append them with their respective index and the image File itself
             for (const [index, image] of Object.entries(await images())) {
@@ -443,7 +446,7 @@ export default function Tiptap({
                     requiredItems.filter((item) => item !== "wordsRequired")
                         .length !== 0
                         ? `The following fields: ${requiredItems.filter(
-                              (item) => item !== "wordsRequired"
+                              (item) => item !== "wordsRequired",
                           )} cannot be blank.`
                         : !wordsRequired
                         ? "Insufficient words, need a minimum of 50 words to publish."
@@ -475,7 +478,7 @@ export default function Tiptap({
                                     setSearchTag(
                                         e.currentTarget.value
                                             .toLowerCase()
-                                            .replace(/\s/g, "")
+                                            .replace(/\s/g, ""),
                                     );
                                 }}
                                 className="input input-ghost"
@@ -489,21 +492,21 @@ export default function Tiptap({
                                     tagList.filter((tag) =>
                                         tag
                                             .toLowerCase()
-                                            .includes(searchTag.toLowerCase())
+                                            .includes(searchTag.toLowerCase()),
                                     ).length !== 0 ? (
                                         tagList
                                             .filter((tag) =>
                                                 tag
                                                     .toLowerCase()
                                                     .includes(
-                                                        searchTag.toLowerCase()
-                                                    )
+                                                        searchTag.toLowerCase(),
+                                                    ),
                                             )
                                             .sort()
                                             .map(
                                                 (
                                                     tag: string,
-                                                    index: number
+                                                    index: number,
                                                 ) => (
                                                     <Fragment key={index}>
                                                         <li
@@ -514,7 +517,7 @@ export default function Tiptap({
                                                             <a>{tag}</a>
                                                         </li>
                                                     </Fragment>
-                                                )
+                                                ),
                                             )
                                     ) : (
                                         <li>
@@ -549,7 +552,7 @@ export default function Tiptap({
                                                     </p>
                                                 </div>
                                             </Fragment>
-                                        )
+                                        ),
                                     )}
                                 <p className="text-sm">Up to 4 tags only</p>
                             </div>
@@ -608,29 +611,30 @@ export default function Tiptap({
                 </div>
 
                 {coverImage && (
-                    <dialog ref={modal_coverImage} className="modal">
-                        <div className="modal-box overflow-auto space-y-4">
-                            <NextImage
-                                className="mx-auto"
-                                src={coverImage as string}
-                                alt="image"
-                                width={400}
-                                height={400}
-                            />
-                            <label
-                                htmlFor="coverImage"
-                                className="btn btn-neutral flex justify-center align-middle"
-                            >
-                                Change
-                            </label>
-                            <div className="modal-action">
-                                <form method="dialog">
-                                    {/* if there is a button in form, it will close the modal */}
-                                    <button className="btn">Close</button>
-                                </form>
-                            </div>
+                    <Modal
+                        className="overflow-auto space-y-4"
+                        ref={modal_coverImage}
+                    >
+                        <NextImage
+                            className="mx-auto"
+                            src={coverImage as string}
+                            alt="image"
+                            width={400}
+                            height={400}
+                        />
+                        <label
+                            htmlFor="coverImage"
+                            className="btn btn-neutral flex justify-center align-middle"
+                        >
+                            Change
+                        </label>
+                        <div className="modal-action">
+                            <form method="dialog">
+                                {/* if there is a button in form, it will close the modal */}
+                                <button className="btn">Close</button>
+                            </form>
                         </div>
-                    </dialog>
+                    </Modal>
                 )}
             </div>
         </>

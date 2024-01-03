@@ -4,10 +4,11 @@ import { FormContext } from "@/types/formContext";
 import { Post, PostSeries } from "@prisma/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Fragment, useEffect, useRef, useState } from "react";
-import Input from "./Input";
+import Input from "../../../../../components/ui/Input";
 import { FormProvider, useForm } from "react-hook-form";
-import SeriesManagePostContainer from "./series/SeriesManagePostContainer";
-import QueryWrapper from "./QueryWrapper";
+import SeriesManagePostContainer from "./SeriesManagePostContainer";
+import QueryWrapper from "../../../../../components/provider/QueryWrapper";
+import Modal from "../../../../../components/ui/Modal";
 
 interface PostSeriesWithPosts extends PostSeries {
     posts: Array<Post>;
@@ -34,7 +35,7 @@ export default function SeriesManageContainer() {
         return data;
     };
 
-    const submissions = useForm();
+    const form = useForm();
 
     const seriesTitle_validation: FormContext = {
         name: "Title",
@@ -58,7 +59,7 @@ export default function SeriesManageContainer() {
         },
     };
 
-    const createSeries = submissions.handleSubmit(async (data) => {
+    const createSeries = form.handleSubmit(async (data) => {
         const formData = new FormData();
         formData.append("title", data.Title);
         formData.append("description", data.Description);
@@ -70,7 +71,7 @@ export default function SeriesManageContainer() {
         return post;
     });
 
-    const editSeries = submissions.handleSubmit(async (data) => {
+    const editSeries = form.handleSubmit(async (data) => {
         const params = new URLSearchParams({
             seriesId: actionSeriesId,
         });
@@ -100,12 +101,12 @@ export default function SeriesManageContainer() {
     function handleModalEditSeries(
         id: string,
         title: string,
-        description?: string
+        description?: string,
     ) {
         setEditingSeries(true);
         setActionSeriesId(id);
-        submissions.setValue("Title", title);
-        submissions.setValue("Description", description);
+        form.setValue("Title", title);
+        form.setValue("Description", description);
         modalSeries.current?.show();
     }
 
@@ -154,85 +155,75 @@ export default function SeriesManageContainer() {
             >
                 Create Series
             </button>
-            <dialog className="modal" ref={modalSeries}>
-                <div className="modal-box">
-                    {editingSeries && (
-                        <>
-                            <button
-                                className="btn btn-outline btn-error"
-                                onClick={() =>
-                                    modalWarnDeleteSeries.current?.show()
-                                }
-                            >
-                                DELETE SERIES
-                            </button>
-                            <dialog
-                                className="modal"
-                                ref={modalWarnDeleteSeries}
-                            >
-                                <div className="modal-box">
-                                    <h3 className="font-bold text-lg mt-4">
-                                        DELETE SERIES
-                                    </h3>
-                                    <p className="text-md">
-                                        Are you sure you want to delete this
-                                        Series?
-                                    </p>
-                                    <div className="modal-action">
-                                        <form method="dialog">
-                                            <div className="flex gap-4">
-                                                <button
-                                                    className="btn btn-error"
-                                                    onClick={() => {
-                                                        modalSeries.current?.close();
-                                                        mutationDeleteSeries.mutate();
-                                                    }}
-                                                >
-                                                    Delete
-                                                </button>
-                                                <button className="btn">
-                                                    Close
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </dialog>
-                        </>
-                    )}
-                    <h3 className="font-bold text-lg mt-4">
-                        {editingSeries ? "Editing Series" : "Create a Series"}
-                    </h3>
-                    <FormProvider {...submissions}>
-                        <Input {...seriesTitle_validation} />
-                        <Input {...seriesDescription_validation} />
-                    </FormProvider>
-                    <div className="modal-action">
+            <Modal ref={modalSeries}>
+                {editingSeries && (
+                    <>
                         <button
-                            className="btn btn-info"
+                            className="btn btn-outline btn-error"
                             onClick={() =>
-                                editingSeries
-                                    ? mutationEditSeries.mutate()
-                                    : mutationCreateSeries.mutate()
+                                modalWarnDeleteSeries.current?.show()
                             }
                         >
-                            Submit
+                            DELETE SERIES
                         </button>
-                        <form method="dialog">
-                            <button
-                                className="btn"
-                                onClick={() => {
-                                    setEditingSeries(false);
-                                    submissions.setValue("Title", "");
-                                    submissions.setValue("Description", "");
-                                }}
-                            >
-                                Close
-                            </button>
-                        </form>
-                    </div>
+                        <Modal ref={modalWarnDeleteSeries}>
+                            <h3 className="font-bold text-lg mt-4">
+                                DELETE SERIES
+                            </h3>
+                            <p className="text-md">
+                                Are you sure you want to delete this Series?
+                            </p>
+                            <div className="modal-action">
+                                <form method="dialog">
+                                    <div className="flex gap-4">
+                                        <button
+                                            className="btn btn-error"
+                                            onClick={() => {
+                                                modalSeries.current?.close();
+                                                mutationDeleteSeries.mutate();
+                                            }}
+                                        >
+                                            Delete
+                                        </button>
+                                        <button className="btn">Close</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </Modal>
+                    </>
+                )}
+                <h3 className="font-bold text-lg mt-4">
+                    {editingSeries ? "Editing Series" : "Create a Series"}
+                </h3>
+                <FormProvider {...form}>
+                    <Input {...seriesTitle_validation} />
+                    <Input {...seriesDescription_validation} />
+                </FormProvider>
+                <div className="modal-action">
+                    <button
+                        className="btn btn-info"
+                        onClick={() =>
+                            editingSeries
+                                ? mutationEditSeries.mutate()
+                                : mutationCreateSeries.mutate()
+                        }
+                    >
+                        Submit
+                    </button>
+                    <form method="dialog">
+                        <button
+                            className="btn"
+                            onClick={() => {
+                                setEditingSeries(false);
+                                form.setValue("Title", "");
+                                form.setValue("Description", "");
+                            }}
+                        >
+                            Close
+                        </button>
+                    </form>
                 </div>
-            </dialog>
+            </Modal>
 
             <div className="flex flex-wrap gap-4 mt-4">
                 {isSuccess &&
@@ -246,7 +237,7 @@ export default function SeriesManageContainer() {
                                         handleModalEditSeries(
                                             series.id,
                                             series.title,
-                                            series.description ?? ""
+                                            series.description ?? "",
                                         )
                                     }
                                 >
@@ -275,7 +266,7 @@ export default function SeriesManageContainer() {
                                         className="btn btn-outline btn-error"
                                         onClick={() =>
                                             setModalActionRemovePostSeries(
-                                                series
+                                                series,
                                             )
                                         }
                                     >
@@ -307,7 +298,7 @@ export default function SeriesManageContainer() {
                                             className="btn"
                                             onClick={() => {
                                                 setModalActionAddPostSeries(
-                                                    undefined
+                                                    undefined,
                                                 );
                                                 refetch();
                                             }}
@@ -341,7 +332,7 @@ export default function SeriesManageContainer() {
                                             className="btn"
                                             onClick={() => {
                                                 setModalActionRemovePostSeries(
-                                                    undefined
+                                                    undefined,
                                                 );
                                                 refetch();
                                             }}

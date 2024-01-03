@@ -4,10 +4,10 @@ import { UserSocials } from "@/types/user";
 import { useRouter } from "next/navigation";
 import { FormContext } from "@/types/formContext";
 import { FormProvider, RegisterOptions, useForm } from "react-hook-form";
-import Input from "@/components/Input";
+import Input from "@/components/ui/Input";
 import { Fragment } from "react";
 import { User } from "@prisma/client";
-import DisplayImage from "../cloudinary/user/DisplayImage";
+import DisplayImage from "./DisplayImage";
 
 export default function ProfileSettingsComponent({
     username,
@@ -58,7 +58,7 @@ export default function ProfileSettingsComponent({
             type: "text",
             placeholder: "Your personal website link",
             value: socialData.find(
-                (social) => social.name === "Personal Website"
+                (social) => social.name === "Personal Website",
             )?.url
                 ? socialData.find((social) => social.name === "Personal Webite")
                       ?.url
@@ -145,7 +145,7 @@ export default function ProfileSettingsComponent({
             socials.push({
                 name: social.name,
                 url: data[social.name],
-            })
+            }),
         );
         const update = await fetch("/api/user", {
             method: "PATCH",

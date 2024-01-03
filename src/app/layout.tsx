@@ -7,7 +7,7 @@ import NextTopLoader from "nextjs-toploader";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import { TopLoader } from "@/components/TopLoader";
-import ThemeProvider from "@/components/ThemeProvider";
+import ThemeProvider from "@/components/provider/ThemeProvider";
 config.autoAddCss = false;
 
 const inter = Inter({ subsets: ["latin"] });

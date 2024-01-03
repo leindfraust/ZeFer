@@ -6,7 +6,7 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faBell } from "@fortawesome/free-solid-svg-icons";
 import { User } from "@prisma/client";
-import SideMenu from "./menu/SideMenu";
+import SideMenu from "../menu/SideMenu";
 import SearchBar from "./SearchBar";
 import { cn } from "@/utils/cn";
 import useSocket from "@/socket";
@@ -62,7 +62,7 @@ export default function Navigation({
             <div
                 className={cn(
                     "navbar bg-base-200 sticky top-0 z-20",
-                    className
+                    className,
                 )}
             >
                 <div className="flex-none z-20">

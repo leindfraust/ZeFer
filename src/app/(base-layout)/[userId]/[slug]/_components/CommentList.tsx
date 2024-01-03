@@ -2,10 +2,10 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Fragment, useEffect } from "react";
-import CommentContainer from "./comments/CommentContainer";
+import CommentContainer from "./CommentContainer";
 import useSocket from "@/socket";
 import { Post, PostComment } from "@prisma/client";
-import QueryWrapper from "./QueryWrapper";
+import QueryWrapper from "../../../../../components/provider/QueryWrapper";
 
 export default function CommentList({ titleId, title }: Post) {
     const socket = useSocket();

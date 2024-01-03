@@ -2,12 +2,12 @@
 
 import { Post } from "@prisma/client";
 import { Fragment, useState } from "react";
-import PostContainer from "./post/PostContainer";
+import PostContainer from "./PostContainer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import PostContainerLoader from "./post/PostContainerLoader";
+import PostContainerLoader from "./PostContainerLoader";
 
 export default function PostList({
     keyword,
@@ -24,7 +24,7 @@ export default function PostList({
     const pathName = usePathname();
     const searchParams = useSearchParams();
     const [feed, setFeed] = useState<"relevance" | "latest" | "most-popular">(
-        searchParams.get("feed") as "relevance" | "latest" | "most-popular"
+        searchParams.get("feed") as "relevance" | "latest" | "most-popular",
     );
     const { replace } = useRouter();
 
@@ -76,13 +76,13 @@ export default function PostList({
                 searchParams.get("feed") as
                     | "relevance"
                     | "latest"
-                    | "most-popular"
+                    | "most-popular",
             );
         replace(
             `${pathName}?${keyword ? `q=${keyword}&` : ""}feed=${
                 feed ?? "latest"
             }`,
-            { scroll: false }
+            { scroll: false },
         );
         if (refetchAllowed) refetch();
     }, [
@@ -149,7 +149,7 @@ export default function PostList({
                                         </div>
                                     )}
                                 </Fragment>
-                            ))
+                            )),
                     )
                 ) : (
                     <PostContainerLoader />

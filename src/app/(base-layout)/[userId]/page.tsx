@@ -12,9 +12,9 @@ import type { UserSocials } from "@/types/user";
 import { Fragment } from "react";
 import Link from "next/link";
 import { Metadata } from "next";
-import PostList from "@/components/PostList";
+import PostList from "@/components/post/PostList";
 import Image from "next/image";
-import QueryWrapper from "@/components/QueryWrapper";
+import QueryWrapper from "@/components/provider/QueryWrapper";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/utils/authConfig";
 import UserFollowButton from "@/components/user/actions/UserFollowButton";
@@ -39,7 +39,7 @@ export async function generateMetadata({
     });
     if (!user) return notFound();
     const websiteUrl = (user?.socials as UserSocials[]).find(
-        (social) => social.name === "Personal Website"
+        (social) => social.name === "Personal Website",
     )?.url;
 
     return {
@@ -190,7 +190,7 @@ export default async function ProfilePage({
                             </p>
                         )}
                         {(user.socials as UserSocials[]).find(
-                            (social) => social?.url !== ""
+                            (social) => social?.url !== "",
                         ) && (
                             <>
                                 <p className="text-xl">Social Links: </p>
@@ -203,10 +203,10 @@ export default async function ProfilePage({
                                                         <Link
                                                             href={
                                                                 social.url.includes(
-                                                                    "http://"
+                                                                    "http://",
                                                                 ) ||
                                                                 social.url.includes(
-                                                                    "https://"
+                                                                    "https://",
                                                                 )
                                                                     ? social.url
                                                                     : `https://${social.url}`
@@ -219,7 +219,7 @@ export default async function ProfilePage({
                                                     </li>
                                                 )}
                                             </Fragment>
-                                        )
+                                        ),
                                     )}
                                 </ul>
                             </>

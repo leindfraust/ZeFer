@@ -1,5 +1,6 @@
 "use client";
 
+import capitalizeFirstLetter from "@/utils/capitalizeFirstLetter";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -24,42 +25,32 @@ export default function SettingsLinks() {
         if (extractedPath === link) return "active";
     }
 
+    const links = ["profile", "preferences", "account"];
+
     return (
         <>
             <ul className="hidden lg:block menu menu-lg rounded-box">
-                <li>
-                    <Link
-                        href={"/settings/profile"}
-                        className={activeLink("profile")}
-                    >
-                        Profile
-                    </Link>
-                </li>
-                <li>
-                    <Link
-                        href={"/settings/preferences"}
-                        className={activeLink("preferences")}
-                    >
-                        Preferences
-                    </Link>
-                </li>
-                <li>
-                    <Link
-                        href={"/settings/account"}
-                        className={activeLink("account")}
-                    >
-                        Account
-                    </Link>
-                </li>
+                {links.map((link) => (
+                    <li key={link}>
+                        <Link
+                            href={`/settings/${link}`}
+                            className={activeLink(link)}
+                        >
+                            {capitalizeFirstLetter(link)}
+                        </Link>
+                    </li>
+                ))}
             </ul>
             <select
                 className="select select-bordered font-bold text-lg w-full max-w-xs lg:hidden"
                 value={selectedLink}
                 onChange={selectLink}
             >
-                <option value="profile">Profile</option>
-                <option value="preferences">Preferences</option>
-                <option value="account">Account</option>
+                {links.map((link) => (
+                    <option key={link} value={link}>
+                        {capitalizeFirstLetter(link)}
+                    </option>
+                ))}
             </select>
         </>
     );

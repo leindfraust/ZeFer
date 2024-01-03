@@ -1,9 +1,9 @@
 "use client";
 
-import MenuBar from "../wysiwyg/menu/MenuBar";
-import "../wysiwyg/custom_css/placeholder.css";
+import MenuBar from "../../../../../components/wysiwyg/menu/MenuBar";
+import "../../../../../components/wysiwyg/custom_css/placeholder.css";
 import { EditorContent, useEditor } from "@tiptap/react";
-import TiptapImage from "../wysiwyg/custom_extensions/Image";
+import TiptapImage from "../../../../../components/wysiwyg/custom_extensions/Image";
 import TiptapLink from "@tiptap/extension-link";
 import Highlight from "@tiptap/extension-highlight";
 import CharacterCount from "@tiptap/extension-character-count";

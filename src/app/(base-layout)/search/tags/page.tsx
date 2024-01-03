@@ -1,5 +1,5 @@
-import QueryWrapper from "@/components/QueryWrapper";
-import TagList from "@/components/TagList";
+import QueryWrapper from "@/components/provider/QueryWrapper";
+import TagList from "@/components/tag/TagList";
 
 export default function SearchTags({
     searchParams,

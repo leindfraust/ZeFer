@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
-import SearchBar from "../SearchBar";
+import SearchBar from "../ui/SearchBar";
 import TagRankingMenu from "./TagRankingMenu";
 
 export default function SideMenu() {

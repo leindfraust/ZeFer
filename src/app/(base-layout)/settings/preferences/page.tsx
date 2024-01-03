@@ -1,4 +1,4 @@
-import ThemeSwitcher from "@/components/ThemeSwitcher";
+import ThemeSwitcher from "@/app/(base-layout)/settings/preferences/_components/ThemeSwitcher";
 
 export default async function PreferenceSettings() {
     return (

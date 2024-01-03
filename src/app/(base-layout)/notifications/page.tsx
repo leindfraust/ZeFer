@@ -1,4 +1,4 @@
-import QueryWrapper from "@/components/QueryWrapper";
+import QueryWrapper from "@/components/provider/QueryWrapper";
 import NotificationList from "./_components/NotificationList";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/utils/authConfig";

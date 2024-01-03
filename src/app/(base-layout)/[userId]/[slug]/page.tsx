@@ -23,11 +23,11 @@ import {
     // faEllipsis,
 } from "@fortawesome/free-solid-svg-icons";
 import { faComment as faRegComment } from "@fortawesome/free-regular-svg-icons";
-import PostSlugWatcher from "@/components/PostSlugWatcher";
+import PostSlugWatcher from "@/components/provider/PostSlugWatcher";
 import PostBookmark from "@/components/post/actions/PostBookmark";
-import CommentBox from "@/components/comments/CommentBox";
-import QueryWrapper from "@/components/QueryWrapper";
-import CommentList from "@/components/CommentList";
+import CommentBox from "@/app/(base-layout)/[userId]/[slug]/_components/CommentBox";
+import QueryWrapper from "@/components/provider/QueryWrapper";
+import CommentList from "@/app/(base-layout)/[userId]/[slug]/_components/CommentList";
 import NextAuthProvider from "@/components/provider/NextAuthProvider";
 import PostReactionButton from "@/components/reactions/actions/PostReactionButton";
 import { PostShareButton } from "@/components/post/PostShareButton";
@@ -112,7 +112,7 @@ export default async function PostPage({
     ]);
     return (
         <PostSlugWatcher postId={post.id}>
-            <section className={prose}>
+            <main className={prose}>
                 {isPublisher && (
                     <div className="flex justify-end">
                         <Link
@@ -210,13 +210,13 @@ export default async function PostPage({
                                 <p className=" text-xs">
                                     Posted on{" "}
                                     {new Date(
-                                        post.createdAt
+                                        post.createdAt,
                                     ).toLocaleDateString(undefined, {
                                         month: "short",
                                         year:
                                             new Date().getFullYear() ===
                                             new Date(
-                                                post.createdAt
+                                                post.createdAt,
                                             ).getFullYear()
                                                 ? undefined
                                                 : "numeric",
@@ -227,13 +227,13 @@ export default async function PostPage({
                                 <p className=" text-xs">
                                     Updated at{" "}
                                     {new Date(
-                                        post.updatedAt
+                                        post.updatedAt,
                                     ).toLocaleDateString(undefined, {
                                         month: "short",
                                         year:
                                             new Date().getFullYear() ===
                                             new Date(
-                                                post.createdAt
+                                                post.createdAt,
                                             ).getFullYear()
                                                 ? undefined
                                                 : "numeric",
@@ -295,7 +295,7 @@ export default async function PostPage({
                         </QueryWrapper>
                     </NextAuthProvider>
                 </div>
-            </section>
+            </main>
         </PostSlugWatcher>
     );
 }

@@ -19,7 +19,7 @@ import CommentBox from "./CommentBox";
 import useSocket from "@/socket";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import CommentReactionButton from "../reactions/actions/CommentReactionButton";
+import CommentReactionButton from "../../../../../components/reactions/actions/CommentReactionButton";
 import { useSession } from "next-auth/react";
 
 export default function CommentContainer({

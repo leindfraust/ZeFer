@@ -1,5 +1,5 @@
-import PostList from "@/components/PostList";
-import QueryWrapper from "@/components/QueryWrapper";
+import PostList from "@/components/post/PostList";
+import QueryWrapper from "@/components/provider/QueryWrapper";
 import prisma from "@/db";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/utils/authConfig";

@@ -1,5 +1,5 @@
-import QueryWrapper from "@/components/QueryWrapper"
-import PostManageTable from "@/components/post/PostManageTable"
+import QueryWrapper from "@/components/provider/QueryWrapper";
+import PostManageTable from "@/components/post/PostManageTable";
 
 export default async function ManagePosts() {
     return (
@@ -8,5 +8,5 @@ export default async function ManagePosts() {
                 <PostManageTable />
             </QueryWrapper>
         </div>
-    )
+    );
 }

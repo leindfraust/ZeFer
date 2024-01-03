@@ -10,7 +10,7 @@ datasource db {
   provider          = "postgresql"
   url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
-  schemas           = ["users", "sessions", "posts", "tags"]
+  schemas           = ["users", "sessions", "posts", "tags", "apikey"]
 }
 
 model Account {
@@ -63,6 +63,7 @@ model User {
   followedBy       User[]               @relation("UserFollows")
   following        User[]               @relation("UserFollows")
   createdAt        DateTime             @default(now())
+  apiKeys          ApiKey[]
   comments         PostComment[]
   accounts         Account[]
   sessions         Session[]
@@ -75,6 +76,19 @@ model User {
   @@unique([id, name, image])
   @@unique([id, name, username, image])
   @@schema("users")
+}
+
+model ApiKey {
+  id           String    @id @default(cuid())
+  name         String
+  organization String?
+  key          String
+  lastUsed     DateTime?
+  createdAt    DateTime  @default(now())
+  ownerId      String
+  user         User      @relation(fields: [ownerId], references: [id])
+
+  @@schema("apikey")
 }
 
 model VerificationToken {

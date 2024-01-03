@@ -12,6 +12,7 @@ import { cn } from "@/utils/cn";
 import useSocket from "@/socket";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Toaster, toast } from "react-hot-toast";
 
 type NavigationProps = React.HTMLAttributes<HTMLDivElement>;
 export default function Navigation({
@@ -42,6 +43,7 @@ export default function Navigation({
             refetch();
             const notifBell = new Audio("/audio/notification_bell.aac");
             notifBell.play();
+            if (data) toast(`You have ${data + 1} unread notifications`);
         });
 
         //need to connect to a socket of session id
@@ -49,7 +51,7 @@ export default function Navigation({
         return () => {
             socket.off("notifications");
         };
-    }, [refetch, socket]);
+    }, [data, refetch, socket]);
 
     useEffect(() => {
         if (status === "authenticated") {
@@ -198,6 +200,14 @@ export default function Navigation({
                     </div>
                 )}
             </div>
+            <Toaster
+                position="bottom-left"
+                gutter={24}
+                toastOptions={{
+                    duration: 5000,
+                    className: "bg-dark",
+                }}
+            />
         </>
     );
 }

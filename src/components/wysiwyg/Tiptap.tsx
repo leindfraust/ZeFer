@@ -52,7 +52,10 @@ export default function Tiptap({
         editOrDraft?.tags ?? [],
     );
     const [tagList, setTagList] = useState<string[]>([...tags]);
+
     const modal_coverImage = useRef<HTMLDialogElement>(null);
+    const [modalOpenState, setModalOpenState] = useState<boolean>(false);
+
     const updateTimeout = useRef<NodeJS.Timeout>();
     const [tagValidateResult, setTagValidateResult] = useState<boolean>();
 
@@ -226,18 +229,10 @@ export default function Tiptap({
             );
             formData.append("content", JSON.stringify(json));
             formData.append("tags", JSON.stringify(inputTags));
-            const uploadDraft = await fetch("/api/post/draft", {
+            await fetch("/api/post/draft", {
                 method: "POST",
                 body: formData,
             });
-            if (!uploadDraft.ok) {
-                setPostError({
-                    ok: uploadDraft.ok,
-                    status: uploadDraft.status,
-                    statusText: uploadDraft.statusText,
-                    message: "Something went wrong, please try again later.",
-                });
-            }
             updateTimeout.current = undefined;
         };
         const editorsUpdating = () => {
@@ -306,6 +301,7 @@ export default function Tiptap({
         if (coverImage) {
             event.preventDefault();
             modal_coverImage.current?.show();
+            setModalOpenState(true);
         }
     }
 
@@ -558,7 +554,15 @@ export default function Tiptap({
                             </div>
                         </div>
                     </div>
-                    <MenuBar editor={editor} className={cn("!mt-2", prose)} />
+                    <MenuBar
+                        editor={editor}
+                        className={cn(
+                            `!mt-2 ${postEdit && "!top-16"} ${
+                                modalOpenState && "!z-0"
+                            }`,
+                            prose,
+                        )}
+                    />
                     <EditorContent editor={editor} className="mb-24" />
                 </>
             )}
@@ -631,7 +635,12 @@ export default function Tiptap({
                         <div className="modal-action">
                             <form method="dialog">
                                 {/* if there is a button in form, it will close the modal */}
-                                <button className="btn">Close</button>
+                                <button
+                                    className="btn"
+                                    onClick={() => setModalOpenState(false)}
+                                >
+                                    Close
+                                </button>
                             </form>
                         </div>
                     </Modal>

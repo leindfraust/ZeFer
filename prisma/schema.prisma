@@ -79,14 +79,25 @@ model User {
 }
 
 model ApiKey {
-  id           String    @id @default(cuid())
+  id           String          @id @default(cuid())
   name         String
   organization String?
-  key          String
+  key          String          @unique
   lastUsed     DateTime?
-  createdAt    DateTime  @default(now())
+  usage        ApiKeyRequest[]
+  createdAt    DateTime        @default(now())
   ownerId      String
-  user         User      @relation(fields: [ownerId], references: [id])
+  user         User            @relation(fields: [ownerId], references: [id])
+
+  @@schema("apikey")
+}
+
+model ApiKeyRequest {
+  id          String   @id @default(cuid())
+  apiKeyId    String
+  requestSize Int
+  createdAt   DateTime @default(now())
+  apiKey      ApiKey   @relation(fields: [apiKeyId], references: [id])
 
   @@schema("apikey")
 }

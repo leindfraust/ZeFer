@@ -1,10 +1,15 @@
 "use client";
 import { deleteUser, unlinkAccount } from "@/utils/actions/account";
-import { faGithub, faGoogle } from "@fortawesome/free-brands-svg-icons";
+import {
+    IconDefinition,
+    faGithub,
+    faGoogle,
+} from "@fortawesome/free-brands-svg-icons";
+import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Fragment, useCallback, useMemo, useState } from "react";
 
 export default function AccountSettingsComponent({
     providers,
@@ -15,8 +20,51 @@ export default function AccountSettingsComponent({
         provider: string;
     }>;
 }) {
+    const availableProviders = useMemo(() => {
+        return ["google", "github"];
+    }, []);
+
     const router = useRouter();
     const [inputDelete, setInputDelete] = useState<string>("");
+
+    const findProvidersCanConnect = useCallback(() => {
+        let providersAvailable: string[] = [];
+        providers.forEach((provider) => {
+            const getInitialProviders = availableProviders.find(
+                (providerName) => providerName !== provider.provider,
+            );
+            const checkProviderConnected = providers.find(
+                (provider) => provider.provider === getInitialProviders,
+            );
+            if (getInitialProviders && !checkProviderConnected) {
+                const providerDuplicate = providersAvailable.find(
+                    (provider) => provider === getInitialProviders,
+                );
+                if (!providerDuplicate || providerDuplicate === undefined) {
+                    providersAvailable.push(getInitialProviders);
+                }
+            }
+        });
+        return providersAvailable;
+    }, [availableProviders, providers]);
+
+    const providersCanConnect = useMemo(
+        () => findProvidersCanConnect(),
+        [findProvidersCanConnect],
+    );
+
+    const providersCanRemove = useMemo(() => {
+        let providersAvailable: string[] = [];
+        providers.forEach((provider) => {
+            const providerCanRemove = availableProviders.find(
+                (providerName) => providerName === provider.provider,
+            );
+            if (providerCanRemove) {
+                providersAvailable.push(providerCanRemove);
+            }
+        });
+        return providersAvailable;
+    }, [availableProviders, providers]);
 
     async function unlinkProviderAccount(providerLinked: string) {
         const providerDetails = providers.find(
@@ -31,78 +79,78 @@ export default function AccountSettingsComponent({
         }
     }
 
+    function pickProviderLogo(provider: string): IconDefinition {
+        if (provider === "google") return faGoogle;
+        if (provider === "github") return faGithub;
+        return faGlobe;
+    }
+
     async function deleteAccount() {
         const deleteUserAccount = await deleteUser();
         if (deleteUserAccount) signOut();
     }
 
+    function ProviderList({
+        linkAction,
+        providers,
+    }: {
+        linkAction: "Connect" | "Remove";
+        providers: string[];
+    }) {
+        return (
+            <>
+                <div className="container pt-4">
+                    <div className="lg:space-x-4 space-y-4">
+                        <h2 className="text-xl">{linkAction} OAuth Accounts</h2>
+                        {providers.map((provider) => (
+                            <Fragment key={provider}>
+                                <button
+                                    onClick={() =>
+                                        linkAction === "Connect"
+                                            ? signIn(provider)
+                                            : unlinkProviderAccount(provider)
+                                    }
+                                >
+                                    <div
+                                        className={`flex gap-4 items-center shadow-md w-72 justify-center p-4 ${
+                                            linkAction === "Remove" &&
+                                            "bg-error text-white"
+                                        } rounded-lg`}
+                                    >
+                                        <FontAwesomeIcon
+                                            icon={pickProviderLogo(provider)}
+                                            size="xl"
+                                        />
+                                        <p className="text-md">
+                                            {linkAction === "Connect"
+                                                ? "Sign in with"
+                                                : "Remove"}{" "}
+                                            {provider.charAt(0).toUpperCase() +
+                                                provider.slice(1)}
+                                        </p>
+                                    </div>
+                                </button>
+                            </Fragment>
+                        ))}
+                    </div>
+                </div>
+            </>
+        );
+    }
+
     return (
         <>
-            <div className="space-x-4">
-                {!providers.find(
-                    (provider) => provider.provider === "google",
-                ) && (
-                    <button onClick={() => signIn("google")}>
-                        <div className="flex gap-4 items-center shadow-md w-72 justify-center p-4 rounded-lg">
-                            <FontAwesomeIcon icon={faGoogle} size="xl" />
-                            <p className="text-md">Connect with Google</p>
-                        </div>
-                    </button>
-                )}
-                {!providers.find(
-                    (provider) => provider.provider === "github",
-                ) && (
-                    <button onClick={() => signIn("github")}>
-                        <div className="flex gap-4 items-center shadow-md w-72 justify-center p-4 rounded-lg">
-                            <FontAwesomeIcon icon={faGithub} size="xl" />
-                            <p className="text-md">Connect with Github</p>
-                        </div>
-                    </button>
-                )}
-            </div>
-            <h1 className="text-3xl font-bold text-error pt-4">Danger Zone</h1>
-            {providers.length > 1 && (
-                <>
-                    <div className="container pt-4">
-                        <div className="space-x-4">
-                            <h2 className="text-xl">Remove OAuth Accounts</h2>
-                            {providers.find(
-                                (provider) => provider.provider === "google",
-                            ) && (
-                                <button
-                                    onClick={() =>
-                                        unlinkProviderAccount("google")
-                                    }
-                                >
-                                    <div className="flex gap-4 items-center shadow-md w-72 justify-center p-4 bg-error text-white rounded-lg">
-                                        <FontAwesomeIcon
-                                            icon={faGoogle}
-                                            size="xl"
-                                        />
-                                        <p className="text-md">Remove Google</p>
-                                    </div>
-                                </button>
-                            )}
-                            {providers.find(
-                                (provider) => provider.provider === "github",
-                            ) && (
-                                <button
-                                    onClick={() =>
-                                        unlinkProviderAccount("github")
-                                    }
-                                >
-                                    <div className="flex gap-4 items-center shadow-md w-72 justify-center p-4 bg-error text-white rounded-lg">
-                                        <FontAwesomeIcon
-                                            icon={faGithub}
-                                            size="xl"
-                                        />
-                                        <p className="text-md">Remove Github</p>
-                                    </div>
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                </>
+            {providersCanConnect.length !== 0 && (
+                <ProviderList
+                    linkAction="Connect"
+                    providers={providersCanConnect}
+                />
+            )}
+            {providersCanRemove.length !== 0 && (
+                <ProviderList
+                    linkAction="Remove"
+                    providers={providersCanRemove}
+                />
             )}
             <div className="container pt-4">
                 <h2 className="text-xl">Delete Account</h2>

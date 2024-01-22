@@ -6,6 +6,7 @@ import prisma from "@/db";
 import { User } from "@prisma/client";
 import QueryWrapper from "@/components/provider/QueryWrapper";
 import NextAuthProvider from "@/components/provider/NextAuthProvider";
+import { Suspense } from "react";
 
 export default async function RootLayout({
     children,
@@ -31,7 +32,7 @@ export default async function RootLayout({
                     <Navigation {...user} />
                 </NextAuthProvider>
             </QueryWrapper>
-            {children}
+            <Suspense>{children}</Suspense>
         </>
     );
 }

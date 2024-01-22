@@ -8,11 +8,16 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import { TopLoader } from "@/components/TopLoader";
 import ThemeProvider from "@/components/provider/ThemeProvider";
+import { Toaster } from "react-hot-toast";
 config.autoAddCss = false;
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+    metadataBase:
+        process.env.NODE_ENV === "production"
+            ? new URL("https://zefer.vercel.app")
+            : new URL("http://localhost:3000"),
     title: "ZeFer",
     description: "Tell your story to the world.",
     openGraph: {
@@ -31,6 +36,7 @@ export default async function RootLayout({
                 <ThemeProvider />
                 <NextTopLoader showSpinner={false} />
                 <TopLoader />
+                <Toaster position="top-center" gutter={24} />
                 {children}
                 <Analytics />
                 <SpeedInsights />

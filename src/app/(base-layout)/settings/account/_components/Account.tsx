@@ -146,7 +146,7 @@ export default function AccountSettingsComponent({
                     providers={providersCanConnect}
                 />
             )}
-            {providersCanRemove.length !== 0 && (
+            {providersCanRemove.length > 1 && (
                 <ProviderList
                     linkAction="Remove"
                     providers={providersCanRemove}

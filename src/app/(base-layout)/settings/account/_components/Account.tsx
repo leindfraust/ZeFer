@@ -101,7 +101,9 @@ export default function AccountSettingsComponent({
             <>
                 <div className="container pt-4">
                     <div className="lg:space-x-4 space-y-4">
-                        <h2 className="text-xl">{linkAction} OAuth Accounts</h2>
+                        <h2 className="text-2xl font-bold">
+                            {linkAction} OAuth Accounts
+                        </h2>
                         {providers.map((provider) => (
                             <Fragment key={provider}>
                                 <button
@@ -153,7 +155,7 @@ export default function AccountSettingsComponent({
                 />
             )}
             <div className="container pt-4">
-                <h2 className="text-xl">Delete Account</h2>
+                <h2 className="text-2xl font-bold">Delete Account</h2>
                 <p className="text-md mt-4">
                     Deleting your account will remove all your posts, reactions,
                     comments and your information stored within our database.

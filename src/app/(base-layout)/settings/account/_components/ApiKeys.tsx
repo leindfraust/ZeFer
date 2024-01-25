@@ -78,7 +78,7 @@ export default function ApiKeys({
     return (
         <div className="pt-4">
             <div className="flex items-center gap-2">
-                <h1 className="text-3xl font-bold">API Keys</h1>
+                <h1 className="text-2xl font-bold">API Keys</h1>
                 <button
                     className="btn btn-primary btn-md"
                     onClick={() => createApiModalRef.current?.show()}

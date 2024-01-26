@@ -77,12 +77,12 @@ export default function PostContainer({
                                             year:
                                                 new Date().getFullYear() ===
                                                 new Date(
-                                                    createdAt
+                                                    createdAt,
                                                 ).getFullYear()
                                                     ? undefined
                                                     : "numeric",
                                             day: "numeric",
-                                        }
+                                        },
                                     )}{" "}
                                     ({timeDiff})
                                 </p>
@@ -94,7 +94,7 @@ export default function PostContainer({
                         <p className="text-sm lg:text-md">{description}</p>
                         <div className="!mt-4 space-y-4">
                             {tags && (
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 flex-wrap">
                                     {tags.map((tag) => (
                                         <Fragment key={tag}>
                                             <p className="badge badge-sm badge-neutral">

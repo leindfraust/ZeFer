@@ -167,7 +167,7 @@ export default async function PostPage({
                     <h4 className="!text-slate-600">{post?.description}</h4>
                     <br />
                     {post.tags.length !== 0 && (
-                        <div className="flex space-x-4">
+                        <div className="flex gap-2 flex-wrap">
                             {post.tags.map((tag: string, index: number) => (
                                 <Fragment key={index}>
                                     <Link href={`/tag/${tag}`}>

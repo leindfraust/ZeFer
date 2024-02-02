@@ -14,7 +14,7 @@ git checkout -b <enhancement_feature>
 
 ## 3. Test Locally
 
-Before requesting a PR, make sure you have tested your project locally and is working correctly. Also make sure your branch is up to date with the main branch. Follow the guide here <https://gist.github.com/whoisryosuke/36b3b41e738394170b9a7c230665e6b9>
+Before requesting a PR, make sure you have tested your project locally and is working correctly. Also make sure your branch is up to date with the master branch. Follow the guide here <https://gist.github.com/whoisryosuke/36b3b41e738394170b9a7c230665e6b9>
 
 ## 4. Request PR
 

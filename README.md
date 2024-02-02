@@ -6,7 +6,7 @@ Join us on this exciting journey as we build not just a platform, but a living, 
 
 ## Write in ZeFer, integrate it freely to other platforms with our APIs
 
-We do not limit your blog posts only in our platform, you can freely integrate it to ther platforms. Currently we only support getting your blog posts from us through HTTP API with Bearer Token Authentication but we are actively developing an SDK around this. You can check the documentation how to set it up here: <https://zeferapi-documentation.vercel.app/>
+We do not limit your blog posts only in our platform, you can freely integrate it to other platforms. Currently we only support getting your blog posts from us through HTTP API with Bearer Token Authentication but we are actively developing an SDK around this. You can check the documentation how to set it up here: <https://zeferapi-documentation.vercel.app/>
 
 ## Contributing
 
@@ -37,6 +37,7 @@ We use [ESLint](https://eslint.org/) and [prettier](https://github.com/prettier/
 ### Prerequisites
 
 -   Node version 20 or higher
+-   A Socket IO server for ZeFer, clone and fork it here <https://github.com/leindfraust/ZeFerSocketIO>
 
 ### Installation
 

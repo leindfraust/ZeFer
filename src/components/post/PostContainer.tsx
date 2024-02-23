@@ -5,6 +5,7 @@ import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PostBookmark from "./actions/PostBookmark";
 import { Fragment, useMemo } from "react";
+import timeDiff from "@/utils/timeDiffCalc";
 
 export default function PostContainer({
     coverImage,
@@ -26,22 +27,8 @@ export default function PostContainer({
         comments: number;
     };
 }) {
-    const timeDiff = useMemo(() => {
-        const timeDiff = new Date().getTime() - new Date(createdAt).getTime();
-
-        const seconds = Math.floor(timeDiff / 1000);
-        const minutes = Math.floor(timeDiff / (1000 * 60));
-        const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-        const months = Math.floor(timeDiff / (1000 * 60 * 60 * 24 * 30));
-
-        if (months) return `${months} ${months > 1 ? "months" : "month"} ago`;
-        if (days) return `${days} ${days > 1 ? "days" : "day"} ago`;
-        if (hours) return `${hours} ${hours > 1 ? "hours" : "hour"} ago`;
-        if (minutes)
-            return `${minutes} ${minutes > 1 ? "minutes" : "minute"} ago`;
-        if (seconds)
-            return `${seconds} ${seconds > 1 ? "seconds" : "second"} ago`;
+    const timeDiffCalc = useMemo(() => {
+        return timeDiff(createdAt);
     }, [createdAt]);
 
     return (
@@ -84,7 +71,7 @@ export default function PostContainer({
                                             day: "numeric",
                                         },
                                     )}{" "}
-                                    ({timeDiff})
+                                    ({timeDiffCalc})
                                 </p>
                             </div>
                         </div>

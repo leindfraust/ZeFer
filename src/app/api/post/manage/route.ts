@@ -5,59 +5,64 @@ import { authConfig } from "@/utils/authConfig";
 import prisma from "@/db";
 
 export async function GET(req: NextRequest): Promise<any> {
-    const url = new URL(req.url)
+    const url = new URL(req.url);
 
-    const sort = url.searchParams.get("sort") as 'recent' | 'unpublished' | 'most-views' | 'most-reactions' | 'most-comments'
+    const sort = url.searchParams.get("sort") as
+        | "recent"
+        | "unpublished"
+        | "most-views"
+        | "most-reactions"
+        | "most-comments";
 
-    const session = await getServerSession(authConfig)
+    const session = await getServerSession(authConfig);
     interface PrismaQuery {
         where: {
-            userId: string
-            published?: boolean
-        },
-        orderBy: {}
+            userId: string;
+            published?: boolean;
+        };
+        orderBy: {};
     }
 
     const prismaQuery: PrismaQuery = {
         where: {
-            userId: session?.user.id
+            userId: session?.user.id,
         },
         orderBy: {
-            createdAt: 'desc' // default sorting is it's recent creation
-        }
-    }
-    if (sort === 'recent') {
-        orderBy: {
-            createdAt: 'desc' // default sorting is it's recent creation
-        }
-    }
-
-    if (sort === 'unpublished') {
-        prismaQuery.where.published = false
+            createdAt: "desc", // default sorting is it's recent creation
+        },
+    };
+    if (sort === "recent") {
+        prismaQuery.orderBy = {
+            createdAt: "desc",
+        };
     }
 
-    if (sort === 'most-views') {
+    if (sort === "unpublished") {
+        prismaQuery.where.published = false;
+    }
+
+    if (sort === "most-views") {
         prismaQuery.orderBy = {
             views: {
-                _count: 'desc'
-            }
-        }
+                _count: "desc",
+            },
+        };
     }
 
-    if (sort === 'most-reactions') {
+    if (sort === "most-reactions") {
         prismaQuery.orderBy = {
             reactions: {
-                _count: 'desc'
-            }
-        }
+                _count: "desc",
+            },
+        };
     }
 
-    if (sort === 'most-comments') {
+    if (sort === "most-comments") {
         prismaQuery.orderBy = {
             comments: {
-                _count: 'desc'
-            }
-        }
+                _count: "desc",
+            },
+        };
     }
 
     try {
@@ -70,46 +75,44 @@ export async function GET(req: NextRequest): Promise<any> {
                 title: true,
                 titleId: true,
                 published: true,
-
-            }
-        })
-        return NextResponse.json({ data: posts }, { status: 200 })
+            },
+        });
+        return NextResponse.json({ data: posts }, { status: 200 });
     } catch (err) {
-        return NextResponse.json({ err }, { status: 500 })
+        return NextResponse.json({ err }, { status: 500 });
     }
 }
 
 export async function PUT(req: NextRequest): Promise<any> {
-    const url = new URL(req.url)
-    const postId = url.searchParams.get("postId") as string
-    const publish = url.searchParams.get('publish') as 'true' | 'false'
+    const url = new URL(req.url);
+    const postId = url.searchParams.get("postId") as string;
+    const publish = url.searchParams.get("publish") as "true" | "false";
 
     try {
         const publishOrUnpublishPost = await prisma.post.update({
             where: { id: postId },
             data: {
-                published: publish === 'true' ? true : false
-            }
-        })
-        if (publishOrUnpublishPost) return NextResponse.json({ status: 200 })
+                published: publish === "true" ? true : false,
+            },
+        });
+        if (publishOrUnpublishPost) return NextResponse.json({ status: 200 });
     } catch (err) {
-        console.log(err)
-        return NextResponse.json({ err }, { status: 500 })
+        console.log(err);
+        return NextResponse.json({ err }, { status: 500 });
     }
 }
 
 export async function DELETE(req: NextRequest): Promise<any> {
-    const url = new URL(req.url)
+    const url = new URL(req.url);
 
-    const postId = url.searchParams.get("postId") as string
+    const postId = url.searchParams.get("postId") as string;
     try {
         const deletePost = await prisma.post.delete({
-            where: { id: postId }
-        })
-        if (deletePost) return NextResponse.json({ status: 200 })
+            where: { id: postId },
+        });
+        if (deletePost) return NextResponse.json({ status: 200 });
     } catch (err) {
-        console.log(err)
-        return NextResponse.json({ err }, { status: 500 })
+        console.log(err);
+        return NextResponse.json({ err }, { status: 500 });
     }
-
 }

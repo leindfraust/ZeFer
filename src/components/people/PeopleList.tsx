@@ -5,7 +5,6 @@ import { Fragment } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
-// import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import PeopleContainer from "./PeopleContainer";
 import PeopleContainerLoader from "./PeopleContainerLoader";
 

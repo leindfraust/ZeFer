@@ -137,9 +137,12 @@ export default function SeriesManageContainer() {
     });
 
     useEffect(() => {
-        if (mutationCreateSeries.isSuccess) refetch();
-        if (mutationEditSeries.isSuccess) refetch();
-        if (mutationDeleteSeries.isSuccess) refetch();
+        if (
+            mutationCreateSeries.isSuccess ||
+            mutationEditSeries.isSuccess ||
+            mutationDeleteSeries.isSuccess
+        )
+            refetch();
     }, [
         mutationCreateSeries.isSuccess,
         mutationDeleteSeries.isSuccess,

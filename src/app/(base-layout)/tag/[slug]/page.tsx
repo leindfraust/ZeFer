@@ -8,7 +8,7 @@ import { TagRank } from "@/types/tag";
 import { User } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
-import { Fragment } from "react";
+import { Fragment, Suspense } from "react";
 
 export default async function TagPosts({
     params,
@@ -84,7 +84,9 @@ export default async function TagPosts({
                 </div>
                 <div className="flex-1 ml-4 mr-4">
                     <QueryWrapper>
-                        <PostList tag={params.slug} />
+                        <Suspense>
+                            <PostList tag={params.slug} />
+                        </Suspense>
                     </QueryWrapper>
                 </div>
             </div>

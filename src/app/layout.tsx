@@ -9,6 +9,7 @@ import { config } from "@fortawesome/fontawesome-svg-core";
 import { TopLoader } from "@/components/TopLoader";
 import ThemeProvider from "@/components/provider/ThemeProvider";
 import { Toaster } from "react-hot-toast";
+import { Suspense } from "react";
 config.autoAddCss = false;
 
 const inter = Inter({ subsets: ["latin"] });
@@ -34,8 +35,10 @@ export default async function RootLayout({
         <html lang="en">
             <body className={inter.className}>
                 <ThemeProvider />
-                <NextTopLoader showSpinner={false} />
-                <TopLoader />
+                <Suspense>
+                    <NextTopLoader showSpinner={false} />
+                    <TopLoader />
+                </Suspense>
                 <Toaster position="top-center" gutter={24} />
                 {children}
                 <Analytics />

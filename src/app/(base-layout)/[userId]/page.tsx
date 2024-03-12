@@ -9,7 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import prisma from "@/db";
 import type { UserSocials } from "@/types/user";
-import { Fragment } from "react";
+import { Fragment, Suspense } from "react";
 import Link from "next/link";
 import { Metadata } from "next";
 import PostList from "@/components/post/PostList";
@@ -227,7 +227,9 @@ export default async function ProfilePage({
                     </div>
                     <div className="w-full">
                         <QueryWrapper>
-                            <PostList userId={userId} />
+                            <Suspense>
+                                <PostList userId={userId} />
+                            </Suspense>
                         </QueryWrapper>
                     </div>
                 </div>

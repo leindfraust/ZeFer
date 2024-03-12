@@ -7,6 +7,7 @@ import { User } from "@prisma/client";
 import SideMenu from "@/components/menu/SideMenu";
 import TagRankingMenu from "@/components/menu/TagRankingMenu";
 import ZeFerBgHomepage from "@/components/ZeFerBgHompage";
+import { Suspense } from "react";
 
 export default async function Home() {
     const session = await getServerSession(authConfig);
@@ -32,7 +33,9 @@ export default async function Home() {
 
                     <div className="w-full ml-4 mr-4">
                         <QueryWrapper>
-                            <PostList />
+                            <Suspense>
+                                <PostList />
+                            </Suspense>
                         </QueryWrapper>
                     </div>
 

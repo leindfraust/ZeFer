@@ -252,7 +252,6 @@ export default async function PostPage({
                                     <PostReactionButton
                                         authorId={post.userId}
                                         session={session}
-                                        title={post.title}
                                         id={post.id}
                                         initialReactionCount={
                                             post._count.reactions
@@ -288,6 +287,7 @@ export default async function PostPage({
                             titleId={slug}
                             title={post.title}
                             authorId={post.userId}
+                            postId={post.id}
                             className="mb-4"
                         />
                         <QueryWrapper>

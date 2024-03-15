@@ -26,6 +26,7 @@ export default function CommentBox({
     titleId,
     title,
     authorId,
+    postId,
     buttonChildren,
     commentReplyPostTitle,
     commentReplyPostId,
@@ -35,6 +36,7 @@ export default function CommentBox({
     titleId: string;
     title?: string;
     authorId?: string;
+    postId?: string;
     commentReplyPostTitle?: string; //only used in notifications
     commentReplyUserId?: string;
     commentReplyPostId?: string;
@@ -112,7 +114,8 @@ export default function CommentBox({
                     userId: authorId,
                     from: session?.user.name,
                     fromImage: session?.user.image,
-                    message: `has commented on your post ${title}`,
+                    message: `has commented on your post`,
+                    postId,
                     actionUrl: pathname,
                 };
                 socket.emit("submitNotification", commentNotification);

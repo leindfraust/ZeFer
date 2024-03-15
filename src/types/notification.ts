@@ -3,7 +3,8 @@ type UserNotificationInputValidation = {
     from: string;
     fromImage: string;
     message: string;
-    actionUrl: string
-}
+    postId?: string;
+    actionUrl: string;
+};
 
-export type { UserNotificationInputValidation }
+export type { UserNotificationInputValidation };

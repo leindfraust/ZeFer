@@ -117,7 +117,6 @@ export default function CommentContainer({
                                 <CommentReactionButton
                                     id={id}
                                     userId={userId}
-                                    title={title}
                                     session={session}
                                     initialReactionCount={
                                         reactions?.length ?? 0

@@ -19,13 +19,11 @@ import useSocket from "@/socket";
 export default function PostReactionButton({
     authorId,
     session,
-    title,
     id,
     initialReactionCount,
 }: {
     authorId: string;
     session: Session | null;
-    title: string;
     id: string;
     initialReactionCount: number;
 }) {
@@ -39,7 +37,7 @@ export default function PostReactionButton({
     //get initial post reaction
     useEffect(() => {
         checkUserLoggedIn().then((response) =>
-            setIsLoggedIn(response.valueOf())
+            setIsLoggedIn(response.valueOf()),
         );
     }, []);
 
@@ -65,7 +63,7 @@ export default function PostReactionButton({
         } else {
             const addOrEditPostReaction = await updateCreatePostReaction(
                 id,
-                "heart"
+                "heart",
             );
             if (addOrEditPostReaction) {
                 setPostReaction("heart");
@@ -74,7 +72,8 @@ export default function PostReactionButton({
                     userId: authorId,
                     from: session?.user.name,
                     fromImage: session?.user.image,
-                    message: `has reacted with ❤️ to your post ${title}`,
+                    message: `has reacted with ❤️ to your post`,
+                    postId: id,
                     actionUrl: pathname,
                 };
                 socket.emit("submitNotification", reactionNotification);

@@ -131,6 +131,7 @@ model Post {
   postReadingLength    PostReadingLength[]
   views                PostView[]
   readPerMinute        Int
+  activities           UserNotifications[]
   published            Boolean              @default(false)
   createdAt            DateTime             @default(now())
   updatedAt            DateTime             @updatedAt
@@ -255,9 +256,12 @@ model PostReaction {
 model UserNotifications {
   id        String   @id @default(uuid())
   userId    String
+  postId    String?
+  postTitle String?
   from      String?
   fromImage String?
   message   String
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   actionUrl String
   createdAt DateTime @default(now())
   new       Boolean  @default(true)

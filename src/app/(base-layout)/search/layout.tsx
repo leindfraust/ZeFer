@@ -1,50 +1,28 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import LinkMenu from "@/components/ui/LinkMenu";
+import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
 const SearchMenu = () => {
-    const pathName = usePathname();
     const searchParams = useSearchParams();
     const keyword = searchParams.get("q");
 
     const links = [
         {
-            name: "Posts",
+            label: "Posts",
             href: `/search/posts?q=${keyword}`,
-            active: pathName === "/search/posts",
         },
         {
-            name: "People",
+            label: "People",
             href: `/search/people?q=${keyword}`,
-            active: pathName === "/search/people",
         },
         {
-            name: "Tags",
+            label: "Tags",
             href: `/search/tags?q=${keyword}`,
-            active: pathName === "/search/tags",
-        },
-        {
-            name: "My Posts",
-            href: `/search/my-posts?q=${keyword}`,
-            active: pathName === "/search/my-posts",
         },
     ];
-    return (
-        <ul className="menu menu-lg rounded-box">
-            {links.map((link, index) => (
-                <li key={index}>
-                    <Link
-                        href={link.href}
-                        className={`${link.active ? "active" : ""}`}
-                    >
-                        {link.name}
-                    </Link>
-                </li>
-            ))}
-        </ul>
-    );
+    return <LinkMenu links={links} relativePathname="/search" />;
 };
 
 export default function SearchLayout({

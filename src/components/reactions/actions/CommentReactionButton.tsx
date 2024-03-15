@@ -18,14 +18,12 @@ import useSocket from "@/socket";
 export default function CommentReactionButton({
     id,
     userId,
-    title,
     session,
     initialReactionCount,
     isLoggedIn,
 }: {
     id: string;
     userId: string;
-    title: string;
     session: Session | null;
     initialReactionCount: number;
     isLoggedIn: boolean;
@@ -58,16 +56,17 @@ export default function CommentReactionButton({
         } else {
             const addOrEditCommentReaction = await updateCreateCommentReaction(
                 id,
-                "heart"
+                "heart",
             );
             if (addOrEditCommentReaction) {
                 setCommentReaction("heart");
                 setCommentReactionCount((prev) => prev + 1);
                 const reactionNotification: UserNotificationInputValidation = {
                     userId: userId,
+                    postId: id,
                     from: session?.user.name,
                     fromImage: session?.user.image,
-                    message: `has reacted with ❤️ to your comment on ${title}`,
+                    message: `has reacted with ❤️ to your comment on your post`,
                     actionUrl: pathname,
                 };
                 socket.emit("submitNotification", reactionNotification);

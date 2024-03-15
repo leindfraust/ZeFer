@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { MenuLink } from "@/types/menu";
+import type { MenuLink } from "@/types/menu";
 
 export default function LinkMenu({
     links,

@@ -70,6 +70,7 @@ export default function PostReactionButton({
                 setPostReactionCount((prev) => prev + 1);
                 const reactionNotification: UserNotificationInputValidation = {
                     userId: authorId,
+                    fromUserId: session?.user.id,
                     from: session?.user.name,
                     fromImage: session?.user.image,
                     message: `has reacted with ❤️ to your post`,

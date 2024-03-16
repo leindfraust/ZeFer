@@ -10,6 +10,16 @@ export async function GET(req: NextRequest) {
     const getNotifications = await prisma.userNotifications.findMany({
         where: {
             userId: session?.user.id,
+            OR: [
+                {
+                    fromUserId: {
+                        not: session?.user.id,
+                    },
+                },
+                {
+                    fromUserId: null,
+                },
+            ],
             ...(keyword && {
                 message: {
                     search: keyword,

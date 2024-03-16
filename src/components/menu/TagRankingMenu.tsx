@@ -27,17 +27,15 @@ export default function TagRankingMenu() {
             <ul className="space-y-2 text-sm font-bold">
                 {tagsRanking &&
                     (tagsRanking as TagRank[]).map((tag: TagRank, index) => (
-                        <>
+                        <Fragment key={index}>
                             {index <= 9 && (
-                                <Fragment key={index}>
-                                    <li>
-                                        <Link href={`/tag/${tag.tag}`}>
-                                            #{tag.tag}
-                                        </Link>
-                                    </li>
-                                </Fragment>
+                                <li>
+                                    <Link href={`/tag/${tag.tag}`}>
+                                        #{tag.tag}
+                                    </Link>
+                                </li>
                             )}
-                        </>
+                        </Fragment>
                     ))}
             </ul>
         </>

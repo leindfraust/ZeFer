@@ -28,9 +28,8 @@ export default function Navigation({
 
     const getNotifications = async () => {
         const response = await fetch("/api/notification/count");
-        const json = await response.json();
-        const data = await json;
-        return (await data.data) as number;
+        const data = await response.json();
+        return data.data as number;
     };
 
     const { data, refetch } = useQuery({
@@ -39,7 +38,8 @@ export default function Navigation({
     });
 
     useEffect(() => {
-        socket.on("notifications", () => {
+        socket.on("notifications", (fromUserId) => {
+            if (fromUserId === session?.user.id) return;
             refetch();
             const notifBell = new Audio("/audio/notification_bell.aac");
             notifBell.play();
@@ -55,7 +55,7 @@ export default function Navigation({
         return () => {
             socket.off("notifications");
         };
-    }, [data, refetch, socket]);
+    }, [data, refetch, session?.user.id, socket]);
 
     useEffect(() => {
         if (status === "authenticated") {
@@ -117,6 +117,7 @@ export default function Navigation({
                             <Link
                                 href={"/notifications"}
                                 className="btn relative"
+                                onClick={() => refetch()}
                             >
                                 <FontAwesomeIcon icon={faBell} size="xl" />
                             </Link>

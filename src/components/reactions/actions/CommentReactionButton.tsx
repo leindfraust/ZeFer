@@ -64,6 +64,7 @@ export default function CommentReactionButton({
                 const reactionNotification: UserNotificationInputValidation = {
                     userId: userId,
                     postId: id,
+                    fromUserId: session?.user.id,
                     from: session?.user.name,
                     fromImage: session?.user.image,
                     message: `has reacted with ❤️ to your comment on your post`,

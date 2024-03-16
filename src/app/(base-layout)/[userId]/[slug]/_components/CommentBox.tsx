@@ -102,6 +102,7 @@ export default function CommentBox({
                 const commentReplyNotification: UserNotificationInputValidation =
                     {
                         userId: commentReplyUserId,
+                        fromUserId: session?.user.id,
                         from: session?.user.name,
                         fromImage: session?.user.image,
                         message: `has replied to your comment on ${commentReplyPostTitle}`,
@@ -112,6 +113,7 @@ export default function CommentBox({
             if (authorId && title) {
                 const commentNotification: UserNotificationInputValidation = {
                     userId: authorId,
+                    fromUserId: session?.user.id,
                     from: session?.user.name,
                     fromImage: session?.user.image,
                     message: `has commented on your post`,

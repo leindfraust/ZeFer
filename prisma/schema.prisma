@@ -44,34 +44,35 @@ model Session {
 }
 
 model User {
-  id               String               @id @default(cuid())
-  username         String?              @unique
-  name             String?
-  bio              String?
-  address          String?
-  occupation       String?
-  email            String?              @unique
-  emailVerified    DateTime?
-  image            String
-  views            Int?
-  readingHistory   PostReadingHistory[]
-  bookMarks        Post[]               @relation("Bookmarks")
-  pinned           String? //refer to postId only
-  interests        String[]
-  series           PostSeries[]
-  socials          Json[] //refer to UserSocials type in types/user.ts
-  followedBy       User[]               @relation("UserFollows")
-  following        User[]               @relation("UserFollows")
-  createdAt        DateTime             @default(now())
-  apiKeys          ApiKey[]
-  comments         PostComment[]
-  accounts         Account[]
-  sessions         Session[]
-  draft            PostDraft?
-  post             Post[]
-  commentReactions CommentReaction[]
-  postReactions    PostReaction[]
-  notifications    UserNotifications[]
+  id                String               @id @default(cuid())
+  username          String?              @unique
+  name              String?
+  bio               String?
+  address           String?
+  occupation        String?
+  email             String?              @unique
+  emailVerified     DateTime?
+  image             String
+  views             Int?
+  readingHistory    PostReadingHistory[]
+  bookMarks         Post[]               @relation("Bookmarks")
+  pinned            String? //refer to postId only
+  interests         String[]
+  series            PostSeries[]
+  socials           Json[] //refer to UserSocials type in types/user.ts
+  followedBy        User[]               @relation("UserFollows")
+  following         User[]               @relation("UserFollows")
+  createdAt         DateTime             @default(now())
+  apiKeys           ApiKey[]
+  comments          PostComment[]
+  accounts          Account[]
+  sessions          Session[]
+  draft             PostDraft?
+  post              Post[]
+  commentReactions  CommentReaction[]
+  postReactions     PostReaction[]
+  notifications     UserNotifications[]
+  sentNotifications UserNotifications[]  @relation("UserNotificationsFromUser")
 
   @@unique([id, name, image])
   @@unique([id, name, username, image])
@@ -254,18 +255,19 @@ model PostReaction {
 }
 
 model UserNotifications {
-  id        String   @id @default(uuid())
-  userId    String
-  postId    String?
-  postTitle String?
-  from      String?
-  fromImage String?
-  message   String
-  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
-  actionUrl String
-  createdAt DateTime @default(now())
-  new       Boolean  @default(true)
-  user      User     @relation(fields: [userId], references: [id])
+  id         String   @id @default(uuid())
+  userId     String
+  postId     String?
+  fromUserId String?
+  from       String?
+  fromImage  String?
+  message    String
+  post       Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  actionUrl  String
+  createdAt  DateTime @default(now())
+  new        Boolean  @default(true)
+  user       User     @relation(fields: [userId], references: [id])
+  fromUser   User?    @relation("UserNotificationsFromUser", fields: [fromUserId], references: [id])
 
   @@schema("users")
 }

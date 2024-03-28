@@ -14,7 +14,7 @@ import CharacterCount from "@tiptap/extension-character-count";
 import NextImage from "next/image";
 import MenuBar from "./menu/MenuBar";
 import parse from "html-react-parser";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { StatusResponse } from "@/types/status";
 import StautsNotif from "../StatusNotif";
 import { useRouter } from "next/navigation";
@@ -24,6 +24,8 @@ import { PostDraft } from "@prisma/client";
 import { cn } from "@/utils/cn";
 import { validateTag } from "@/utils/actions/tag";
 import Modal from "../ui/Modal";
+import { autocompleteGemini } from "@/utils/actions/wysiwyg";
+import { AutocompleteGemini } from "./custom_extensions/autocomplete";
 
 export default function Tiptap({
     userId,
@@ -55,8 +57,12 @@ export default function Tiptap({
 
     const modal_coverImage = useRef<HTMLDialogElement>(null);
     const [modalOpenState, setModalOpenState] = useState<boolean>(false);
+    const [insertContentState, setInsertContentState] =
+        useState<boolean>(false);
 
-    const updateTimeout = useRef<NodeJS.Timeout>();
+    const postDraftTimeout = useRef<NodeJS.Timeout>();
+    const insertContentTimeout = useRef<NodeJS.Timeout>();
+
     const [tagValidateResult, setTagValidateResult] = useState<boolean>();
 
     const prose =
@@ -111,6 +117,7 @@ export default function Tiptap({
             HighLight,
             TaskItem,
             TaskList,
+            AutocompleteGemini,
             TiptapImage.configure({
                 HTMLAttributes: {
                     class: "mx-auto",
@@ -132,8 +139,75 @@ export default function Tiptap({
             attributes: {
                 class: prose,
             },
+            handleKeyDown(view, event) {
+                if (event.key === "Tab") {
+                    if (!insertContentState) {
+                        event.preventDefault();
+                        setInsertContentState(true);
+                    }
+                } else {
+                    setInsertContentState(() => false);
+                }
+            },
         },
     });
+
+    const insertContent = useCallback(
+        async (words: string) => {
+            editor!.extensionStorage.AutocompleteExtension.autosuggestion =
+                '<span class="generating"><span>&#x2022;</span><span>&#x2022;</span><span>&#x2022;</span></span>';
+
+            editor?.commands.setMeta("triggerSuggestion", true);
+            const autocomplete = await autocompleteGemini(words);
+            if (autocomplete) {
+                editor!.extensionStorage.AutocompleteExtension.autosuggestion =
+                    autocomplete;
+            } else {
+                editor!.extensionStorage.AutocompleteExtension.autosuggestion =
+                    "";
+            }
+            editor?.commands.setMeta("triggerSuggestion", false);
+        },
+        [editor],
+    );
+
+    useEffect(() => {
+        if (insertContentState) {
+            const currentPos = editor?.state.selection.anchor;
+            editor?.state.doc.nodesBetween(
+                Number(currentPos),
+                Number(currentPos),
+                (node) => {
+                    const nodeJson = node.toJSON();
+                    if (!nodeJson?.content || !nodeJson?.content[0].text)
+                        return;
+                    setInsertContentState(false);
+                    if (
+                        !insertContentTimeout.current ||
+                        insertContentTimeout.current === undefined
+                    ) {
+                        insertContentTimeout.current = setTimeout(
+                            async () =>
+                                await insertContent(nodeJson?.content[0].text),
+                            1000,
+                        );
+                    } else {
+                        clearTimeout(insertContentTimeout.current);
+                        insertContentTimeout.current = setTimeout(
+                            async () =>
+                                await insertContent(nodeJson?.content[0].text),
+                            1000,
+                        );
+                    }
+                },
+            );
+        }
+    }, [
+        editor?.state.doc,
+        editor?.state.selection.anchor,
+        insertContent,
+        insertContentState,
+    ]);
 
     const editorTitle = useEditor({
         extensions: [
@@ -233,7 +307,7 @@ export default function Tiptap({
                 method: "POST",
                 body: formData,
             });
-            updateTimeout.current = undefined;
+            postDraftTimeout.current = undefined;
         };
         const editorsUpdating = () => {
             if (!postEdit && !publishState) {
@@ -243,16 +317,16 @@ export default function Tiptap({
                     editor?.getText()
                 ) {
                     if (
-                        !updateTimeout.current ||
-                        updateTimeout.current === undefined
+                        !postDraftTimeout.current ||
+                        postDraftTimeout.current === undefined
                     ) {
-                        updateTimeout.current = setTimeout(
+                        postDraftTimeout.current = setTimeout(
                             () => savePostDraft(),
                             5000,
                         );
                     } else {
-                        clearTimeout(updateTimeout.current);
-                        updateTimeout.current = setTimeout(
+                        clearTimeout(postDraftTimeout.current);
+                        postDraftTimeout.current = setTimeout(
                             () => savePostDraft(),
                             5000,
                         );
@@ -276,16 +350,16 @@ export default function Tiptap({
             editorsUpdating();
         });
         if (publishState) {
-            clearTimeout(updateTimeout.current);
+            clearTimeout(postDraftTimeout.current);
         }
     }, [
-        postDraft?.coverImage,
-        postEdit,
         coverImageFile,
         editor,
         editorDescription,
         editorTitle,
         inputTags,
+        postDraft?.coverImage,
+        postEdit,
         publishState,
     ]);
 
@@ -454,6 +528,90 @@ export default function Tiptap({
     }
     return (
         <>
+            <div className=" z-50 sticky top-0 bg-base-100 rounded-lg">
+                <div className="flex flex-wrap justify-center p-2">
+                    <div className="flex items-center overflow-auto space-x-4">
+                        <label
+                            htmlFor="coverImage"
+                            className={`btn ${
+                                coverImage ? "btn-info" : "btn-outline"
+                            }`}
+                            onClick={modalCoverImage}
+                        >
+                            {coverImage
+                                ? "View Cover Image"
+                                : "Add Cover Image"}
+                        </label>
+                        <input
+                            type="file"
+                            id="coverImage"
+                            accept="image/png, image/jpeg"
+                            onChange={addCoverImage}
+                            hidden
+                        />
+                        <button
+                            className={`btn ${
+                                preview ? "btn-info" : "btn-outline"
+                            }`}
+                            onClick={togglePreview}
+                        >
+                            {preview ? "Edit" : "Preview"}
+                        </button>
+                        <button
+                            className="btn btn-outline"
+                            onClick={() => uploadPost(false)}
+                        >
+                            Save as Draft
+                        </button>
+                        <button
+                            className={`btn btn-success btn-outline ${
+                                publishState ? "btn-disabled" : ""
+                            }`}
+                            onClick={() => uploadPost(true)}
+                        >
+                            {publishState
+                                ? postEdit
+                                    ? "Updating"
+                                    : "Publishing..."
+                                : postEdit
+                                ? "Update"
+                                : "Publish"}
+                        </button>
+                    </div>
+                </div>
+
+                {coverImage && (
+                    <Modal
+                        className="overflow-auto space-y-4"
+                        ref={modal_coverImage}
+                    >
+                        <NextImage
+                            className="mx-auto"
+                            src={coverImage as string}
+                            alt="image"
+                            width={400}
+                            height={400}
+                        />
+                        <label
+                            htmlFor="coverImage"
+                            className="btn btn-neutral flex justify-center align-middle"
+                        >
+                            Change
+                        </label>
+                        <div className="modal-action">
+                            <form method="dialog">
+                                {/* if there is a button in form, it will close the modal */}
+                                <button
+                                    className="btn"
+                                    onClick={() => setModalOpenState(false)}
+                                >
+                                    Close
+                                </button>
+                            </form>
+                        </div>
+                    </Modal>
+                )}
+            </div>
             <StautsNotif {...(postError as StatusResponse)} />
             {preview ? (
                 <>
@@ -566,86 +724,6 @@ export default function Tiptap({
                     <EditorContent editor={editor} className="mb-24" />
                 </>
             )}
-            <div className=" fixed bottom-0 bg-base-100 w-screen rounded-lg bg-opacity-50 hover:bg-opacity-100">
-                <div className="flex flex-wrap justify-center p-2">
-                    <div className="flex items-center overflow-auto space-x-4">
-                        <label
-                            htmlFor="coverImage"
-                            className={`btn ${coverImage ? "btn-info" : ""}`}
-                            onClick={modalCoverImage}
-                        >
-                            {coverImage
-                                ? "View Cover Image"
-                                : "Add Cover Image"}
-                        </label>
-                        <input
-                            type="file"
-                            id="coverImage"
-                            accept="image/png, image/jpeg"
-                            onChange={addCoverImage}
-                            hidden
-                        />
-                        <button
-                            className={`btn ${preview ? "btn-info" : ""}`}
-                            onClick={togglePreview}
-                        >
-                            {preview ? "Edit" : "Preview"}
-                        </button>
-                        <button
-                            className="btn"
-                            onClick={() => uploadPost(false)}
-                        >
-                            Save as Draft
-                        </button>
-                        <button
-                            className={`btn btn-success ${
-                                publishState ? "btn-disabled" : ""
-                            }`}
-                            onClick={() => uploadPost(true)}
-                        >
-                            {publishState
-                                ? postEdit
-                                    ? "Updating"
-                                    : "Publishing..."
-                                : postEdit
-                                ? "Update"
-                                : "Publish"}
-                        </button>
-                    </div>
-                </div>
-
-                {coverImage && (
-                    <Modal
-                        className="overflow-auto space-y-4"
-                        ref={modal_coverImage}
-                    >
-                        <NextImage
-                            className="mx-auto"
-                            src={coverImage as string}
-                            alt="image"
-                            width={400}
-                            height={400}
-                        />
-                        <label
-                            htmlFor="coverImage"
-                            className="btn btn-neutral flex justify-center align-middle"
-                        >
-                            Change
-                        </label>
-                        <div className="modal-action">
-                            <form method="dialog">
-                                {/* if there is a button in form, it will close the modal */}
-                                <button
-                                    className="btn"
-                                    onClick={() => setModalOpenState(false)}
-                                >
-                                    Close
-                                </button>
-                            </form>
-                        </div>
-                    </Modal>
-                )}
-            </div>
         </>
     );
 }

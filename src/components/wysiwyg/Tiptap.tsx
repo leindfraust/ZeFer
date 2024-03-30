@@ -146,7 +146,8 @@ export default function Tiptap({
                         setInsertContentState(true);
                     }
                 } else {
-                    setInsertContentState(() => false);
+                    clearTimeout(insertContentTimeout.current);
+                    setInsertContentState(false);
                 }
             },
         },

@@ -15,7 +15,7 @@ export async function autocompleteGemini(words: string) {
     2. If the set of words can be autocompleted, reply through outputting the next words and if don't, reply with a word "false".
     3. You will not process any words that are indecent, offensive, or malicious.
     4. The next words should be based on the context of the set of words and should be relevant. 
-    6. If the next words can is a continuation of the set of words, add a space in the beginning of the next words and do not capitalize the first letter of the next words.
+    5. If the next words requires a space in the beginning, put a space in the beginning, just follow a proper format on the next words.
     Here are the words: ${words}`;
         const result = await model.generateContent(prompt);
         const response = result.response;

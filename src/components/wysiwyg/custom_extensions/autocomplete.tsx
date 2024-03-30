@@ -93,6 +93,8 @@ export const AutocompleteGemini = Extension.create({
                                 this.storage.autosuggestion = "";
                                 view.dispatch(tr);
                             }
+                        } else {
+                            this.storage.autosuggestion = "";
                         }
                     },
                 },

@@ -178,7 +178,7 @@ export default function MenuBar({
     ];
 
     return (
-        <div className={cn("sticky top-0 z-10 bg-base-100", className)}>
+        <div className={cn("sticky top-14 z-10 bg-base-100", className)}>
             <dialog ref={link_modal} className="modal">
                 <div className="modal-box">
                     <div className="flex justify-center flex-wrap space-y-4 p-4">

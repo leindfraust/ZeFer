@@ -10,19 +10,19 @@ const SearchMenu = () => {
 
     const links = [
         {
-            label: "Posts",
             href: `/search/posts?q=${keyword}`,
+            label: "Posts",
         },
         {
-            label: "People",
             href: `/search/people?q=${keyword}`,
+            label: "People",
         },
         {
-            label: "Tags",
             href: `/search/tags?q=${keyword}`,
+            label: "Tags",
         },
     ];
-    return <LinkMenu links={links} relativePathname="/search" />;
+    return <LinkMenu links={links} />;
 };
 
 export default function SearchLayout({

@@ -1,4 +1,5 @@
 "use client";
+import Modal from "@/components/ui/Modal";
 import { deleteUser, unlinkAccount } from "@/utils/actions/account";
 import {
     IconDefinition,
@@ -9,7 +10,7 @@ import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Fragment, useCallback, useMemo, useState } from "react";
+import { Fragment, useCallback, useMemo, useRef, useState } from "react";
 
 export default function AccountSettingsComponent({
     providers,
@@ -97,9 +98,43 @@ export default function AccountSettingsComponent({
         linkAction: "Connect" | "Remove";
         providers: string[];
     }) {
+        const modalOauthRemoveRef = useRef<HTMLDialogElement>(null);
+        const [provider, setProvider] = useState<string>("");
+
+        function handleModalRemove(selectedProvider: string) {
+            setProvider(selectedProvider);
+            modalOauthRemoveRef.current?.show();
+        }
         return (
             <>
                 <div className="container pt-4">
+                    <Modal ref={modalOauthRemoveRef}>
+                        <h3 className="font-bold text-lg mt-4">
+                            Remove{" "}
+                            {provider.charAt(0).toUpperCase() +
+                                provider.slice(1)}{" "}
+                            Account
+                        </h3>
+                        <p className="text-md">
+                            Are you sure you want to remove this account?
+                        </p>
+                        <div className="modal-action">
+                            <form method="dialog">
+                                <div className="flex gap-4">
+                                    <button
+                                        className="btn btn-error"
+                                        onClick={() => {
+                                            modalOauthRemoveRef.current?.close();
+                                            unlinkProviderAccount(provider);
+                                        }}
+                                    >
+                                        Remove
+                                    </button>
+                                    <button className="btn">Close</button>
+                                </div>
+                            </form>
+                        </div>
+                    </Modal>
                     <div className="lg:space-x-4 space-y-4">
                         <h2 className="text-2xl font-bold">
                             {linkAction} OAuth Accounts
@@ -110,7 +145,7 @@ export default function AccountSettingsComponent({
                                     onClick={() =>
                                         linkAction === "Connect"
                                             ? signIn(provider)
-                                            : unlinkProviderAccount(provider)
+                                            : handleModalRemove(provider)
                                     }
                                 >
                                     <div

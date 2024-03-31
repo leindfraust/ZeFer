@@ -16,7 +16,7 @@ export default async function SettingsLayout({
                 <div className="p-4 mx-auto w-1/2 lg:w-1/6">
                     <SettingsLinks />
                 </div>
-                <div className="flex-1 ml-4 mr-4">{children}</div>
+                <div className="flex-1">{children}</div>
             </div>
         </div>
     );

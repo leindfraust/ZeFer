@@ -6,6 +6,7 @@ import { FormContext } from "@/types/formContext";
 import { generateApiKey, revokeApiKey } from "@/utils/actions/account";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClipboard } from "@fortawesome/free-regular-svg-icons";
 import { ApiKey } from "@prisma/client";
 import { useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -18,8 +19,11 @@ export default function ApiKeys({
 }) {
     const [apiKeys, setApiKeys] = useState<ApiKey[]>(initialApiKeys);
 
-    const createApiModalRef = useRef<HTMLDialogElement>(null);
-    const deleteApiModalRef = useRef<HTMLDialogElement>(null);
+    const createApiKeyModalRef = useRef<HTMLDialogElement>(null);
+    const deleteApiKeyModalRef = useRef<HTMLDialogElement>(null);
+
+    const successApiKeyCreationModalRef = useRef<HTMLDialogElement>(null);
+    const [newApiKeyCreated, setNewApiKeyCreated] = useState<string>("");
 
     const [toDelApiKeyId, setToDelApiKeyId] = useState<string>();
 
@@ -38,7 +42,7 @@ export default function ApiKeys({
 
     function delApiKeyModalPrompt({ id }: ApiKey) {
         setToDelApiKeyId(id);
-        deleteApiModalRef.current?.show();
+        deleteApiKeyModalRef.current?.show();
     }
 
     const addApiKey = form.handleSubmit(async (data) => {
@@ -48,11 +52,13 @@ export default function ApiKeys({
         if (!duplicateName) {
             const generatedApiKey = await generateApiKey(data.Name);
             if (generatedApiKey) {
-                setApiKeys([...apiKeys, generatedApiKey]);
+                setApiKeys([...apiKeys, generatedApiKey.maskedApiKey]);
                 toast.success("API key successfully created", {
-                    id: "123",
+                    id: "apiKey",
                 });
-                createApiModalRef.current?.close();
+                createApiKeyModalRef.current?.close();
+                setNewApiKeyCreated(generatedApiKey.rawKey);
+                successApiKeyCreationModalRef.current?.show();
             }
         } else {
             form.setError("Name", {
@@ -68,11 +74,11 @@ export default function ApiKeys({
             if (deleteApiKey) {
                 setApiKeys([...deleteApiKey]);
                 toast.success("API Key successfully deleted", {
-                    id: "123",
+                    id: "apiKey",
                 });
             }
         }
-        deleteApiModalRef.current?.close();
+        deleteApiKeyModalRef.current?.close();
     };
 
     return (
@@ -81,13 +87,13 @@ export default function ApiKeys({
                 <h1 className="text-2xl font-bold">API Keys</h1>
                 <button
                     className="btn btn-primary btn-md"
-                    onClick={() => createApiModalRef.current?.show()}
+                    onClick={() => createApiKeyModalRef.current?.show()}
                 >
                     Create
                 </button>
             </div>
 
-            <Modal ref={createApiModalRef}>
+            <Modal ref={createApiKeyModalRef}>
                 <h2 className="text-lg font-bold">Create New Secret Key</h2>
                 <FormProvider {...form}>
                     <Input {...apiKey_validation} />
@@ -102,7 +108,47 @@ export default function ApiKeys({
                 </div>
             </Modal>
 
-            <Modal ref={deleteApiModalRef}>
+            <Modal ref={successApiKeyCreationModalRef}>
+                <h2 className="text-lg font-bold">
+                    Congratulations, you have created an API key.
+                </h2>
+                <p className="text-md mt-2">
+                    Please copy the API key and store it in a secure place. For
+                    security purposes, you will not be able to access this
+                    secret key again.
+                </p>
+                <div className="flex justify-center">
+                    <div className="join mt-4">
+                        <input
+                            className="input input-bordered join-item w-full"
+                            defaultValue={newApiKeyCreated}
+                        />
+                        <button
+                            className="btn join-item rounded-r-full bg-transparent"
+                            onClick={() => {
+                                navigator.clipboard.writeText(newApiKeyCreated);
+                                toast.success("API Key copied", {
+                                    id: "apiKey",
+                                });
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faClipboard} />
+                        </button>
+                    </div>
+                </div>
+                <div className="modal-action">
+                    <form method="dialog">
+                        <button
+                            className="btn"
+                            onClick={() => setNewApiKeyCreated("")}
+                        >
+                            Close
+                        </button>
+                    </form>
+                </div>
+            </Modal>
+
+            <Modal ref={deleteApiKeyModalRef}>
                 <h2 className="text-lg font-bold">
                     Are you sure you want to delete{" "}
                 </h2>

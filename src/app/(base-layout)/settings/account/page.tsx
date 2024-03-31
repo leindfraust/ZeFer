@@ -3,6 +3,7 @@ import prisma from "@/db";
 import { getServerSession } from "next-auth";
 import AccountSettingsComponent from "@/app/(base-layout)/settings/account/_components/Account";
 import ApiKeys from "./_components/ApiKeys";
+import maskString from "@/utils/maskString";
 
 export default async function AccountSettings() {
     const session = await getServerSession(authConfig);
@@ -18,11 +19,16 @@ export default async function AccountSettings() {
         where: { ownerId: session?.user.id },
     });
 
+    const maskedKeys = apiKeys.map((key) => ({
+        ...key,
+        key: maskString(key?.key),
+    }));
+
     return (
         <div className="mx-auto lg:w-9/12 justify-center">
             <div className="shadow-lg p-12 rounded-md space-y-2">
                 <AccountSettingsComponent providers={[...linkedProviders]} />
-                <ApiKeys initialApiKeys={apiKeys} />
+                <ApiKeys initialApiKeys={maskedKeys} />
             </div>
         </div>
     );

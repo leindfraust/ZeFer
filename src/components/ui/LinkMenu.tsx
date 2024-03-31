@@ -6,12 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { MenuLink } from "@/types/menu";
 
-export default function LinkMenu({
-    links,
-}: {
-    relativePathname: string;
-    links: MenuLink[];
-}) {
+export default function LinkMenu({ links }: { links: MenuLink[] }) {
     const router = useRouter();
     const pathName = usePathname();
     const [selectedLink, setSelectedLink] = useState<string>(pathName);

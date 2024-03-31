@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authConfig } from "../authConfig";
 import prisma from "@/db";
 import { init } from "@paralleldrive/cuid2";
+import maskString from "../maskString";
 
 export async function unlinkAccount(accountId: string, providerId: string) {
     const session = await getServerSession(authConfig);
@@ -59,7 +60,16 @@ export async function generateApiKey(apiName: string) {
             },
         },
     });
-    if (addApiKey) return addApiKey;
+    if (addApiKey) {
+        const maskedApiKey = {
+            ...addApiKey,
+            key: maskString(addApiKey?.key),
+        };
+        return {
+            rawKey: addApiKey.key,
+            maskedApiKey,
+        };
+    }
 }
 
 export async function revokeApiKey(apiKeyId: string) {

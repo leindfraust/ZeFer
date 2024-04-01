@@ -16,7 +16,7 @@ export default async function AccountSettings() {
         },
     });
     const apiKeys = await prisma.apiKey.findMany({
-        where: { ownerId: session?.user.id },
+        where: { ownerId: session?.user.id, isActive: true },
     });
 
     const maskedKeys = apiKeys.map((key) => ({

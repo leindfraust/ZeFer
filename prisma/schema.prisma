@@ -89,6 +89,7 @@ model ApiKey {
   createdAt    DateTime        @default(now())
   ownerId      String
   user         User            @relation(fields: [ownerId], references: [id])
+  isActive     Boolean         @default(true)
 
   @@schema("apikey")
 }

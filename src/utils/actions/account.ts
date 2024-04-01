@@ -74,13 +74,16 @@ export async function generateApiKey(apiName: string) {
 
 export async function revokeApiKey(apiKeyId: string) {
     const session = await getServerSession(authConfig);
-    const revokeApiKey = await prisma.apiKey.delete({
+    const revokeApiKey = await prisma.apiKey.update({
         where: {
             id: apiKeyId,
+        },
+        data: {
+            isActive: false,
         },
     });
     if (revokeApiKey)
         return await prisma.apiKey.findMany({
-            where: { ownerId: session?.user.id },
+            where: { ownerId: session?.user.id, isActive: true },
         });
 }

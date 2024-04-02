@@ -8,6 +8,7 @@ import Input from "@/components/ui/Input";
 import { Fragment } from "react";
 import { User } from "@prisma/client";
 import DisplayImage from "./DisplayImage";
+import { toast } from "react-hot-toast";
 
 export default function ProfileSettingsComponent({
     username,
@@ -160,6 +161,9 @@ export default function ProfileSettingsComponent({
             }),
         });
         if (update.ok) {
+            toast.success("Profile information has been updated.", {
+                id: "profile",
+            });
             router.refresh();
         } else {
             const error = await update.json();

@@ -183,12 +183,6 @@ export default async function ProfilePage({
                                 <p className="text-lg">{user.occupation}</p>
                             </div>
                         )}
-                        {user.occupation && (
-                            <p className="text-xl">
-                                <FontAwesomeIcon icon={faBriefcase} />
-                                {user.occupation}
-                            </p>
-                        )}
                         {(user.socials as UserSocials[]).find(
                             (social) => social?.url !== "",
                         ) && (

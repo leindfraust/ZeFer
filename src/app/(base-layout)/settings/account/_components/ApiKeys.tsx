@@ -99,12 +99,12 @@ export default function ApiKeys({
                     <Input {...apiKey_validation} />
                 </FormProvider>
                 <div className="modal-action">
-                    <form method="dialog">
-                        <button className="btn">Cancel</button>
-                    </form>
                     <button className="btn btn-neutral" onClick={addApiKey}>
                         Confirm
                     </button>
+                    <form method="dialog">
+                        <button className="btn">Cancel</button>
+                    </form>
                 </div>
             </Modal>
 
@@ -153,12 +153,12 @@ export default function ApiKeys({
                     Are you sure you want to delete{" "}
                 </h2>
                 <div className="modal-action">
-                    <form method="dialog">
-                        <button className="btn">Cancel</button>
-                    </form>
                     <button className="btn btn-neutral" onClick={deleteApiKey}>
                         Confirm
                     </button>
+                    <form method="dialog">
+                        <button className="btn">Cancel</button>
+                    </form>
                 </div>
             </Modal>
 

@@ -198,6 +198,9 @@ export default function SeriesManageContainer() {
                 <h3 className="font-bold text-lg mt-4">
                     {editingSeries ? "Editing Series" : "Create a Series"}
                 </h3>
+                {editingSeries && (
+                    <p className="text-sm">ID: {actionSeriesId}</p>
+                )}
                 <FormProvider {...form}>
                     <Input {...seriesTitle_validation} />
                     <Input {...seriesDescription_validation} />

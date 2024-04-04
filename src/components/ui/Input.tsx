@@ -11,6 +11,7 @@ export default function Input({
     value,
     maxLength,
     onChange,
+    disabled,
 }: FormContext & RegisterOptions) {
     const {
         register,
@@ -35,6 +36,7 @@ export default function Input({
                         required: required,
                         onChange: onChange,
                     })}
+                    disabled={typeof disabled === "boolean" ? disabled : false}
                     className="input input-bordered w-full"
                 />
             ) : (

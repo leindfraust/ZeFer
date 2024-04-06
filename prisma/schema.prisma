@@ -44,35 +44,37 @@ model Session {
 }
 
 model User {
-  id                String               @id @default(cuid())
-  username          String?              @unique
-  name              String?
-  bio               String?
-  address           String?
-  occupation        String?
-  email             String?              @unique
-  emailVerified     DateTime?
-  image             String
-  views             Int?
-  readingHistory    PostReadingHistory[]
-  bookMarks         Post[]               @relation("Bookmarks")
-  pinned            String? //refer to postId only
-  interests         String[]
-  series            PostSeries[]
-  socials           Json[] //refer to UserSocials type in types/user.ts
-  followedBy        User[]               @relation("UserFollows")
-  following         User[]               @relation("UserFollows")
-  createdAt         DateTime             @default(now())
-  apiKeys           ApiKey[]
-  comments          PostComment[]
-  accounts          Account[]
-  sessions          Session[]
-  draft             PostDraft?
-  post              Post[]
-  commentReactions  CommentReaction[]
-  postReactions     PostReaction[]
-  notifications     UserNotifications[]
-  sentNotifications UserNotifications[]  @relation("UserNotificationsFromUser")
+  id                    String               @id @default(cuid())
+  username              String?              @unique
+  name                  String?
+  bio                   String?
+  address               String?
+  occupation            String?
+  email                 String?              @unique
+  emailVerified         DateTime?
+  image                 String
+  views                 Int?
+  readingHistory        PostReadingHistory[]
+  bookMarks             Post[]               @relation("Bookmarks")
+  pinned                String? //refer to postId only
+  interests             String[]
+  series                PostSeries[]
+  socials               Json[] //refer to UserSocials type in types/user.ts
+  followedBy            User[]               @relation("UserFollows")
+  following             User[]               @relation("UserFollows")
+  createdAt             DateTime             @default(now())
+  apiKeys               ApiKey[]
+  comments              PostComment[]
+  accounts              Account[]
+  sessions              Session[]
+  draft                 PostDraft?
+  post                  Post[]
+  commentReactions      CommentReaction[]
+  postReactions         PostReaction[]
+  sendNotificationEmail Boolean              @default(true)
+  sendNotificationPhone Boolean              @default(false)
+  notifications         UserNotifications[]
+  sentNotifications     UserNotifications[]  @relation("UserNotificationsFromUser")
 
   @@unique([id, name, image])
   @@unique([id, name, username, image])

@@ -1,6 +1,6 @@
 import prisma from "@/db";
-import GoogleProvider from "next-auth/providers/google"
-import GithubProvider from "next-auth/providers/github"
+import GoogleProvider from "next-auth/providers/google";
+import GithubProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { AuthOptions } from "next-auth";
 import { Adapter } from "next-auth/adapters";
@@ -10,7 +10,7 @@ export const authConfig: AuthOptions = {
     adapter: PrismaAdapter(prisma) as Adapter,
     secret: process.env.NEXTAUTH_SECRET as string,
     session: {
-        strategy: "jwt"
+        strategy: "jwt",
     },
     providers: [
         GoogleProvider({
@@ -22,8 +22,10 @@ export const authConfig: AuthOptions = {
                     name: profile.name,
                     email: profile.email,
                     image: profile.picture,
-                    username: profile.given_name.replace(/\s/g, '').toLowerCase() + generateRandom4DigitNumber()
-                }
+                    username:
+                        profile.given_name.replace(/\s/g, "").toLowerCase() +
+                        generateRandom4DigitNumber(),
+                };
             },
         }),
         GithubProvider({
@@ -35,10 +37,12 @@ export const authConfig: AuthOptions = {
                     name: profile.name ?? profile.login,
                     email: profile.email,
                     image: profile.avatar_url,
-                    username: profile.login.replace(/\s/g, '').toLowerCase() + generateRandom4DigitNumber()
-                }
+                    username:
+                        profile.login.replace(/\s/g, "").toLowerCase() +
+                        generateRandom4DigitNumber(),
+                };
             },
-        })
+        }),
     ],
     callbacks: {
         session: ({ session, token }) => ({
@@ -50,6 +54,9 @@ export const authConfig: AuthOptions = {
         }),
     },
     theme: {
-        logo: "/zefer.svg"
-    }
-}
+        logo: "/zefer.svg",
+    },
+    pages: {
+        newUser: "/settings/profile",
+    },
+};

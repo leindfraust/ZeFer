@@ -5,10 +5,19 @@ import { useRouter } from "next/navigation";
 import { FormContext } from "@/types/formContext";
 import { FormProvider, RegisterOptions, useForm } from "react-hook-form";
 import Input from "@/components/ui/Input";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { User } from "@prisma/client";
 import DisplayImage from "./DisplayImage";
 import { toast } from "react-hot-toast";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+    faCheckCircle,
+    faExclamationCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import {
+    generateVerificationCode,
+    getCurrentEmailVerificationCodeDate,
+} from "@/utils/actions/verification";
 
 export default function ProfileSettingsComponent({
     username,
@@ -17,6 +26,7 @@ export default function ProfileSettingsComponent({
     address,
     occupation,
     email,
+    emailVerified,
     socials,
     id,
     image,
@@ -28,6 +38,71 @@ export default function ProfileSettingsComponent({
         image,
         name,
     } as User;
+    const [initialVerificationCodeSent, setInitialVerificationCodeSent] =
+        useState<boolean>(false);
+    const [isVerificationCodeSent, setIsVerificationCodeSent] =
+        useState<boolean>(false);
+    const [isSending, setIsSending] = useState<boolean>(false);
+
+    const [countdown, setCountdown] = useState<number>(60);
+    useEffect(() => {
+        async function getCurrentCode() {
+            const currentEmailVerificationCode =
+                await getCurrentEmailVerificationCodeDate();
+            if (currentEmailVerificationCode) {
+                const expectedCountdown =
+                    new Date(currentEmailVerificationCode).getTime() + 60000;
+                const remainingCountdown = Math.round(
+                    (new Date(expectedCountdown).getTime() -
+                        new Date().getTime()) /
+                        1000,
+                );
+                if (remainingCountdown > 0) {
+                    setIsVerificationCodeSent(true);
+                    setCountdown(remainingCountdown);
+                }
+            }
+        }
+        getCurrentCode();
+    }, []);
+
+    async function sendVerificationCode() {
+        setIsSending(true);
+        if (!initialVerificationCodeSent) setInitialVerificationCodeSent(true);
+        if (!isVerificationCodeSent) {
+            const generateCode = await generateVerificationCode();
+            if (generateCode) {
+                const params = new URLSearchParams({
+                    code: generateCode,
+                });
+                const response = await fetch(
+                    `/api/email/send/verification?${params}`,
+                    {
+                        method: "POST",
+                    },
+                );
+                if (response.ok) {
+                    setIsVerificationCodeSent(true);
+                    toast.success("Verification code sent to your email.");
+                    setTimeout(() => {
+                        setIsVerificationCodeSent(false);
+                    }, 60000);
+                    setCountdown(60);
+                }
+            }
+        }
+        setIsSending(false);
+    }
+
+    useEffect(() => {
+        if (isVerificationCodeSent) {
+            if (countdown > 0) {
+                setTimeout(() => setCountdown(countdown - 1), 1000);
+            } else {
+                setIsVerificationCodeSent(false);
+            }
+        }
+    }, [countdown, isVerificationCodeSent]);
 
     const socialForms: FormContext[] = [
         {
@@ -121,12 +196,13 @@ export default function ProfileSettingsComponent({
     const email_validation: FormContext = {
         name: "Email",
         type: "text",
-        placeholder: "Your email",
+        placeholder: emailVerified ? email! : "Your email",
         value: email ? email : "",
         required: {
             value: true,
             message: "This field is required",
         },
+        disabled: emailVerified ? true : false,
     };
 
     const occupation_validation: FormContext = {
@@ -188,12 +264,48 @@ export default function ProfileSettingsComponent({
                         <h3 className="text-2xl font-bold">
                             Profile Information
                         </h3>
+                        {!emailVerified && (
+                            <div role="alert" className="alert alert-error">
+                                <FontAwesomeIcon icon={faExclamationCircle} />
+                                <span>
+                                    Your email has not been verified yet. Verify
+                                    your email to keep your account secure.
+                                </span>
+                                <div>
+                                    <button
+                                        className="btn btn-sm"
+                                        onClick={sendVerificationCode}
+                                        disabled={
+                                            isVerificationCodeSent || isSending
+                                        }
+                                    >
+                                        {!isVerificationCodeSent ? (
+                                            <>
+                                                {!initialVerificationCodeSent
+                                                    ? "Send Verification Code"
+                                                    : isSending
+                                                    ? "Processing..."
+                                                    : "Resend Verification Code"}
+                                            </>
+                                        ) : (
+                                            <>{`Try again in ${countdown}s`}</>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                         <Input {...username_validation} />
                         <Input {...name_validation} />
                         <Input {...bio_validation} />
                         <Input {...address_validation} />
                         <Input {...occupation_validation} />
                         <Input {...email_validation} />
+                        {emailVerified && (
+                            <div role="alert" className="alert alert-success">
+                                <FontAwesomeIcon icon={faCheckCircle} />
+                                <span>Email is verified.</span>
+                            </div>
+                        )}
                         <DisplayImage {...uploadImgProps} />
                     </div>
                     <div className="shadow-lg p-12 rounded-md space-y-2">

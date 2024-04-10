@@ -1,3 +1,13 @@
-export { default } from "next-auth/middleware"
+export { default } from "next-auth/middleware";
 
-export const config = { matcher: ["/new", "/:userId/:titleId/edit", "/settings/:path*", "/manage/:path*", "/api/post/manage/:path*", "/api/user/cloudinary/:path*"] }
+export const config = {
+    matcher: [
+        "/new",
+        "/:userId/:titleId/edit",
+        "/settings/:path*",
+        "/manage/:path*",
+        "/api/post/manage/:path*",
+        "/api/user/cloudinary/:path*",
+        "/api/email/:path*",
+    ],
+};

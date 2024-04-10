@@ -35,8 +35,8 @@ export default function Input({
                         value: value,
                         required: required,
                         onChange: onChange,
+                        disabled: disabled,
                     })}
-                    disabled={typeof disabled === "boolean" ? disabled : false}
                     className="input input-bordered w-full"
                 />
             ) : (

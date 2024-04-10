@@ -10,7 +10,7 @@ datasource db {
   provider          = "postgresql"
   url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
-  schemas           = ["users", "sessions", "posts", "tags", "apikey"]
+  schemas           = ["users", "sessions", "posts", "tags", "apikey", "verification"]
 }
 
 model Account {
@@ -44,25 +44,26 @@ model Session {
 }
 
 model User {
-  id                    String               @id @default(cuid())
-  username              String?              @unique
+  id                    String                 @id @default(cuid())
+  username              String?                @unique
   name                  String?
   bio                   String?
   address               String?
   occupation            String?
-  email                 String?              @unique
+  email                 String?                @unique
   emailVerified         DateTime?
+  emailVerificationCode EmailVerificationCode?
   image                 String
   views                 Int?
   readingHistory        PostReadingHistory[]
-  bookMarks             Post[]               @relation("Bookmarks")
+  bookMarks             Post[]                 @relation("Bookmarks")
   pinned                String? //refer to postId only
   interests             String[]
   series                PostSeries[]
   socials               Json[] //refer to UserSocials type in types/user.ts
-  followedBy            User[]               @relation("UserFollows")
-  following             User[]               @relation("UserFollows")
-  createdAt             DateTime             @default(now())
+  followedBy            User[]                 @relation("UserFollows")
+  following             User[]                 @relation("UserFollows")
+  createdAt             DateTime               @default(now())
   apiKeys               ApiKey[]
   comments              PostComment[]
   accounts              Account[]
@@ -71,10 +72,10 @@ model User {
   post                  Post[]
   commentReactions      CommentReaction[]
   postReactions         PostReaction[]
-  sendNotificationEmail Boolean              @default(true)
-  sendNotificationPhone Boolean              @default(false)
+  sendNotificationEmail Boolean                @default(true)
+  sendNotificationPhone Boolean                @default(false)
   notifications         UserNotifications[]
-  sentNotifications     UserNotifications[]  @relation("UserNotificationsFromUser")
+  sentNotifications     UserNotifications[]    @relation("UserNotificationsFromUser")
 
   @@unique([id, name, image])
   @@unique([id, name, username, image])
@@ -273,6 +274,16 @@ model UserNotifications {
   fromUser   User?    @relation("UserNotificationsFromUser", fields: [fromUserId], references: [id])
 
   @@schema("users")
+}
+
+model EmailVerificationCode {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  key       String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@schema("verification")
 }
 
 model TagsRanking {

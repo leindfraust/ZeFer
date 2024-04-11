@@ -71,9 +71,10 @@ export default function ProfileSettingsComponent({
         if (!initialVerificationCodeSent) setInitialVerificationCodeSent(true);
         if (!isVerificationCodeSent) {
             const generateCode = await generateVerificationCode();
-            if (generateCode) {
+            if (generateCode?.code || generateCode?.userId) {
                 const params = new URLSearchParams({
-                    code: generateCode,
+                    code: generateCode?.code,
+                    userId: generateCode?.userId,
                 });
                 const response = await fetch(
                     `/api/email/send/verification?${params}`,

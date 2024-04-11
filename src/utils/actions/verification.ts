@@ -33,29 +33,32 @@ export const generateVerificationCode = async () => {
             key: createKey(),
         },
     });
-    if (code) return code.key;
+    if (code)
+        return {
+            code: code.key,
+            userId: session?.user.id,
+        };
     return null;
 };
 
-export const verifyEmail = async (code: string) => {
-    const session = await getServerSession(authConfig);
+export const verifyEmail = async (code: string, userId: string) => {
     const verify = await prisma.emailVerificationCode.findUnique({
         where: {
             key: code,
-            userId: session?.user.id,
+            userId: userId,
         },
     });
     if (verify) {
         await prisma.user.update({
             where: {
-                id: session?.user.id,
+                id: userId,
             },
             data: {
                 emailVerified: new Date(),
             },
         });
         await prisma.emailVerificationCode.delete({
-            where: { userId: session?.user.id },
+            where: { userId: userId },
         });
         return true;
     }

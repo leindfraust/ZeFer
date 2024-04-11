@@ -4,11 +4,11 @@ import { notFound } from "next/navigation";
 export default async function EmailVeritification({
     params,
 }: {
-    params: { code: string };
+    params: { code: string; userId: string };
 }) {
-    const { code } = params;
-    if (!code) notFound();
-    const verify = await verifyEmail(code);
+    const { code, userId } = params;
+    if (!code || !userId) notFound();
+    const verify = await verifyEmail(code, userId);
 
     return (
         <div className="mt-12 mb-12 mr-4 ml-4 lg:mr-28 lg:ml-28 mx-auto space-y-4">

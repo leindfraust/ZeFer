@@ -55,7 +55,7 @@ export const VerifyEmailTemplate = ({
                         target="_blank"
                         style={{ ...link, color: "#898989" }}
                     >
-                        ZeFer
+                        ZeFer{" "}
                     </Link>
                     Tell your story to the world.
                     <br />

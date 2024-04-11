@@ -1,7 +1,5 @@
 import VerifyEmailTemplate from "@/components/email/templates/verification";
 import prisma from "@/db";
-import { authConfig } from "@/utils/authConfig";
-import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
@@ -12,11 +10,12 @@ export async function POST(req: NextRequest) {
         const url = new URL(req.url);
         const baseUrl = url.origin;
         const code = url.searchParams.get("code");
-        const verificationUrl = `${baseUrl}/verify/email/${code}`;
-        const session = await getServerSession(authConfig);
+        const userId = url.searchParams.get("userId");
+        const verificationUrl = `${baseUrl}/verify/email/${code}/${userId}`;
+        if (!userId) throw new Error("No user id provided");
         const user = await prisma.user.findUnique({
             where: {
-                id: session?.user?.id,
+                id: userId,
             },
         });
         if (user?.email) {

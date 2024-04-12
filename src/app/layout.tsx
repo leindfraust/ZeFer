@@ -17,13 +17,41 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
     metadataBase:
         process.env.NODE_ENV === "production"
-            ? new URL("https://zefer.vercel.app")
+            ? new URL("https://zefer.blog")
             : new URL("http://localhost:3000"),
-    title: "ZeFer",
-    description: "Tell your story to the world.",
+    title: "ZeFer, a publishing platform for developers and creatives alike to share their content or story.",
+    applicationName: "ZeFer",
+    description:
+        "A dynamic publishing platform for developers and creatives to share their content or story to the world.",
     openGraph: {
         images: "/zefer-text-with-logo.svg",
     },
+    authors: [
+        {
+            name: "Romel Jr Zerna",
+            url: "https://linktr.ee/leindfraust",
+        },
+        {
+            name: "Mel Fatima Fernandez",
+        },
+    ],
+    keywords: [
+        "ZeFer",
+        "blog",
+        "publishing",
+        "developers",
+        "creatives",
+        "content",
+        "story",
+        "zefer",
+        "publishing platform",
+        "blog posts",
+        "posts",
+        "creator",
+        "content sharing",
+        "story sharing",
+        "content creator",
+    ],
 };
 
 export default async function RootLayout({

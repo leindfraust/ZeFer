@@ -53,7 +53,22 @@ export default function Tiptap({
     const [inputTags, setInputTags] = useState<string[]>(
         editOrDraft?.tags ?? [],
     );
-    const [tagList, setTagList] = useState<string[]>([...tags]);
+    const [tagList, setTagList] = useState<string[]>(tags);
+
+    useEffect(() => {
+        if (editOrDraft?.tags) {
+            function removeInputTags() {
+                let tagList = tags;
+                editOrDraft?.tags.forEach((tagDraft) => {
+                    const tag = tagList.filter((tag) => tag !== tagDraft);
+                    tagList = tag;
+                });
+                return tagList;
+            }
+            const newTagList = removeInputTags();
+            setTagList(newTagList);
+        }
+    }, [editOrDraft?.tags, tags]);
 
     const modal_coverImage = useRef<HTMLDialogElement>(null);
     const [modalOpenState, setModalOpenState] = useState<boolean>(false);

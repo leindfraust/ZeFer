@@ -220,6 +220,11 @@ export default async function ProfilePage({
                         )}
                     </div>
                     <div className="w-full">
+                    {posts === 0 && (
+                            <div className="flex items-center md:justify-normal justify-center font-bold text-gray-600 w-full h-full md:ml-[400px] md:text-xl text-md">
+                            <span>No post from user yet</span>
+                            </div>
+                        )}
                         <QueryWrapper>
                             <Suspense>
                                 <PostList userId={userId} />

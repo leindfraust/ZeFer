@@ -1,6 +1,6 @@
 "use client";
 
-import { CommentReaction, PostComment } from "@prisma/client";
+import { CommentReaction, Post, PostComment } from "@prisma/client";
 import CharacterCount from "@tiptap/extension-character-count";
 import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
@@ -13,7 +13,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Image from "next/image";
 import parse from "html-react-parser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComment } from "@fortawesome/free-solid-svg-icons";
+import { faComment,faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Fragment, useEffect, useState } from "react";
 import CommentBox from "./CommentBox";
 import useSocket from "@/socket";
@@ -21,6 +21,8 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import CommentReactionButton from "../../../../../components/reactions/actions/CommentReactionButton";
 import { useSession } from "next-auth/react";
+import { isCommentOwner } from "@/utils/actions/comments";
+
 
 export default function CommentContainer({
     id,
@@ -40,8 +42,10 @@ export default function CommentContainer({
 }) {
     const { data: session, status } = useSession();
     const socket = useSocket();
+    
 
     const [commentBoxDisplay, setCommentBoxDisplay] = useState<boolean>(false);
+    const [ownComment, setOwnComment] = useState<string>()
     const prose = "prose prose-sm sm:prose lg:prose-lg";
     const postCommentContent = generateHTML(content as JSONContent, [
         TaskList,
@@ -73,11 +77,17 @@ export default function CommentContainer({
             setCommentBoxDisplay(false);
             refetch();
         });
+        const getOwnerComment = async() => {
+            const userId = await isCommentOwner(session?.user.id)
+          
+            setOwnComment(userId)
+        }
+        getOwnerComment();
 
         return () => {
             socket.off("refetchReplies");
         };
-    }, [id, refetch, socket]);
+    }, [id, refetch, socket,userId]);
 
     return (
         <div className="container space-x-6">
@@ -128,6 +138,7 @@ export default function CommentContainer({
                                     }
                                 />
                             </div>
+  
                             <div className="flex items-center gap-2">
                                 <FontAwesomeIcon
                                     className="cursor-pointer"
@@ -136,7 +147,17 @@ export default function CommentContainer({
                                 />
                                 <p className="text-sm">{data?.length}</p>
                             </div>
+{ownComment === userId ? (
+
+<div className="flex items-center ml-auto px-4">
+<FontAwesomeIcon
+    className="cursor-pointer"
+    icon={faTrash}
+/>
+</div>
+) : (null)}
                         </div>
+                        
                     )}
                     <CommentBox
                         titleId={titleId}

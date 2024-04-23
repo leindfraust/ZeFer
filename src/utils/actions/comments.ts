@@ -37,3 +37,19 @@ export async function getPostReplyComments(commentId: string) {
     if (!getPostReplyComments) throw new Error("Replies not found.")
     return getPostReplyComments[0].postCommentReplies
 }
+
+export async function isCommentOwner (userId:string) {
+        const commentOwner = await prisma.postComment.findFirst({
+            where: {
+                userId: userId,
+            },
+            select:{
+                userId:true,
+            }
+        });
+    if(!commentOwner){
+        throw new Error("You have no comment for this post yet")
+    }
+   return commentOwner.userId;
+    
+}

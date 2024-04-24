@@ -1,7 +1,5 @@
 "use server"
-
 import prisma from "@/db";
-
 export async function getPostComments(titleId: string) {
     const getPost = await prisma.post.findUnique({
         where: { titleId: titleId },
@@ -52,4 +50,21 @@ export async function isCommentOwner (userId:string) {
     }
    return commentOwner.userId;
     
+}
+
+
+export async function deleteComments (id:string) { 
+    const remove = await prisma.postComment.update({
+        where: {
+            id: id,
+        },
+     data:{
+        isRemoved:true,
+     },
+     select:{
+        isRemoved:true
+     }
+     
+    });
+return remove.isRemoved;
 }

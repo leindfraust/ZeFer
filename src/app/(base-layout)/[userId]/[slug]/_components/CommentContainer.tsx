@@ -13,7 +13,11 @@ import StarterKit from "@tiptap/starter-kit";
 import Image from "next/image";
 import parse from "html-react-parser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComment, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+    faComment,
+    faTrash,
+    faUserSlash,
+} from "@fortawesome/free-solid-svg-icons";
 import { Fragment, useEffect, useState, useRef } from "react";
 import CommentBox from "./CommentBox";
 import useSocket from "@/socket";
@@ -36,7 +40,7 @@ export default function CommentContainer({
     titleId,
     title,
     reactions,
-    isRemoved
+    isRemoved,
 }: PostComment & {
     titleId: string;
     title: string;
@@ -48,7 +52,7 @@ export default function CommentContainer({
     const [isCommentDelete, setCommentDelete] = useState<boolean>(false);
     const modalDeleteRef = useRef<HTMLDialogElement>(null);
     const [ownComment, setOwnComment] = useState<string>();
-    const prose = 'prose prose-sm sm:prose lg:prose-lg';
+    const prose = "prose prose-sm sm:prose lg:prose-lg";
     const postCommentContent = generateHTML(content as JSONContent, [
         TaskList,
         TaskItem,
@@ -98,20 +102,29 @@ export default function CommentContainer({
     return (
         <div className="container space-x-6">
             <div className="flex gap-2 items-start">
-                    <div className="avatar">
-                        <div className="rounded-full prose-img:w-full !overflow-visible">
-                            <Link href={`/${userUsername ?? userId}`}>
+                <div className="avatar">
+                    <div className="rounded-full prose-img:w-full !overflow-visible">
+                        <Link href={`/${userUsername ?? userId}`}>
+                            {isCommentDelete || isRemoved ? (
+                                <FontAwesomeIcon
+                                    icon={faUserSlash}
+                                    className="rounded-full"
+                                    width={40}
+                                    height={40}
+                                />
+                            ) : (
                                 <Image
-                                    src={isCommentDelete || isRemoved ? "" : userImage}
+                                    src={userImage}
                                     alt={userName}
                                     className="rounded-full"
                                     width={40}
                                     height={40}
                                 />
-                            </Link>
-                        </div>
+                            )}
+                        </Link>
                     </div>
-               
+                </div>
+
                 <div className="container">
                     <div className="shadow-md rounded-box border-solid border-2 focus-within:border-slate-500 p-4 mb-4">
                         <div className={prose}>
@@ -138,46 +151,46 @@ export default function CommentContainer({
                             )}
                         </div>
                     </div>
-                    {commentBoxDisplay || isCommentDelete || isRemoved ? (
-                    null
-                    ) : (
+                    {commentBoxDisplay ||
+                    isCommentDelete ||
+                    isRemoved ? null : (
                         <div className="flex justify-start gap-4 mt-4">
-                        <div className="flex items-center gap-2">
-                            <CommentReactionButton
-                                id={id}
-                                userId={userId}
-                                session={session}
-                                initialReactionCount={
-                                    reactions?.length ?? 0
-                                }
-                                isLoggedIn={
-                                    session && status === "authenticated"
-                                        ? true
-                                        : false
-                                }
-                            />
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                            <FontAwesomeIcon
-                                className="cursor-pointer"
-                                icon={faComment}
-                                onClick={() => setCommentBoxDisplay(true)}
-                            />
-                            <p className="text-sm">{data?.length}</p>
-                        </div>
-                        {ownComment === userId ? (
-                            <div className="flex items-center ml-auto px-4">
-                                <FontAwesomeIcon
-                                    className="cursor-pointer"
-                                    icon={faTrash}
-                                    onClick={() =>
-                                        modalDeleteRef.current?.show()
+                            <div className="flex items-center gap-2">
+                                <CommentReactionButton
+                                    id={id}
+                                    userId={userId}
+                                    session={session}
+                                    initialReactionCount={
+                                        reactions?.length ?? 0
+                                    }
+                                    isLoggedIn={
+                                        session && status === "authenticated"
+                                            ? true
+                                            : false
                                     }
                                 />
                             </div>
-                        ) : null}
-                    </div>
+
+                            <div className="flex items-center gap-2">
+                                <FontAwesomeIcon
+                                    className="cursor-pointer"
+                                    icon={faComment}
+                                    onClick={() => setCommentBoxDisplay(true)}
+                                />
+                                <p className="text-sm">{data?.length}</p>
+                            </div>
+                            {ownComment === userId ? (
+                                <div className="flex items-center ml-auto px-4">
+                                    <FontAwesomeIcon
+                                        className="cursor-pointer"
+                                        icon={faTrash}
+                                        onClick={() =>
+                                            modalDeleteRef.current?.show()
+                                        }
+                                    />
+                                </div>
+                            ) : null}
+                        </div>
                     )}
                     <Modal ref={modalDeleteRef}>
                         <div className="flex flex-col space-y-4">

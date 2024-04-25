@@ -222,7 +222,7 @@ model PostComment {
   reactions          CommentReaction[]
   user               User?             @relation(fields: [userId, userName, userUsername, userImage], references: [id, name, username, image], onDelete: Cascade)
   post               Post              @relation(fields: [postId], references: [id], onDelete: Cascade)
-
+  isRemoved           Boolean         @default(false)
   @@schema("posts")
 }
 

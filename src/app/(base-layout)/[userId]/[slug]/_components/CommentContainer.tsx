@@ -41,6 +41,7 @@ export default function CommentContainer({
     title,
     reactions,
     isRemoved,
+    postId
 }: PostComment & {
     titleId: string;
     title: string;
@@ -52,6 +53,7 @@ export default function CommentContainer({
     const [isCommentDelete, setCommentDelete] = useState<boolean>(false);
     const modalDeleteRef = useRef<HTMLDialogElement>(null);
     const [ownComment, setOwnComment] = useState<string>();
+    const [ownPost, setOwnPost] = useState<string>()
     const prose = "prose prose-sm sm:prose lg:prose-lg";
     const postCommentContent = generateHTML(content as JSONContent, [
         TaskList,
@@ -84,9 +86,9 @@ export default function CommentContainer({
             refetch();
         });
         const getOwnerComment = async () => {
-            const userId = await isCommentOwner(session?.user.id);
-
-            setOwnComment(userId);
+            const {commentOwner, postOwner} = await isCommentOwner(session?.user.id, titleId);
+            setOwnComment(commentOwner);
+            setOwnPost(postOwner)
         };
         getOwnerComment();
 
@@ -99,6 +101,8 @@ export default function CommentContainer({
         const data = await deleteComments(id);
         setCommentDelete(data);
     };
+    console.log(ownComment, 'OWN COMMENT ID')
+    console.log(titleId, "titile id")
     return (
         <div className="container space-x-6">
             <div className="flex gap-2 items-start">
@@ -179,7 +183,7 @@ export default function CommentContainer({
                                 />
                                 <p className="text-sm">{data?.length}</p>
                             </div>
-                            {ownComment === userId ? (
+                            {ownComment === userId || ownPost ? (
                                 <div className="flex items-center ml-auto px-4">
                                     <FontAwesomeIcon
                                         className="cursor-pointer"

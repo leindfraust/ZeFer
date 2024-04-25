@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     description:
         "A dynamic publishing platform for developers and creatives to share their content or story to the world.",
     openGraph: {
-        images: "/zefer-text-with-logo.svg",
+        images: "/zefer-bg.svg",
     },
     authors: [
         {

@@ -13,8 +13,12 @@ import StarterKit from "@tiptap/starter-kit";
 import Image from "next/image";
 import parse from "html-react-parser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faComment,faTrash } from "@fortawesome/free-solid-svg-icons";
-import { Fragment, useEffect, useState } from "react";
+import {
+    faComment,
+    faTrash,
+    faUserSlash,
+} from "@fortawesome/free-solid-svg-icons";
+import { Fragment, useEffect, useState, useRef } from "react";
 import CommentBox from "./CommentBox";
 import useSocket from "@/socket";
 import Link from "next/link";
@@ -22,8 +26,9 @@ import { useQuery } from "@tanstack/react-query";
 import CommentReactionButton from "../../../../../components/reactions/actions/CommentReactionButton";
 import { useSession } from "next-auth/react";
 import { isCommentOwner } from "@/utils/actions/comments";
-
-
+import { deleteComments } from "@/utils/actions/comments";
+import { revalidatePath } from "next/cache";
+import Modal from "@/components/ui/Modal";
 export default function CommentContainer({
     id,
     userId,
@@ -35,6 +40,8 @@ export default function CommentContainer({
     titleId,
     title,
     reactions,
+    isRemoved,
+    postId
 }: PostComment & {
     titleId: string;
     title: string;
@@ -42,10 +49,11 @@ export default function CommentContainer({
 }) {
     const { data: session, status } = useSession();
     const socket = useSocket();
-    
-
     const [commentBoxDisplay, setCommentBoxDisplay] = useState<boolean>(false);
-    const [ownComment, setOwnComment] = useState<string>()
+    const [isCommentDelete, setCommentDelete] = useState<boolean>(false);
+    const modalDeleteRef = useRef<HTMLDialogElement>(null);
+    const [ownComment, setOwnComment] = useState<string>();
+    const [ownPost, setOwnPost] = useState<string>()
     const prose = "prose prose-sm sm:prose lg:prose-lg";
     const postCommentContent = generateHTML(content as JSONContent, [
         TaskList,
@@ -77,51 +85,79 @@ export default function CommentContainer({
             setCommentBoxDisplay(false);
             refetch();
         });
-        const getOwnerComment = async() => {
-            const userId = await isCommentOwner(session?.user.id)
-          
-            setOwnComment(userId)
-        }
+        const getOwnerComment = async () => {
+            const {commentOwner, postOwner} = await isCommentOwner(session?.user.id, titleId);
+            setOwnComment(commentOwner);
+            setOwnPost(postOwner)
+        };
         getOwnerComment();
 
         return () => {
             socket.off("refetchReplies");
         };
-    }, [id, refetch, socket,userId]);
+    }, [id, refetch, socket, session?.user.id]);
 
+    const deleteCommentBtn = async (id: string) => {
+        const data = await deleteComments(id);
+        setCommentDelete(data);
+    };
+    console.log(ownComment, 'OWN COMMENT ID')
+    console.log(titleId, "titile id")
     return (
         <div className="container space-x-6">
             <div className="flex gap-2 items-start">
                 <div className="avatar">
                     <div className="rounded-full prose-img:w-full !overflow-visible">
                         <Link href={`/${userUsername ?? userId}`}>
-                            <Image
-                                src={userImage}
-                                alt={userName}
-                                className="rounded-full"
-                                width={40}
-                                height={40}
-                            />
+                            {isCommentDelete || isRemoved ? (
+                                <FontAwesomeIcon
+                                    icon={faUserSlash}
+                                    className="rounded-full"
+                                    width={40}
+                                    height={40}
+                                />
+                            ) : (
+                                <Image
+                                    src={userImage}
+                                    alt={userName}
+                                    className="rounded-full"
+                                    width={40}
+                                    height={40}
+                                />
+                            )}
                         </Link>
                     </div>
                 </div>
+
                 <div className="container">
-                    <div className="shadow-md rounded-box border-solid border-2 focus-within:border-slate-500 p-4">
+                    <div className="shadow-md rounded-box border-solid border-2 focus-within:border-slate-500 p-4 mb-4">
                         <div className={prose}>
-                            <div className="flex items-center gap-2 mb-4">
-                                <Link href={`/${userUsername ?? userId}`}>
-                                    <p className="text-sm font-bold">
-                                        {userName}
-                                    </p>
-                                </Link>
-                                <p className="text-xs">
-                                    {new Date(createdAt).toDateString()}
-                                </p>
-                            </div>
-                            {parse(`${postCommentContent}`)}
+                            {isCommentDelete || isRemoved ? (
+                                <div className="flex items-center gap-4">
+                                    <p>Comment deleted by user</p>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <Link
+                                            href={`/${userUsername ?? userId}`}
+                                        >
+                                            <p className="text-sm font-bold">
+                                                {userName}
+                                            </p>
+                                        </Link>
+                                        <p className="text-xs">
+                                            {new Date(createdAt).toDateString()}
+                                        </p>
+                                    </div>
+                                    {parse(`${postCommentContent}`)}
+                                </>
+                            )}
                         </div>
                     </div>
-                    {!commentBoxDisplay && (
+                    {commentBoxDisplay ||
+                    isCommentDelete ||
+                    isRemoved ? null : (
                         <div className="flex justify-start gap-4 mt-4">
                             <div className="flex items-center gap-2">
                                 <CommentReactionButton
@@ -138,7 +174,7 @@ export default function CommentContainer({
                                     }
                                 />
                             </div>
-  
+
                             <div className="flex items-center gap-2">
                                 <FontAwesomeIcon
                                     className="cursor-pointer"
@@ -147,18 +183,50 @@ export default function CommentContainer({
                                 />
                                 <p className="text-sm">{data?.length}</p>
                             </div>
-{ownComment === userId ? (
-
-<div className="flex items-center ml-auto px-4">
-<FontAwesomeIcon
-    className="cursor-pointer"
-    icon={faTrash}
-/>
-</div>
-) : (null)}
+                            {ownComment === userId || ownPost ? (
+                                <div className="flex items-center ml-auto px-4">
+                                    <FontAwesomeIcon
+                                        className="cursor-pointer"
+                                        icon={faTrash}
+                                        onClick={() =>
+                                            modalDeleteRef.current?.show()
+                                        }
+                                    />
+                                </div>
+                            ) : null}
                         </div>
-                        
                     )}
+                    <Modal ref={modalDeleteRef}>
+                        <div className="flex flex-col space-y-4">
+                            <h1 className="font-bold text-lg tracking-tighter">
+                                Delete Comment
+                            </h1>
+                            <p className="text-md">
+                                Are you sure you want to delete this comment?
+                                This action cannot be undone.
+                            </p>
+                            <div className="modal-action">
+                                <form method="dialog">
+                                    <div className="flex justify-center gap-4">
+                                        <button
+                                            className="btn btn-error"
+                                            onClick={() => deleteCommentBtn(id)}
+                                        >
+                                            Delete
+                                        </button>
+                                        <button
+                                            className="btn"
+                                            onClick={() => {
+                                                modalDeleteRef.current?.close();
+                                            }}
+                                        >
+                                            Close
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </Modal>
                     <CommentBox
                         titleId={titleId}
                         commentReplyPostId={id}

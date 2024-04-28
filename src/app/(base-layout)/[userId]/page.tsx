@@ -8,7 +8,7 @@ import {
     faPeopleGroup,
 } from "@fortawesome/free-solid-svg-icons";
 import prisma from "@/db";
-import type { UserSocials } from "@/types/user";
+import type { FormSocials } from "@/types/user";
 import { Fragment, Suspense } from "react";
 import Link from "next/link";
 import { Metadata } from "next";
@@ -38,7 +38,7 @@ export async function generateMetadata({
         },
     });
     if (!user) return notFound();
-    const websiteUrl = (user?.socials as UserSocials[]).find(
+    const websiteUrl = (user?.socials as FormSocials[]).find(
         (social) => social.name === "Personal Website",
     )?.url;
 
@@ -183,13 +183,13 @@ export default async function ProfilePage({
                                 <p className="text-lg">{user.occupation}</p>
                             </div>
                         )}
-                        {(user.socials as UserSocials[]).find(
+                        {(user.socials as FormSocials[]).find(
                             (social) => social?.url !== "",
                         ) && (
                             <>
                                 <p className="text-xl">Social Links: </p>
                                 <ul className="list-disc ml-12">
-                                    {(user.socials as UserSocials[]).map(
+                                    {(user.socials as FormSocials[]).map(
                                         (social) => (
                                             <Fragment key={social.name}>
                                                 {social.url && (
@@ -220,9 +220,9 @@ export default async function ProfilePage({
                         )}
                     </div>
                     <div className="w-full">
-                    {posts === 0 && (
+                        {posts === 0 && (
                             <div className="flex items-center md:justify-normal justify-center font-bold text-gray-600 w-full h-full md:ml-[400px] md:text-xl text-md">
-                            <span>No post from user yet</span>
+                                <span>No post from user yet</span>
                             </div>
                         )}
                         <QueryWrapper>

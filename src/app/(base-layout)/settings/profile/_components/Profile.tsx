@@ -1,6 +1,6 @@
 "use client";
 
-import { UserSocials } from "@/types/user";
+import { FormSocials } from "@/types/user";
 import { useRouter } from "next/navigation";
 import { FormContext } from "@/types/formContext";
 import { FormProvider, RegisterOptions, useForm } from "react-hook-form";
@@ -32,7 +32,7 @@ export default function ProfileSettingsComponent({
     image,
 }: User) {
     const router = useRouter();
-    const socialData = [...socials] as UserSocials[];
+    const socialData = [...socials] as FormSocials[];
     const uploadImgProps = {
         id,
         image,
@@ -218,7 +218,7 @@ export default function ProfileSettingsComponent({
     };
 
     const updateDetails = form.handleSubmit(async (data) => {
-        let socials: UserSocials[] = [];
+        let socials: FormSocials[] = [];
         socialForms.forEach((social) =>
             socials.push({
                 name: social.name,

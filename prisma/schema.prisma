@@ -10,7 +10,7 @@ datasource db {
   provider          = "postgresql"
   url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
-  schemas           = ["users", "sessions", "posts", "tags", "apikey", "verification"]
+  schemas           = ["users", "organizations", "sessions", "posts", "tags", "apikey", "verification"]
 }
 
 model Account {
@@ -45,7 +45,7 @@ model Session {
 
 model User {
   id                    String                 @id @default(cuid())
-  username              String?                @unique
+  username              String                 @unique
   name                  String?
   bio                   String?
   address               String?
@@ -60,7 +60,7 @@ model User {
   pinned                String? //refer to postId only
   interests             String[]
   series                PostSeries[]
-  socials               Json[] //refer to UserSocials type in types/user.ts
+  socials               Json[] //refer to FormSocials type in types/user.ts
   followedBy            User[]                 @relation("UserFollows")
   following             User[]                 @relation("UserFollows")
   createdAt             DateTime               @default(now())
@@ -76,6 +76,9 @@ model User {
   sendNotificationPhone Boolean                @default(false)
   notifications         UserNotifications[]
   sentNotifications     UserNotifications[]    @relation("UserNotificationsFromUser")
+  organizations         Organization[]
+  ownedOrganizations    Organization[]         @relation("UserOwnsOrganizations")
+  adminInOrganizations  Organization[]         @relation("UserAdminOfOrganizations")
 
   @@unique([id, name, image])
   @@unique([id, name, username, image])
@@ -222,7 +225,8 @@ model PostComment {
   reactions          CommentReaction[]
   user               User?             @relation(fields: [userId, userName, userUsername, userImage], references: [id, name, username, image], onDelete: Cascade)
   post               Post              @relation(fields: [postId], references: [id], onDelete: Cascade)
-  isRemoved           Boolean         @default(false)
+  isRemoved          Boolean           @default(false)
+
   @@schema("posts")
 }
 
@@ -292,4 +296,19 @@ model TagsRanking {
   createdAt DateTime @default(now())
 
   @@schema("tags")
+}
+
+model Organization {
+  id       String  @id @default(cuid())
+  name     String
+  image    String
+  username String  @unique
+  socials  Json
+  summary  String?
+  ownerId  String
+  owner    User    @relation("UserOwnsOrganizations", fields: [ownerId], references: [id])
+  admins   User[]  @relation("UserAdminOfOrganizations")
+  members  User[]
+
+  @@schema("organizations")
 }

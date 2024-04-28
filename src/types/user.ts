@@ -1,6 +1,6 @@
-type UserSocials = {
-    name: string,
-    url: string
-}
+type FormSocials = {
+    name: string;
+    url: string;
+};
 
-export type { UserSocials }
+export type { FormSocials };

@@ -2,7 +2,6 @@ import Tiptap from "@/components/wysiwyg/Tiptap";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/utils/authConfig";
 import prisma from "@/db";
-import { PostDraft } from "@prisma/client";
 
 export default async function CreatePost() {
     const session = await getServerSession(authConfig);
@@ -20,7 +19,8 @@ export default async function CreatePost() {
         <Tiptap
             userId={user?.id}
             username={user?.username}
-            postDraft={(user?.draft as PostDraft) ?? ""}
+            editOrDraft={user?.draft! ?? undefined}
+            mode={user?.draft ? "draft" : undefined}
             tags={[...(await (await tags.GET()).json())]}
         />
     );

@@ -37,12 +37,15 @@ export default function Input({
                         onChange: onChange,
                         disabled: disabled,
                     })}
-                    className="input input-bordered w-full"
+                    className={`${
+                        type === "file" ? "file-input" : "input"
+                    } input-bordered w-full`}
                 />
             ) : (
                 <>
                     <textarea
                         className=" textarea textarea-bordered w-full"
+                        placeholder={placeholder}
                         {...register(name, {
                             value: value,
                             maxLength: maxLength?.value,

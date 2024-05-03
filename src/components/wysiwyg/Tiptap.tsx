@@ -497,7 +497,7 @@ export default function Tiptap({
                 });
             } else {
                 uploadPost.json().then((response) => {
-                    router.push(`/${username ?? userId}/${response.data}`);
+                    router.push(`/${username ?? userId}/${response.data}${publish ? "" : '/edit'}`);
                 });
             }
         }

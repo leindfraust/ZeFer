@@ -37,7 +37,6 @@ export default async function EditPost({ params }: { params: { userId: string, s
     const post = await prisma.post.findFirst({
         where: {
             titleId: slug,
-            published: true,
             OR: [
                 {
                     userId: userId,

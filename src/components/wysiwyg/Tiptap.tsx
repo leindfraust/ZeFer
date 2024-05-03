@@ -19,7 +19,6 @@ import { StatusResponse } from "@/types/status";
 import StautsNotif from "../StatusNotif";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { PostEdit } from "@/types/post";
 import { PostDraft } from "@prisma/client";
 import { cn } from "@/utils/cn";
 import { validateTag } from "@/utils/actions/tag";
@@ -31,16 +30,15 @@ export default function Tiptap({
     userId,
     username,
     tags,
-    postEdit,
-    postDraft,
+    editOrDraft,
+    mode,
 }: {
     userId?: string;
     username?: string | null | undefined;
     tags: string[];
-    postEdit?: PostEdit;
-    postDraft?: PostDraft;
+    editOrDraft?: PostDraft;
+    mode?: "edit" | "draft";
 }) {
-    const editOrDraft = postEdit ?? postDraft;
     const router = useRouter();
     const [postError, setPostError] = useState<StatusResponse>();
     const [coverImage, setCoverImage] = useState<string>(
@@ -54,6 +52,8 @@ export default function Tiptap({
         editOrDraft?.tags ?? [],
     );
     const [tagList, setTagList] = useState<string[]>(tags);
+    const [isAutoSavingDraft, setIsAutoSavingDraft] = useState<boolean>(false);
+    const [isSavingDraft, setIsSavingDraft] = useState<boolean>(false);
 
     useEffect(() => {
         if (editOrDraft?.tags) {
@@ -264,6 +264,7 @@ export default function Tiptap({
 
     useEffect(() => {
         const savePostDraft = async () => {
+            setIsAutoSavingDraft(true);
             const formData = new FormData();
             const json = editor?.getJSON();
             const editorImages = json?.content?.filter(
@@ -291,7 +292,7 @@ export default function Tiptap({
             if (coverImageFile) {
                 formData.append("coverImage", coverImageFile as File);
             } else {
-                const draftImg = await fetch(postDraft?.coverImage as string)
+                const draftImg = await fetch(editOrDraft?.coverImage as string)
                     .then((file) => file.blob())
                     .then(
                         (blob) =>
@@ -323,10 +324,11 @@ export default function Tiptap({
                 method: "POST",
                 body: formData,
             });
+            setIsAutoSavingDraft(false);
             postDraftTimeout.current = undefined;
         };
         const editorsUpdating = () => {
-            if (!postEdit && !publishState) {
+            if (mode !== "edit" && !publishState) {
                 if (
                     editorTitle?.getText() ||
                     editorDescription?.getText() ||
@@ -370,12 +372,12 @@ export default function Tiptap({
         }
     }, [
         coverImageFile,
+        editOrDraft?.coverImage,
         editor,
         editorDescription,
         editorTitle,
         inputTags,
-        postDraft?.coverImage,
-        postEdit,
+        mode,
         publishState,
     ]);
 
@@ -430,6 +432,8 @@ export default function Tiptap({
     }
 
     async function uploadPost(publish: boolean) {
+        if (isAutoSavingDraft) return;
+        if (!publish) setIsSavingDraft(true);
         setPublishState(true);
         const json = editor?.getJSON();
         const editorImages = json?.content?.filter(
@@ -469,8 +473,8 @@ export default function Tiptap({
                 formData.append(`image_${index}`, image);
             }
         }
-        if (postEdit?.postId) {
-            formData.append("postId", postEdit.postId);
+        if (mode === "edit") {
+            formData.append("postId", editOrDraft?.id!);
         }
         formData.append("username", username ? username : "");
         formData.append("title", editorTitle?.getText() as string);
@@ -479,7 +483,7 @@ export default function Tiptap({
         formData.append("series", "test");
         formData.append("tags", JSON.stringify(inputTags));
         formData.append("readPerMinute", readPerMinute as unknown as string);
-        formData.append("published", publish as unknown as string);
+        formData.append("published", publish ? "true" : "false");
 
         const passedRequirements = await checkPostRequirements();
         if (passedRequirements) {
@@ -489,6 +493,7 @@ export default function Tiptap({
             });
             if (!uploadPost.ok) {
                 setPublishState(false);
+                if (!publish) setIsSavingDraft(false);
                 setPostError({
                     ok: uploadPost.ok,
                     status: uploadPost.status,
@@ -496,9 +501,16 @@ export default function Tiptap({
                     message: "Something went wrong, please try again later.",
                 });
             } else {
-                uploadPost.json().then((response) => {
-                    router.push(`/${username ?? userId}/${response.data}${publish ? "" : '/edit'}`);
-                });
+                const result = await uploadPost.json();
+                if (result) {
+                    setPublishState(false);
+                    if (!publish) setIsSavingDraft(false);
+                    router.push(
+                        publish
+                            ? `/${username ?? userId}/${result.data}`
+                            : `/${username ?? userId}/${result.data}/edit`,
+                    );
+                }
             }
         }
     }
@@ -575,22 +587,31 @@ export default function Tiptap({
                         </button>
                         <button
                             className="btn btn-outline"
+                            disabled={
+                                publishState ||
+                                isAutoSavingDraft ||
+                                isSavingDraft
+                            }
                             onClick={() => uploadPost(false)}
                         >
-                            Save as Draft
+                            {isSavingDraft && (
+                                <span className="loading loading-spinner"></span>
+                            )}
+                            {isSavingDraft ? "Saving..." : "Save as Draft"}
                         </button>
                         <button
-                            className={`btn btn-success btn-outline ${
-                                publishState ? "btn-disabled" : ""
-                            }`}
+                            className="btn btn-success btn-outline"
+                            disabled={publishState || isAutoSavingDraft}
                             onClick={() => uploadPost(true)}
                         >
                             {publishState
-                                ? postEdit
+                                ? mode === "edit"
                                     ? "Updating"
                                     : "Publishing..."
-                                : postEdit
+                                : mode === "edit"
                                 ? "Update"
+                                : isAutoSavingDraft
+                                ? "Saving..."
                                 : "Publish"}
                         </button>
                     </div>
@@ -638,7 +659,7 @@ export default function Tiptap({
                     <EditorContent editor={editorTitle} />
                     <EditorContent editor={editorDescription} />
                     <div className={cn("!mb-2", prose)}>
-                        <div className="dropdown container z-50">
+                        <div className="dropdown container">
                             <input
                                 type="text"
                                 placeholder="Add tags"
@@ -655,7 +676,7 @@ export default function Tiptap({
                             />
                             <ul
                                 tabIndex={0}
-                                className="dropdown-content menu max-h-[24rem] overflow-auto shadow bg-base-200 rounded-box"
+                                className="dropdown-content menu max-h-[24rem] overflow-auto shadow bg-base-200 rounded-box z-50"
                             >
                                 <span className="flex flex-wrap">
                                     {tagList.length !== 0 &&
@@ -731,7 +752,7 @@ export default function Tiptap({
                     <MenuBar
                         editor={editor}
                         className={cn(
-                            `!mt-2 ${postEdit && "!top-16"} ${
+                            `!mt-2 ${mode === "edit" && "!top-16"} ${
                                 modalOpenState && "!z-0"
                             }`,
                             prose,

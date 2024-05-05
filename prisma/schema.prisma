@@ -301,7 +301,7 @@ model TagsRanking {
 
 model Organization {
   id        String   @id @default(cuid())
-  secret    String
+  secret    String   @unique
   keys      ApiKey[]
   name      String
   image     String

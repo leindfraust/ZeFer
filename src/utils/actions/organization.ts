@@ -27,6 +27,52 @@ export async function rerollSecretKey(organizationId: string) {
     return apiKey;
 }
 
+export async function joinOrganizationWithSK(secret: string) {
+    const session = await getServerSession(authConfig);
+    const checkIfOrganizationjExists = await prisma.organization.findUnique({
+        where: { secret },
+    });
+    if (!checkIfOrganizationjExists) {
+        throw new Error("Organization does not exist.");
+    }
+    const checkIfAlreadyJoined = await prisma.user.findUnique({
+        where: {
+            id: session?.user.id,
+            OR: [
+                {
+                    ownedOrganizations: {
+                        some: {
+                            secret,
+                        },
+                    },
+                },
+                {
+                    organizations: {
+                        some: {
+                            secret,
+                        },
+                    },
+                },
+            ],
+        },
+    });
+    if (checkIfAlreadyJoined)
+        throw new Error("You are already a member of this organization.");
+    const joinOrganization = await prisma.organization.update({
+        where: {
+            secret,
+        },
+        data: {
+            members: {
+                connect: {
+                    id: session?.user.id,
+                },
+            },
+        },
+    });
+    return joinOrganization;
+}
+
 export async function addAdmin(organizationId: string, adminId: string) {
     const session = await getServerSession(authConfig);
     const organization = await prisma.organization.findUnique({

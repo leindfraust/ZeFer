@@ -10,6 +10,7 @@ import type { Organization } from "@prisma/client";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { joinOrganizationWithSK } from "@/utils/actions/organization";
 
 export default function OrganizationManageCreateContainer({
     id,
@@ -22,7 +23,8 @@ export default function OrganizationManageCreateContainer({
 }: Partial<Organization> & { setSelectedOrganization: Function }) {
     const router = useRouter();
     const socialData = [...(socials ?? [])] as FormSocials[];
-    const form = useForm();
+    const joinOrgForm = useForm();
+    const createOrgForm = useForm();
     const [imgFile, setImgFile] = useState<File | string>();
 
     function handleImage(event: React.ChangeEvent<HTMLInputElement>) {
@@ -30,7 +32,17 @@ export default function OrganizationManageCreateContainer({
         setImgFile(event.target.files[0]);
     }
 
-    const handleSubmit = form.handleSubmit(async (data) => {
+    const joinOrganization = joinOrgForm.handleSubmit(async (data) => {
+        const secret = data["Secret key"];
+        try {
+            const join = await joinOrganizationWithSK(secret);
+            if (join) setSelectedOrganization(join);
+        } catch (error: any) {
+            toast.error(error.message);
+        }
+    });
+
+    const createOrganization = createOrgForm.handleSubmit(async (data) => {
         const image = data["Profile Image"][0];
         let socials: FormSocials[] = [];
         socialForms.forEach((social) =>
@@ -78,14 +90,23 @@ export default function OrganizationManageCreateContainer({
             errorFields.forEach((field: string) => {
                 const fieldError =
                     field.charAt(0).toUpperCase() + field.slice(1);
-                form.setError(fieldError, {
+                createOrgForm.setError(fieldError, {
                     type: "uniqueConstraint",
                     message: `${fieldError} already registered.`,
                 });
-                form.setFocus(fieldError);
+                createOrgForm.setFocus(fieldError);
             });
         }
     });
+    const sk_validation: FormContext = {
+        name: "Secret key",
+        type: "text",
+        placeholder: "Organization's secret key",
+        required: {
+            value: true,
+            message: "This field is required",
+        },
+    };
 
     const name_validation: FormContext = {
         name: "Organization name",
@@ -168,7 +189,17 @@ export default function OrganizationManageCreateContainer({
     ];
     return (
         <>
-            <FormProvider {...form}>
+            <FormProvider {...joinOrgForm}>
+                <div className="shadow-lg p-12 rounded-md space-y-2">
+                    <h3 className="text-2xl font-bold">Join an Organization</h3>
+                    <Input {...sk_validation} />
+                </div>
+            </FormProvider>
+            <button className="btn btn-info w-full" onClick={joinOrganization}>
+                Join Organization
+            </button>
+            <div className="divider divider-horizontal"></div>
+            <FormProvider {...createOrgForm}>
                 <div className="shadow-lg p-12 rounded-md space-y-2">
                     <h3 className="text-2xl font-bold">
                         {id ? "Update Organization" : "Create an Organization"}
@@ -207,7 +238,10 @@ export default function OrganizationManageCreateContainer({
                         ))}
                 </div>
             </FormProvider>
-            <button className="btn btn-info w-full" onClick={handleSubmit}>
+            <button
+                className="btn btn-info w-full"
+                onClick={createOrganization}
+            >
                 {id ? "Update Organization" : "Create Organization"}
             </button>
         </>

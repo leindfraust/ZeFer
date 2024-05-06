@@ -33,7 +33,10 @@ export async function joinOrganizationWithSK(secret: string) {
         where: { secret },
     });
     if (!checkIfOrganizationjExists) {
-        throw new Error("Organization does not exist.");
+        return {
+            status: false,
+            message: "Organization does not exist.",
+        };
     }
     const checkIfAlreadyJoined = await prisma.user.findUnique({
         where: {
@@ -57,7 +60,10 @@ export async function joinOrganizationWithSK(secret: string) {
         },
     });
     if (checkIfAlreadyJoined)
-        throw new Error("You are already a member of this organization.");
+        return {
+            status: false,
+            message: "You are already a member of this organization.",
+        };
     const joinOrganization = await prisma.organization.update({
         where: {
             secret,
@@ -69,8 +75,17 @@ export async function joinOrganizationWithSK(secret: string) {
                 },
             },
         },
+        include: {
+            owner: true,
+            admins: true,
+            members: true,
+        },
     });
-    return joinOrganization;
+    return {
+        status: true,
+        message: "You have successfully joined the organization.",
+        organization: joinOrganization,
+    };
 }
 
 export async function addAdmin(organizationId: string, adminId: string) {

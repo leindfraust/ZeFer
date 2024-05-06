@@ -5,8 +5,8 @@ import { RegisterOptions, useForm } from "react-hook-form";
 import { FormProvider } from "react-hook-form";
 import Input from "@/components/ui/Input";
 import { FormSocials } from "@/types/user";
-import { Fragment, useState } from "react";
-import type { Organization } from "@prisma/client";
+import React, { Fragment, useState } from "react";
+import type { Organization, User } from "@prisma/client";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -20,7 +20,18 @@ export default function OrganizationManageCreateContainer({
     socials,
     summary,
     setSelectedOrganization,
-}: Partial<Organization> & { setSelectedOrganization: Function }) {
+}: Partial<Organization> & {
+    setSelectedOrganization: React.Dispatch<
+        React.SetStateAction<
+            | (Organization & {
+                  admins: User[];
+                  members: User[];
+                  owner: User;
+              })
+            | undefined
+        >
+    >;
+}) {
     const router = useRouter();
     const socialData = [...(socials ?? [])] as FormSocials[];
     const joinOrgForm = useForm();
@@ -34,11 +45,11 @@ export default function OrganizationManageCreateContainer({
 
     const joinOrganization = joinOrgForm.handleSubmit(async (data) => {
         const secret = data["Secret key"];
-        try {
-            const join = await joinOrganizationWithSK(secret);
-            if (join) setSelectedOrganization(join);
-        } catch (error: any) {
-            toast.error(error.message);
+        const join = await joinOrganizationWithSK(secret);
+        if (join.status) {
+            setSelectedOrganization(join.organization!);
+        } else {
+            toast.error(join.message);
         }
     });
 

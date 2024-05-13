@@ -189,36 +189,27 @@ export default function Tiptap({
 
     useEffect(() => {
         if (insertContentState) {
-            const currentPos = editor?.state.selection.anchor;
-            editor?.state.doc.nodesBetween(
-                Number(currentPos),
-                Number(currentPos),
-                (node) => {
-                    const nodeJson = node.toJSON();
-                    if (!nodeJson?.content || !nodeJson?.content[0].text)
-                        return;
-                    setInsertContentState(false);
-                    if (
-                        !insertContentTimeout.current ||
-                        insertContentTimeout.current === undefined
-                    ) {
-                        insertContentTimeout.current = setTimeout(
-                            async () =>
-                                await insertContent(nodeJson?.content[0].text),
-                            1000,
-                        );
-                    } else {
-                        clearTimeout(insertContentTimeout.current);
-                        insertContentTimeout.current = setTimeout(
-                            async () =>
-                                await insertContent(nodeJson?.content[0].text),
-                            1000,
-                        );
-                    }
-                },
-            );
+            const prompt = editor?.getText();
+            if (!prompt) return;
+            setInsertContentState(false);
+            if (
+                !insertContentTimeout.current ||
+                insertContentTimeout.current === undefined
+            ) {
+                insertContentTimeout.current = setTimeout(
+                    async () => await insertContent(prompt),
+                    1000,
+                );
+            } else {
+                clearTimeout(insertContentTimeout.current);
+                insertContentTimeout.current = setTimeout(
+                    async () => await insertContent(prompt),
+                    1000,
+                );
+            }
         }
     }, [
+        editor,
         editor?.state.doc,
         editor?.state.selection.anchor,
         insertContent,
@@ -264,6 +255,7 @@ export default function Tiptap({
 
     useEffect(() => {
         const savePostDraft = async () => {
+            if (publishState) return;
             setIsAutoSavingDraft(true);
             const formData = new FormData();
             const json = editor?.getJSON();
@@ -461,7 +453,19 @@ export default function Tiptap({
             editor?.storage.characterCount.words() / 238,
         );
         const formData = new FormData();
-        formData.append("coverImage", coverImageFile as File);
+        if (coverImageFile) {
+            formData.append("coverImage", coverImageFile as File);
+        } else {
+            const draftImg = await fetch(editOrDraft?.coverImage as string)
+                .then((file) => file.blob())
+                .then(
+                    (blob) =>
+                        new File([blob], "img_cover", {
+                            type: "image/png",
+                        }),
+                );
+            if (draftImg) formData.append("coverImage", draftImg);
+        }
         if ((await images()).length !== 0) {
             // append a form data of image_total given the total length of the array
             formData.append(
@@ -503,8 +507,6 @@ export default function Tiptap({
             } else {
                 const result = await uploadPost.json();
                 if (result) {
-                    setPublishState(false);
-                    if (!publish) setIsSavingDraft(false);
                     router.push(
                         publish
                             ? `/${username ?? userId}/${result.data}`

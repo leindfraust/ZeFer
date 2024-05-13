@@ -6,6 +6,7 @@ import prisma from "@/db";
 import { JSONContent } from "@tiptap/react";
 import { Post } from "@prisma/client";
 import { getCloudinaryImage, uploadCloudinary } from "@/lib/cloudinary";
+import { revalidatePath } from "next/cache";
 //Promise<any> is a temporary fix
 
 export async function GET(req: NextRequest): Promise<any> {
@@ -311,15 +312,19 @@ export async function POST(req: NextRequest): Promise<any> {
                         coverImage: imageAddr, //always output coverImage of 1920 1080
                     },
                 });
-                if (coverImage)
+                if (coverImage) {
+                    revalidatePath("/new", "page");
                     return NextResponse.json(
                         { data: post.titleId },
                         { status: 200 },
                     ); //return a response here since coverImage is REQUIRED.
+                }
             }
         }
-        if (post)
+        if (post) {
+            revalidatePath("/new", "page");
             return NextResponse.json({ data: post.titleId }, { status: 200 });
+        }
     } catch (err) {
         console.log(err);
         return NextResponse.json({ err }, { status: 500 });

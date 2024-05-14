@@ -205,8 +205,7 @@ export async function POST(req: NextRequest): Promise<any> {
                 },
             });
         }
-        const orgId = body.get("orgId") as string
-        console.log(orgId, "ORG ID")
+        const orgId = body.get("orgId") as string;
         const post = await prisma.post.upsert({
             where: { id: (body.get("postId") as string) ?? "" },
             update: {
@@ -235,7 +234,11 @@ export async function POST(req: NextRequest): Promise<any> {
                 user: {
                     connect: { id: session?.user.id },
                 },
-                ...(orgId && { organization: { connect: { id: orgId } } }),
+                ...(orgId && {
+                    organization: {
+                        connect: { id: orgId },
+                    },
+                }),
             },
             select: {
                 id: true,

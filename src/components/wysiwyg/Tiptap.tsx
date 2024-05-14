@@ -32,14 +32,14 @@ export default function Tiptap({
     tags,
     editOrDraft,
     mode,
-    selectedOrg
+    selectedOrg,
 }: {
     userId?: string;
     username?: string | null | undefined;
     tags: string[];
     editOrDraft?: PostDraft;
     mode?: "edit" | "draft";
-    selectedOrg?:Organization | null,
+    selectedOrg?: Organization | null;
 }) {
     const router = useRouter();
     const [postError, setPostError] = useState<StatusResponse>();
@@ -314,7 +314,7 @@ export default function Tiptap({
             );
             formData.append("content", JSON.stringify(json));
             formData.append("tags", JSON.stringify(inputTags));
-            formData.append("org", JSON.stringify(selectedOrg))
+            formData.append("org", JSON.stringify(selectedOrg));
             await fetch("/api/post/draft", {
                 method: "POST",
                 body: formData,

@@ -32,21 +32,16 @@ export default function PostContainer({
         return timeDiff(createdAt);
     }, [createdAt]);
     const [orgName, setOrgName] = useState<string | undefined>();
-    useEffect(() => {
-        const fetchOrgName = async () => {
-            if (organizationId) {
-                try {
-                    const nameOrg = await getOrgName(organizationId);
-                    setOrgName(nameOrg);
-                } catch (error) {
-                    console.log(error);
-                }
-            } else {
-                return;
-            }
-        };
-        fetchOrgName();
-    }, [organizationId]);
+    const fetchOrgName = async() => {
+      if(organizationId){
+        const fetch = await getOrgName(organizationId)
+        setOrgName(fetch)
+      }
+      else{
+        return;
+      }
+    }
+    fetchOrgName();
     return (
         <div className="flex flex-wrap justify-end p-2 lg:block border-b pb-6">
             <Link

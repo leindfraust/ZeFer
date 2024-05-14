@@ -492,7 +492,7 @@ export default function Tiptap({
         formData.append("tags", JSON.stringify(inputTags));
         formData.append("readPerMinute", readPerMinute as unknown as string);
         formData.append("published", publish ? "true" : "false");
-        formData.append("orgId", JSON.stringify(selectedOrg?.id))
+        formData.append("orgId", selectedOrg?.id ?? "")
 
         const passedRequirements = await checkPostRequirements();
         if (passedRequirements) {

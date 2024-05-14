@@ -41,8 +41,8 @@ const PostTypeSelector = ({
                     selectedOrg={selectOrg.org ?? null}
                 />
             ) : (
-                <div className="flex flex-row w-full  justify-center gap-20 mt-40">
-                    <div className="card card-compact w-96 bg-base-100 shadow-xl py-5">
+                <div className="flex md:flex-row flex-col w-full  justify-center gap-20 mt-40 items-center md:items-stretch">
+                    <div className="card card-compact md:w-96 w-72 bg-base-100 shadow-xl py-5">
                         <h1 className="font-bold text-lg mx-5">
                             Post for Organization
                         </h1>
@@ -97,7 +97,7 @@ const PostTypeSelector = ({
                         </div>
                     </div>
 
-                    <div className="card card-compact w-96 bg-base-100 shadow-xl py-5">
+                    <div className="card card-compact  md:w-96 w-72  bg-base-100 shadow-xl py-5">
                         <h1 className="font-bold text-lg mx-5">
                             Post for Personal
                         </h1>

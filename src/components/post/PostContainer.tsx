@@ -4,9 +4,9 @@ import Image from "next/image";
 import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PostBookmark from "./actions/PostBookmark";
-import { Fragment, useMemo } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import timeDiff from "@/utils/timeDiffCalc";
-
+import { getOrgName } from "@/utils/actions/organization";
 export default function PostContainer({
     coverImage,
     title,
@@ -21,6 +21,7 @@ export default function PostContainer({
     tags,
     _count,
     createdAt,
+    organizationId,
 }: Post & {
     _count?: {
         reactions: number;
@@ -30,7 +31,22 @@ export default function PostContainer({
     const timeDiffCalc = useMemo(() => {
         return timeDiff(createdAt);
     }, [createdAt]);
-
+    const [orgName, setOrgName] = useState<string | undefined>();
+    useEffect(() => {
+        const fetchOrgName = async () => {
+            if (organizationId) {
+                try {
+                    const nameOrg = await getOrgName(organizationId);
+                    setOrgName(nameOrg);
+                } catch (error) {
+                    console.log(error);
+                }
+            } else {
+                return;
+            }
+        };
+        fetchOrgName();
+    }, [organizationId]);
     return (
         <div className="flex flex-wrap justify-end p-2 lg:block border-b pb-6">
             <Link
@@ -56,7 +72,10 @@ export default function PostContainer({
                             </div>
                             <div className="container">
                                 <p className="text-xs">
-                                    {author} <strong>·</strong>{" "}
+                                    {organizationId
+                                        ? `${author} for ${orgName}`
+                                        : author}{" "}
+                                    <strong>·</strong>{" "}
                                     {new Date(createdAt).toLocaleDateString(
                                         undefined,
                                         {

@@ -203,3 +203,19 @@ export async function removeMember(organizationId: string, memberId: string) {
     });
     if (newMembers) return newMembers;
 }
+
+
+export async function getOrgName (orgId:string | null){
+    if(!orgId){
+        return ;
+    }
+    const orgName = await prisma.organization.findUnique({
+        where:{
+            id:orgId
+        },
+        select:{
+            name:true
+        }
+    })
+    return orgName?.name
+}

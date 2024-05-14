@@ -192,7 +192,6 @@ export async function POST(req: NextRequest): Promise<any> {
     }
     try {
         const session = await getServerSession(authConfig);
-
         const pastDraft = await prisma.user.findUnique({
             where: { id: session?.user.id },
             select: {
@@ -206,7 +205,8 @@ export async function POST(req: NextRequest): Promise<any> {
                 },
             });
         }
-
+        const orgId = body.get("orgId") as string
+        console.log(orgId, "ORG ID")
         const post = await prisma.post.upsert({
             where: { id: (body.get("postId") as string) ?? "" },
             update: {
@@ -235,6 +235,7 @@ export async function POST(req: NextRequest): Promise<any> {
                 user: {
                     connect: { id: session?.user.id },
                 },
+                ...(orgId && { organization: { connect: { id: orgId } } }),
             },
             select: {
                 id: true,

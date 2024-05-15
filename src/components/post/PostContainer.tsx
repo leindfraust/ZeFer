@@ -1,3 +1,4 @@
+"use client"
 import { Post } from "@prisma/client";
 import Link from "next/link";
 import Image from "next/image";

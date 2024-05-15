@@ -19,7 +19,7 @@ import { StatusResponse } from "@/types/status";
 import StautsNotif from "../StatusNotif";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { PostDraft } from "@prisma/client";
+import { Organization, PostDraft } from "@prisma/client";
 import { cn } from "@/utils/cn";
 import { validateTag } from "@/utils/actions/tag";
 import Modal from "../ui/Modal";
@@ -32,12 +32,14 @@ export default function Tiptap({
     tags,
     editOrDraft,
     mode,
+    selectedOrg,
 }: {
     userId?: string;
     username?: string | null | undefined;
     tags: string[];
     editOrDraft?: PostDraft;
     mode?: "edit" | "draft";
+    selectedOrg?: Organization | null;
 }) {
     const router = useRouter();
     const [postError, setPostError] = useState<StatusResponse>();
@@ -312,6 +314,7 @@ export default function Tiptap({
             );
             formData.append("content", JSON.stringify(json));
             formData.append("tags", JSON.stringify(inputTags));
+            formData.append("org", JSON.stringify(selectedOrg));
             await fetch("/api/post/draft", {
                 method: "POST",
                 body: formData,
@@ -371,6 +374,7 @@ export default function Tiptap({
         inputTags,
         mode,
         publishState,
+        selectedOrg,
     ]);
 
     function addCoverImage(event: React.ChangeEvent<HTMLInputElement>) {
@@ -488,6 +492,7 @@ export default function Tiptap({
         formData.append("tags", JSON.stringify(inputTags));
         formData.append("readPerMinute", readPerMinute as unknown as string);
         formData.append("published", publish ? "true" : "false");
+        formData.append("orgId", selectedOrg?.id ?? "")
 
         const passedRequirements = await checkPostRequirements();
         if (passedRequirements) {

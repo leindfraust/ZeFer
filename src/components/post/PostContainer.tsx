@@ -6,7 +6,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PostBookmark from "./actions/PostBookmark";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import timeDiff from "@/utils/timeDiffCalc";
-import { getOrgName } from "@/utils/actions/organization";
+import { getOrg } from "@/utils/actions/organization";
+import { cn } from "@/utils/cn";
+interface OrgType {
+    name: string;
+    image: string;
+}
 export default function PostContainer({
     coverImage,
     title,
@@ -28,20 +33,17 @@ export default function PostContainer({
         comments: number;
     };
 }) {
+    const [org, setOrg] = useState<OrgType | undefined>();
     const timeDiffCalc = useMemo(() => {
         return timeDiff(createdAt);
     }, [createdAt]);
-    const [orgName, setOrgName] = useState<string | undefined>();
-    const fetchOrgName = async() => {
-      if(organizationId){
-        const fetch = await getOrgName(organizationId)
-        setOrgName(fetch)
-      }
-      else{
-        return;
-      }
-    }
-    fetchOrgName();
+    useEffect(() => {
+        const fetchOrg = async () => {
+            const fetch = await getOrg(organizationId);
+            setOrg(fetch);
+        };
+        fetchOrg();
+    }, [organizationId]);
     return (
         <div className="flex flex-wrap justify-end p-2 lg:block border-b pb-6">
             <Link
@@ -54,8 +56,9 @@ export default function PostContainer({
                                 UNPUBLISHED
                             </p>
                         )}
-                        <div className="flex gap-2 items-center">
-                            <div className="avatar">
+                        <div className="flex gap-2 items-center relative">
+                            <div className="flex flex-row-reverse items-center gap-1 relative">
+                            <div className={cn("avatar", {"absolute top-6 left-[25px] z-10": organizationId})}>
                                 <div className="w-7 rounded-full">
                                     <Image
                                         src={authorImage}
@@ -65,12 +68,26 @@ export default function PostContainer({
                                     />
                                 </div>
                             </div>
+                            {organizationId && (
+                                <div className="avatar">
+                                    <div className="w-12 rounded">
+                                        <Image
+                                            src={org?.image as string}
+                                            alt={org?.name as string}
+                                            width={64}
+                                            height={64}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                            </div>
                             <div className="container">
-                                <p className="text-xs">
+                                <p className="text-xs ml-1">
                                     {organizationId
-                                        ? `${author} for ${orgName}`
-                                        : author}{" "}
-                                    <strong>·</strong>{" "}
+                                        ? `${author} for ${org?.name}`
+                                        : author}
+                                </p>
+                                <p className="text-xs ml-1">
                                     {new Date(createdAt).toLocaleDateString(
                                         undefined,
                                         {

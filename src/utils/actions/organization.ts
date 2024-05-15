@@ -205,17 +205,18 @@ export async function removeMember(organizationId: string, memberId: string) {
 }
 
 
-export async function getOrgName (orgId:string | null){
+export async function getOrg (orgId:string | null){
     if(!orgId){
         return ;
     }
-    const orgName = await prisma.organization.findUnique({
+    const org = await prisma.organization.findUnique({
         where:{
             id:orgId
         },
         select:{
-            name:true
+            name:true,
+            image:true,
         }
     })
-    return orgName?.name
+    if(org)return org
 }

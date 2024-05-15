@@ -137,19 +137,29 @@ export default function PostList({
                     data?.pages.map(
                         (page) =>
                             page.data &&
-                            page.data.map((post: Post, index: string) => (
-                                <Fragment key={post.id}>
-                                    {page.data.length === index + 1 ? (
-                                        <div ref={ref}>
-                                            <PostContainer {...post} />
-                                        </div>
-                                    ) : (
-                                        <div>
-                                            <PostContainer {...post} />
-                                        </div>
-                                    )}
-                                </Fragment>
-                            )),
+                            page.data.map(
+                                (
+                                    post: Post & {
+                                        organization: {
+                                            name: string;
+                                            image: string;
+                                        } | null;
+                                    },
+                                    index: string,
+                                ) => (
+                                    <Fragment key={post.id}>
+                                        {page.data.length === index + 1 ? (
+                                            <div ref={ref}>
+                                                <PostContainer {...post} />
+                                            </div>
+                                        ) : (
+                                            <div>
+                                                <PostContainer {...post} />
+                                            </div>
+                                        )}
+                                    </Fragment>
+                                ),
+                            ),
                     )
                 ) : (
                     <PostContainerLoader />

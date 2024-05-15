@@ -31,6 +31,7 @@ import CommentList from "@/app/(base-layout)/[userId]/[slug]/_components/Comment
 import NextAuthProvider from "@/components/provider/NextAuthProvider";
 import PostReactionButton from "@/components/reactions/actions/PostReactionButton";
 import { PostShareButton } from "@/components/post/PostShareButton";
+import { cn } from "@/utils/cn";
 
 export async function generateMetadata({
     params,
@@ -86,6 +87,12 @@ export default async function PostPage({
                 select: {
                     reactions: true,
                     comments: true,
+                },
+            },
+            organization: {
+                select: {
+                    name: true,
+                    image: true,
                 },
             },
             series: true,
@@ -178,9 +185,9 @@ export default async function PostPage({
                         </div>
                     )}
 
-                    <div className="flex gap-2 items-center">
-                        <div className="avatar">
-                            <div className="rounded-full prose-img:w-full !overflow-visible">
+                    <div className="flex gap-2 items-center not-prose !mt-1 !mb-2">
+                        {/* <div className="avatar">
+                            <div className="rounded-full">
                                 <Image
                                     src={post.authorImage}
                                     alt={post.author}
@@ -189,8 +196,42 @@ export default async function PostPage({
                                     height={40}
                                 />
                             </div>
+                        </div> */}
+                        <div className="flex flex-row-reverse items-center gap-1 relative">
+                            <div
+                                className={cn("avatar", {
+                                    "absolute top-6 left-[25px] z-10":
+                                        post.organizationId,
+                                })}
+                            >
+                                <div className="w-7 rounded-full">
+                                    <Image
+                                        src={post.authorImage}
+                                        alt={post.author}
+                                        width={25}
+                                        height={25}
+                                    />
+                                </div>
+                            </div>
+                            {post.organizationId && post.organization && (
+                                <div className="avatar">
+                                    <div className="w-12 rounded">
+                                        <Image
+                                            src={
+                                                post.organization
+                                                    .image as string
+                                            }
+                                            alt={
+                                                post.organization.name as string
+                                            }
+                                            width={64}
+                                            height={64}
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                        <div className="-space-y-4">
+                        <div className="container">
                             <p className="text-sm">
                                 <strong>
                                     <Link
@@ -203,6 +244,14 @@ export default async function PostPage({
                                         {post?.author}
                                     </Link>
                                 </strong>{" "}
+                                {post.organization && (
+                                    <span>
+                                        for{" "}
+                                        <strong>
+                                            {post.organization.name}
+                                        </strong>
+                                    </span>
+                                )}{" "}
                                 · {post?.readPerMinute} min read
                             </p>
                             {new Date(post.updatedAt).toDateString() ===

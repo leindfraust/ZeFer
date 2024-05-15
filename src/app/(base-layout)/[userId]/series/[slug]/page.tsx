@@ -70,6 +70,12 @@ export default async function SeriesUserPage({
                             comments: true,
                         },
                     },
+                    organization: {
+                        select: {
+                            name: true,
+                            image: true,
+                        },
+                    },
                 },
             },
         },

@@ -40,6 +40,12 @@ export async function GET(req: NextRequest): Promise<any> {
                         comments: true,
                     },
                 },
+                organization: {
+                    select: {
+                        name: true,
+                        image: true,
+                    },
+                },
             },
             where: {
                 NOT: {

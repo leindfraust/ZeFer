@@ -51,10 +51,10 @@ const PostTypeSelector = ({
                                 Promote Your Business or Cause
                             </h3>
                             <p>
-                                Create engaging content to share your
-                                organization's updates, insights, and events.
+                            Create engaging content to share your
+                                organization&apos;s updates, insights, and events.
                                 Connect with your professional audience and
-                                enhance your brand's presence.
+                                enhance your brand&apos;s presence.
                             </p>
                             <div className="dropdown">
                                 <div

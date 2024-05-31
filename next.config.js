@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    instrumentationHook: true
+  },
   async headers() {
     const env = process.env.NODE_ENV
     let URL = "http://localhost:5000"

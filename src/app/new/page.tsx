@@ -1,4 +1,3 @@
-import Tiptap from "@/components/wysiwyg/Tiptap";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/utils/authConfig";
 import prisma from "@/db";
@@ -11,8 +10,8 @@ export default async function CreatePost() {
             id: true,
             username: true,
             draft: true,
-            organizations:true,
-            ownedOrganizations:true,
+            organizations: true,
+            ownedOrganizations: true,
         },
     });
 
@@ -26,7 +25,7 @@ export default async function CreatePost() {
             mode={user?.draft ? "draft" : undefined}
             tags={[...(await (await tags.GET()).json())]}
             orgs={user?.organizations}
-          ownOrg={user?.ownedOrganizations}
+            ownOrg={user?.ownedOrganizations}
         />
     );
 }

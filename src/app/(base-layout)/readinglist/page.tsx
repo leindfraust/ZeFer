@@ -17,6 +17,12 @@ export default async function ReadingList() {
                             comments: true,
                         },
                     },
+                    organization: {
+                        select: {
+                            name: true,
+                            image: true,
+                        },
+                    },
                 },
             },
         },

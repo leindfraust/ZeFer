@@ -1,6 +1,5 @@
 "use server";
 import prisma from "@/db";
-import { NextRequest } from "next/server";
 export async function getPostComments(titleId: string) {
     const getPost = await prisma.post.findUnique({
         where: { titleId: titleId },
@@ -37,32 +36,32 @@ export async function getPostReplyComments(commentId: string) {
     return getPostReplyComments[0].postCommentReplies;
 }
 
-export async function isCommentOwner(userId: string, titleId:string) {
+export async function isCommentOwner(userId: string, titleId: string) {
     const getPostId = await prisma.post.findUnique({
         where: {
             titleId: titleId,
-            userId:userId
+            userId: userId
         },
-        select:{
-            id:true,
+        select: {
+            id: true,
         }
     });
     const commentOwner = await prisma.postComment.findFirst({
-      where:{
-        userId:userId
-      },
-      select:{
-        userId:true
-      }
-        
+        where: {
+            userId: userId
+        },
+        select: {
+            userId: true
+        }
+
     });
 
     if (!commentOwner) {
         throw new Error("You have no comment for this post yet");
     }
     return {
-        commentOwner:commentOwner.userId,
-        postOwner:getPostId?.id
+        commentOwner: commentOwner.userId,
+        postOwner: getPostId?.id
     };
 }
 
@@ -80,5 +79,3 @@ export async function deleteComments(id: string) {
     });
     return remove.isRemoved;
 }
-
-export async function isPostOwner(id: string) {}

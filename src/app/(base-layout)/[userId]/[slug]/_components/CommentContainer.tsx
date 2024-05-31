@@ -1,6 +1,6 @@
 "use client";
 
-import { CommentReaction, Post, PostComment } from "@prisma/client";
+import { CommentReaction, PostComment } from "@prisma/client";
 import CharacterCount from "@tiptap/extension-character-count";
 import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
@@ -27,7 +27,6 @@ import CommentReactionButton from "../../../../../components/reactions/actions/C
 import { useSession } from "next-auth/react";
 import { isCommentOwner } from "@/utils/actions/comments";
 import { deleteComments } from "@/utils/actions/comments";
-import { revalidatePath } from "next/cache";
 import Modal from "@/components/ui/Modal";
 export default function CommentContainer({
     id,
@@ -41,7 +40,6 @@ export default function CommentContainer({
     title,
     reactions,
     isRemoved,
-    postId
 }: PostComment & {
     titleId: string;
     title: string;
@@ -53,7 +51,7 @@ export default function CommentContainer({
     const [isCommentDelete, setCommentDelete] = useState<boolean>(false);
     const modalDeleteRef = useRef<HTMLDialogElement>(null);
     const [ownComment, setOwnComment] = useState<string>();
-    const [ownPost, setOwnPost] = useState<string>()
+    const [ownPost, setOwnPost] = useState<string>();
     const prose = "prose prose-sm sm:prose lg:prose-lg";
     const postCommentContent = generateHTML(content as JSONContent, [
         TaskList,
@@ -86,23 +84,24 @@ export default function CommentContainer({
             refetch();
         });
         const getOwnerComment = async () => {
-            const {commentOwner, postOwner} = await isCommentOwner(session?.user.id, titleId);
+            const { commentOwner, postOwner } = await isCommentOwner(
+                session?.user.id,
+                titleId,
+            );
             setOwnComment(commentOwner);
-            setOwnPost(postOwner)
+            setOwnPost(postOwner);
         };
         getOwnerComment();
 
         return () => {
             socket.off("refetchReplies");
         };
-    }, [id, refetch, socket, session?.user.id]);
+    }, [id, refetch, socket, session?.user.id, titleId]);
 
     const deleteCommentBtn = async (id: string) => {
         const data = await deleteComments(id);
         setCommentDelete(data);
     };
-    console.log(ownComment, 'OWN COMMENT ID')
-    console.log(titleId, "titile id")
     return (
         <div className="container space-x-6">
             <div className="flex gap-2 items-start">

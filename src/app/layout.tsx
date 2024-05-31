@@ -6,7 +6,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import NextTopLoader from "nextjs-toploader";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
-import { TopLoader } from "@/components/TopLoader";
 import ThemeProvider from "@/components/provider/ThemeProvider";
 import { Toaster } from "react-hot-toast";
 import { Suspense } from "react";
@@ -65,7 +64,6 @@ export default async function RootLayout({
                 <ThemeProvider />
                 <Suspense>
                     <NextTopLoader showSpinner={false} />
-                    <TopLoader />
                 </Suspense>
                 <Toaster position="top-center" gutter={24} />
                 {children}

@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PostBookmark from "./actions/PostBookmark";
 import { Fragment, useMemo } from "react";
 import timeDiff from "@/utils/timeDiffCalc";
+import { cn } from "@/utils/cn";
 
 export default function PostContainer({
     coverImage,
@@ -21,16 +22,21 @@ export default function PostContainer({
     tags,
     _count,
     createdAt,
+    organization,
+    organizationId,
 }: Post & {
     _count?: {
         reactions: number;
         comments: number;
     };
+    organization: {
+        name: string;
+        image: string;
+    } | null;
 }) {
     const timeDiffCalc = useMemo(() => {
         return timeDiff(createdAt);
     }, [createdAt]);
-
     return (
         <div className="flex flex-wrap justify-end p-2 lg:block border-b pb-6">
             <Link
@@ -43,20 +49,47 @@ export default function PostContainer({
                                 UNPUBLISHED
                             </p>
                         )}
-                        <div className="flex gap-2 items-center">
-                            <div className="avatar">
-                                <div className="w-7 rounded-full">
-                                    <Image
-                                        src={authorImage}
-                                        alt={author}
-                                        width={25}
-                                        height={25}
-                                    />
+                        <div className="flex gap-2 items-center relative">
+                            <div className="flex flex-row-reverse items-center gap-1 relative">
+                                <div
+                                    className={cn("avatar", {
+                                        "absolute top-6 left-[25px] z-10":
+                                            organizationId,
+                                    })}
+                                >
+                                    <div className="w-7 rounded-full">
+                                        <Image
+                                            src={authorImage}
+                                            alt={author}
+                                            width={25}
+                                            height={25}
+                                        />
+                                    </div>
                                 </div>
+                                {organizationId && organization && (
+                                    <div className="avatar">
+                                        <div className="w-12 rounded">
+                                            <Image
+                                                src={
+                                                    organization.image as string
+                                                }
+                                                alt={
+                                                    organization.name as string
+                                                }
+                                                width={64}
+                                                height={64}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                             <div className="container">
-                                <p className="text-xs">
-                                    {author} <strong>·</strong>{" "}
+                                <p className="text-xs ml-1">
+                                    {organizationId && organization
+                                        ? `${author} for ${organization.name}`
+                                        : author}
+                                </p>
+                                <p className="text-xs ml-1">
                                     {new Date(createdAt).toLocaleDateString(
                                         undefined,
                                         {

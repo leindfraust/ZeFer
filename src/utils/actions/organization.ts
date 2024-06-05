@@ -126,7 +126,7 @@ export async function addMember(organizationId: string, memberId: string) {
     const isAdmin = organization.admins.some(
         (admin) => admin.id === session?.user.id,
     );
-    if (!isOwner || !isAdmin) throw new Error("Not authorized");
+    if (!isOwner && !isAdmin) throw new Error("Not authorized");
     const newMembers = await prisma.organization.update({
         where: { id: organizationId },
         data: {
@@ -187,7 +187,7 @@ export async function removeMember(organizationId: string, memberId: string) {
     const isAdmin = organization.admins.some(
         (admin) => admin.id === session?.user.id,
     );
-    if (!isOwner || !isAdmin) throw new Error("Not authorized");
+    if (!isOwner && !isAdmin) throw new Error("Not authorized");
     const newMembers = await prisma.organization.update({
         where: { id: organizationId },
         data: {
@@ -204,19 +204,18 @@ export async function removeMember(organizationId: string, memberId: string) {
     if (newMembers) return newMembers;
 }
 
-
-export async function getOrg (orgId:string | null){
-    if(!orgId){
-        return ;
+export async function getOrg(orgId: string | null) {
+    if (!orgId) {
+        return;
     }
     const org = await prisma.organization.findUnique({
-        where:{
-            id:orgId
+        where: {
+            id: orgId,
         },
-        select:{
-            name:true,
-            image:true,
-        }
-    })
-    if(org)return org
+        select: {
+            name: true,
+            image: true,
+        },
+    });
+    if (org) return org;
 }

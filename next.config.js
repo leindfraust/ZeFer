@@ -4,9 +4,15 @@ const nextConfig = {
     instrumentationHook: true
   },
   async headers() {
-    const env = process.env.NODE_ENV
-    let URL = "http://localhost:5000"
-    if (env === 'production') URL = "https://melted-patience-leindfraust.koyeb.app/"
+    const env = process.env.NEXT_PUBLIC_VERCEL_ENV
+    const SOCKET = {
+      prod: "https://melted-patience-leindfraust.koyeb.app/",
+      staging: "https://zefer-socket.onrender.com/",
+      dev: "http://localhost:5000",
+    };
+    let URL = SOCKET.dev
+    if (env === 'production') URL = SOCKET.prod
+    if (env === 'development') URL = SOCKET.staging
     return [
       {
         source: "/socket.io",

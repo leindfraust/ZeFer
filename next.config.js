@@ -5,6 +5,7 @@ const nextConfig = {
   },
   async headers() {
     const env = process.env.NEXT_PUBLIC_VERCEL_ENV
+    const stagingUrl = process.env.NEXT_PUBLIC_VERCEL_URL.includes("staging")
     const SOCKET = {
       prod: "https://melted-patience-leindfraust.koyeb.app/",
       staging: "https://zefer-socket.onrender.com/",
@@ -12,7 +13,7 @@ const nextConfig = {
     };
     let URL = SOCKET.dev
     if (env === 'production') URL = SOCKET.prod
-    if (env === 'development') URL = SOCKET.staging
+    if (env === 'development' || !!stagingUrl) URL = SOCKET.staging
     return [
       {
         source: "/socket.io",

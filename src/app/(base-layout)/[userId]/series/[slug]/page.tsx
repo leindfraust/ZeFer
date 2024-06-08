@@ -1,5 +1,6 @@
 import PostContainer from "@/components/post/PostContainer";
 import prisma from "@/db";
+import { postContainerInclude } from "@/utils/prismaQuery";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Fragment } from "react";
@@ -63,20 +64,7 @@ export default async function SeriesUserPage({
                 where: {
                     published: true,
                 },
-                include: {
-                    _count: {
-                        select: {
-                            reactions: true,
-                            comments: true,
-                        },
-                    },
-                    organization: {
-                        select: {
-                            name: true,
-                            image: true,
-                        },
-                    },
-                },
+                include: postContainerInclude(),
             },
         },
     });

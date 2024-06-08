@@ -7,6 +7,7 @@ import { JSONContent } from "@tiptap/react";
 import { Post } from "@prisma/client";
 import { getCloudinaryImage, uploadCloudinary } from "@/lib/cloudinary";
 import { revalidatePath } from "next/cache";
+import { postContainerInclude } from "@/utils/prismaQuery";
 //Promise<any> is a temporary fix
 
 export async function GET(req: NextRequest): Promise<any> {
@@ -33,20 +34,7 @@ export async function GET(req: NextRequest): Promise<any> {
         }
 
         const prismaQuery: PrismaQuery = {
-            include: {
-                _count: {
-                    select: {
-                        reactions: true,
-                        comments: true,
-                    },
-                },
-                organization: {
-                    select: {
-                        name: true,
-                        image: true,
-                    },
-                },
-            },
+            include: postContainerInclude(),
             where: {
                 NOT: {
                     coverImage: null, //this is a safety mechanism as that all posts requires a coverImage
@@ -55,8 +43,8 @@ export async function GET(req: NextRequest): Promise<any> {
                     published === "true"
                         ? true
                         : published === "false"
-                        ? false
-                        : true, //strict checking of false so when published params is anything but true or false, it always returns true
+                            ? false
+                            : true, //strict checking of false so when published params is anything but true or false, it always returns true
             },
             //when orderBy is not defined as latest or most-popular, default to latest
             orderBy: {
@@ -275,9 +263,9 @@ export async function POST(req: NextRequest): Promise<any> {
             if (uploaded) {
                 if (
                     Object.keys(uploaded).length ===
-                        Object.keys(images()).length &&
+                    Object.keys(images()).length &&
                     Object.keys(contentImages).length ===
-                        Object.keys(uploaded).length
+                    Object.keys(uploaded).length
                 ) {
                     if (contentImages) {
                         for (const [index, image] of Object.entries(

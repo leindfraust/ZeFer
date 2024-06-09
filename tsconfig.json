@@ -29,7 +29,9 @@
         "**/*.tsx",
         ".next/types/**/*.ts",
         "src/app/api/auth/[...nextauth].js",
-        "src/middleware.js"
+        "src/middleware.js",
+        "src/utils/socketURL.js",
+        "src/constants.js"
     ],
     "exclude": ["node_modules"]
 }

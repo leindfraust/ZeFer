@@ -1,29 +1,17 @@
 /** @type {import('next').NextConfig} */
+import socketURL from "./src/utils/socketURL.mjs";
 const nextConfig = {
     experimental: {
         instrumentationHook: true,
     },
     async headers() {
-        const env =
-            process.env.NEXT_PUBLIC_VERCEL_ENV ||
-            process.env.VERCEL_ENV ||
-            process.env.NODE_ENV;
-        const SOCKET = {
-            prod: "https://melted-patience-leindfraust.koyeb.app/",
-            preview: "https://zefer-socket.onrender.com/",
-            dev: "http://localhost:5000",
-        };
-        let URL = SOCKET.dev;
-        if (env === "production") URL = SOCKET.prod;
-        if (env === "preview") URL = SOCKET.preview;
-        console.log(URL);
-        console.log(env);
+        console.log("Listening notifications from:", socketURL);
         return [
             {
                 source: "/socket.io",
                 headers: [
                     { key: "Access-Control-Allow-Credentials", value: "true" },
-                    { key: "Access-Control-Allow-Origin", value: URL },
+                    { key: "Access-Control-Allow-Origin", value: socketURL },
                     {
                         key: "Access-Control-Allow-Methods",
                         value: "GET, DELETE, PATCH, POST, PUT",
@@ -73,14 +61,14 @@ const nextConfig = {
     },
 };
 
-module.exports = nextConfig;
+export { nextConfig };
 
 // Injected content via Sentry wizard below
 
-const { withSentryConfig } = require("@sentry/nextjs");
+import { withSentryConfig } from "@sentry/nextjs";
 
-module.exports = withSentryConfig(
-    module.exports,
+const sentryConfig = withSentryConfig(
+    nextConfig,
     {
         // For all available options, see:
         // https://github.com/getsentry/sentry-webpack-plugin#options
@@ -110,3 +98,5 @@ module.exports = withSentryConfig(
         disableLogger: true,
     },
 );
+
+export default sentryConfig;

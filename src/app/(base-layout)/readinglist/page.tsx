@@ -1,6 +1,7 @@
 import PostContainer from "@/components/post/PostContainer";
 import prisma from "@/db";
 import { authConfig } from "@/utils/authConfig";
+import { postContainerInclude } from "@/utils/prismaQuery";
 import { getServerSession } from "next-auth";
 import { Fragment } from "react";
 
@@ -10,20 +11,7 @@ export default async function ReadingList() {
         where: { id: session?.user.id },
         select: {
             bookMarks: {
-                include: {
-                    _count: {
-                        select: {
-                            reactions: true,
-                            comments: true,
-                        },
-                    },
-                    organization: {
-                        select: {
-                            name: true,
-                            image: true,
-                        },
-                    },
-                },
+                include: postContainerInclude(),
             },
         },
     });

@@ -88,7 +88,7 @@ export default function OrganizationManageContainer({
         }
     }
     async function promoteToAdmin({ id, name }: User) {
-        if (!selectedOrganization || !sessionUserId || id) return;
+        if (!selectedOrganization || !sessionUserId || !id) return;
         const isUserAdmin = selectedOrganization?.admins?.find(
             (admin) => admin.id === id,
         );
@@ -120,7 +120,7 @@ export default function OrganizationManageContainer({
     }
 
     async function demoteToMember({ id, name }: User) {
-        if (!selectedOrganization || !sessionUserId || id) return;
+        if (!selectedOrganization || !sessionUserId || !id) return;
         const isUserMember = selectedOrganization?.members.find(
             (member) => member.id === id,
         );
@@ -252,7 +252,7 @@ export default function OrganizationManageContainer({
                         <div className="space-y-4">
                             <div className="container">
                                 <h3 className="text-2xl font-bold">Members</h3>
-                                <div className="overflow-x-auto">
+                                <div className="overflow-x-auto md:overflow-hidden">
                                     <table className="table table-lg">
                                         <tbody>
                                             <tr>

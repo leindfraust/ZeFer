@@ -2,11 +2,11 @@
 
 ## Your story is yours to unfold
 
-Join us on this exciting journey as we build not just a platform, but a living, breathing community where stories resonate, ideas flourish, and connections thrive. ZeFer awaits, ready to amplify your voice and celebrate the diverse narratives that make us who we are.
+Join us on this exciting journey as we build not just a platform, but a living, breathing community where stories resonate, ideas flourish, and connections thrive. ZeFer, the open-source publishing platform, awaits, ready to amplify your voice and celebrate the diverse narratives that make us who we are.
 
 ## Write in ZeFer, integrate it freely to other platforms with our APIs
 
-We do not limit your blog posts only in our platform, you can freely integrate it to other platforms. Currently we only support getting your blog posts from us through HTTP API with Bearer Token Authentication but we are actively developing an SDK around this. You can check the documentation how to set it up here: <https://docs.zefer.blog/>
+We do not limit your blog posts only in our platform, you can freely integrate it to other platforms. We have built an npm package for this. You can check the documentation how to set it up here: <https://docs.zefer.blog/>
 
 ## Contributing
 
@@ -27,6 +27,11 @@ Refer to [CONTRIBUTING.md](CONTRIBUTING.md)
 -   Next.js
 -   Prisma (using PostgreSQL)
 -   NextAuth
+-   Socket.io
+
+#### Error Tracking
+
+-   Sentry.io
 
 ### Style guide
 

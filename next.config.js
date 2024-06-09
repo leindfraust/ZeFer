@@ -5,20 +5,17 @@ const nextConfig = {
     },
     async headers() {
         const env =
-            process.env.NEXT_PUBLIC_VERCEL_ENV || process.env.VERCEL_ENV;
-        const stagingUrl =
-            process.env.NEXT_PUBLIC_VERCEL_URL.includes("staging") ||
-            process.env.VERCEL_URL.includes("staging");
+            process.env.NEXT_PUBLIC_VERCEL_ENV ||
+            process.env.VERCEL_ENV ||
+            process.env.NODE_ENV;
         const SOCKET = {
             prod: "https://melted-patience-leindfraust.koyeb.app/",
-            staging: "https://zefer-socket.onrender.com/",
+            preview: "https://zefer-socket.onrender.com/",
             dev: "http://localhost:5000",
         };
-        console.log(env);
-        console.log(stagingUrl);
         let URL = SOCKET.dev;
         if (env === "production") URL = SOCKET.prod;
-        if (env === "development" || !!stagingUrl) URL = SOCKET.staging;
+        if (env === "preview") URL = SOCKET.preview;
         return [
             {
                 source: "/socket.io",

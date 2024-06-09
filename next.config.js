@@ -16,6 +16,8 @@ const nextConfig = {
         let URL = SOCKET.dev;
         if (env === "production") URL = SOCKET.prod;
         if (env === "preview") URL = SOCKET.preview;
+        console.log(URL);
+        console.log(env);
         return [
             {
                 source: "/socket.io",

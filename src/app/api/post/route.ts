@@ -30,7 +30,7 @@ export async function GET(req: NextRequest): Promise<any> {
                 tags?: {};
                 OR?: [{}, {}];
             };
-            orderBy?: {};
+            orderBy?: {} | [];
         }
 
         const prismaQuery: PrismaQuery = {
@@ -43,8 +43,8 @@ export async function GET(req: NextRequest): Promise<any> {
                     published === "true"
                         ? true
                         : published === "false"
-                            ? false
-                            : true, //strict checking of false so when published params is anything but true or false, it always returns true
+                        ? false
+                        : true, //strict checking of false so when published params is anything but true or false, it always returns true
             },
             //when orderBy is not defined as latest or most-popular, default to latest
             orderBy: {
@@ -104,6 +104,102 @@ export async function GET(req: NextRequest): Promise<any> {
             };
         }
 
+        if (orderBy === "relevance") {
+            const session = await getServerSession(authConfig);
+            const user = await prisma.user.findUnique({
+                where: { id: session?.user.id },
+                include: {
+                    readingHistory: {
+                        take: 100,
+                        include: {
+                            post: true,
+                        },
+                        orderBy: [
+                            {
+                                readingLength: {
+                                    readingLength: "desc",
+                                },
+                            },
+                            {
+                                updatedAt: "desc",
+                            },
+                        ],
+                    },
+                    postReactions: {
+                        take: 100,
+                        include: {
+                            post: true,
+                        },
+                        orderBy: {
+                            updatedAt: "desc",
+                        },
+                    },
+                },
+            });
+            const tags: string[] = [];
+            const postTitleDesc: string[] = [];
+            const authors: string[] = [];
+            user?.readingHistory.forEach(async (history) => {
+                tags.push(...history.post.tags);
+                postTitleDesc.push(history.post.title.toLowerCase());
+                postTitleDesc.push(history.post.description.toLowerCase());
+                authors.push(history.post.author);
+            });
+            user?.postReactions.forEach((postReact) => {
+                tags.push(...postReact.post.tags);
+                postTitleDesc.push(postReact.post.title.toLowerCase());
+                postTitleDesc.push(postReact.post.description.toLowerCase());
+                authors.push(postReact.post.author);
+            });
+            const tagCount: { tag: string; count: number }[] = [];
+            tags.forEach((tag) => {
+                tagCount.push({
+                    tag,
+                    count:
+                        (tagCount.find((count) => count.tag === tag)?.count ||
+                            0) + 1,
+                });
+            });
+            function sortTagsRanking() {
+                const tagList: string[] = [];
+                if (tagCount.length >= 10) {
+                    tagCount
+                        .sort((a, b) => b.count - a.count)
+                        .slice(-10)
+                        .forEach((tag) => tagList.push(tag.tag));
+                } else {
+                    tagCount
+                        .sort((a, b) => b.count - a.count)
+                        .forEach((tag) => tagList.push(tag.tag));
+                }
+                return tagList;
+            }
+            const rankedTags = sortTagsRanking();
+            const compiledInterests = [
+                ...(user?.interests || []),
+                ...rankedTags,
+                ...postTitleDesc,
+                ...authors,
+            ];
+            const interests = [...new Set(compiledInterests)]
+                .map((interest) => interest.replace(/\s/g, "").toLowerCase())
+                .toString()
+                .split(",")
+                .join("&");
+            prismaQuery.orderBy = [
+                {
+                    _relevance: {
+                        fields: ["tags", "title", "description", "author"],
+                        search: interests,
+                        sort: "desc",
+                    },
+                },
+                {
+                    updatedAt: "desc",
+                },
+            ];
+        }
+
         const posts = await prisma.post.findMany({
             ...prismaQuery,
             ...(lastCursor && {
@@ -160,7 +256,7 @@ export async function POST(req: NextRequest): Promise<any> {
         ? (body.get("image_total") as unknown as number)
         : (0 as number);
     const images = () => {
-        let imageFiles: FormDataEntryValue[] = [];
+        const imageFiles: FormDataEntryValue[] = [];
         if (image_total > 0) {
             for (let i = 0; i < image_total; i++) {
                 const image = body.get(`image_${i}`);
@@ -249,7 +345,7 @@ export async function POST(req: NextRequest): Promise<any> {
             const contentImages = content.content?.filter(
                 (image) => image.type === "image",
             ) as JSONContent[];
-            let uploaded: Array<Record<string, any>> = [];
+            const uploaded: Array<Record<string, any>> = [];
             for (const [index, image] of Object.entries(images())) {
                 const cloudinary = await uploadCloudinary({
                     file: image,
@@ -263,9 +359,9 @@ export async function POST(req: NextRequest): Promise<any> {
             if (uploaded) {
                 if (
                     Object.keys(uploaded).length ===
-                    Object.keys(images()).length &&
+                        Object.keys(images()).length &&
                     Object.keys(contentImages).length ===
-                    Object.keys(uploaded).length
+                        Object.keys(uploaded).length
                 ) {
                     if (contentImages) {
                         for (const [index, image] of Object.entries(

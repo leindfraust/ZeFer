@@ -8,7 +8,6 @@ import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import PostContainerLoader from "./PostContainerLoader";
-import { useSession } from "next-auth/react";
 
 export default function PostList({
     keyword,
@@ -21,7 +20,6 @@ export default function PostList({
     userId?: string;
     published?: boolean;
 }) {
-    const { status } = useSession();
     const [refetchAllowed, setRefetchAllowed] = useState<boolean>(false);
     const pathName = usePathname();
     const searchParams = useSearchParams();
@@ -35,14 +33,7 @@ export default function PostList({
             q: keyword ?? "",
             tag: tag ?? "",
             userId: userId ?? "",
-            orderBy:
-                feed === "relevance"
-                    ? status === "authenticated"
-                        ? feed
-                        : "latest"
-                    : status === "authenticated" && !feed
-                    ? "relevance"
-                    : feed ?? "latest", //we set the default value to desc for our sorting so that is latest in our feed
+            orderBy: feed ?? "relevance", //we set the default value to desc for our sorting so that is latest in our feed
             published: published ? published.toString() : "true", //we set the default value to true as to reduce the possibilities of showing unpublished blogs
             cursor: cursor,
         });
@@ -89,13 +80,7 @@ export default function PostList({
             );
         replace(
             `${pathName}?${keyword ? `q=${keyword}&` : ""}feed=${
-                feed === "relevance"
-                    ? status === "authenticated"
-                        ? feed
-                        : "latest"
-                    : status === "authenticated" && !feed
-                    ? "relevance"
-                    : feed ?? "latest"
+                feed ?? "relevance"
             }`,
             { scroll: false },
         );
@@ -108,13 +93,10 @@ export default function PostList({
         refetchAllowed,
         replace,
         searchParams,
-        status,
     ]);
 
     useEffect(() => {
-        if (feed !== "latest" && feed) {
-            setRefetchAllowed(true);
-        }
+        if (feed !== "relevance" && feed) setRefetchAllowed(true);
     }, [feed]);
 
     useEffect(() => {
@@ -132,16 +114,14 @@ export default function PostList({
                         keyword ? "justify-end" : "justify-start"
                     } space-x-4`}
                 >
-                    {status === "authenticated" && (
-                        <h3
-                            className={`text-xl cursor-pointer hover:underline ${
-                                feed === "relevance" ? "underline" : ""
-                            }`}
-                            onClick={() => setFeed("relevance")}
-                        >
-                            Relevant
-                        </h3>
-                    )}
+                    <h3
+                        className={`text-xl cursor-pointer hover:underline ${
+                            feed === "relevance" ? "underline" : ""
+                        }`}
+                        onClick={() => setFeed("relevance")}
+                    >
+                        Relevant
+                    </h3>
                     <h3
                         className={`text-xl cursor-pointer hover:underline ${
                             feed === "latest" ? "underline" : ""

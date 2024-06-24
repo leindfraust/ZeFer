@@ -14,10 +14,12 @@ export default function PostList({
     tag,
     userId,
     published,
+    orgId
 }: {
     keyword?: string;
     tag?: string;
     userId?: string;
+    orgId?:string;
     published?: boolean;
 }) {
     const [refetchAllowed, setRefetchAllowed] = useState<boolean>(false);
@@ -33,6 +35,7 @@ export default function PostList({
             q: keyword ?? "",
             tag: tag ?? "",
             userId: userId ?? "",
+            orgId:orgId ?? "",
             orderBy: feed ?? "relevance", //we set the default value to desc for our sorting so that is latest in our feed
             published: published ? published.toString() : "true", //we set the default value to true as to reduce the possibilities of showing unpublished blogs
             cursor: cursor,
@@ -149,8 +152,10 @@ export default function PostList({
                                 (
                                     post: Post & {
                                         organization: {
+                                            id:string;
                                             name: string;
                                             image: string;
+                                            username:string;
                                         } | null;
                                     },
                                     index: string,

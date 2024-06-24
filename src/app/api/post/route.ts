@@ -18,6 +18,7 @@ export async function GET(req: NextRequest): Promise<any> {
         const keyword = url.searchParams.get("q")?.split(" ").join("&");
         const tag = url.searchParams.get("tag");
         const userId = url.searchParams.get("userId");
+        const orgId = url.searchParams.get("orgId")
         const published = url.searchParams.get("published");
         const orderBy = url.searchParams.get("orderBy"); //either latest or most-popular
         interface PrismaQuery {
@@ -30,6 +31,7 @@ export async function GET(req: NextRequest): Promise<any> {
                 author?: {};
                 tags?: {};
                 OR?: [{}, {}];
+                organizationId?:{};
             };
             orderBy?: {} | [];
         }
@@ -89,6 +91,13 @@ export async function GET(req: NextRequest): Promise<any> {
                     },
                 ],
             };
+        }
+        if(orgId){
+            prismaQuery.where = {
+                ...prismaQuery.where,
+                organizationId:orgId
+            
+            }
         }
 
         if (orderBy === "latest") {

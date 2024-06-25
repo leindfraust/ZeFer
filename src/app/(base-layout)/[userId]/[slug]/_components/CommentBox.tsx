@@ -5,13 +5,8 @@ import "../../../../../components/wysiwyg/custom_css/placeholder.css";
 import { EditorContent, useEditor } from "@tiptap/react";
 import TiptapImage from "../../../../../components/wysiwyg/custom_extensions/Image";
 import TiptapLink from "@tiptap/extension-link";
-import Highlight from "@tiptap/extension-highlight";
-import CharacterCount from "@tiptap/extension-character-count";
 import Placeholder from "@tiptap/extension-placeholder";
-import TaskItem from "@tiptap/extension-task-item";
-import TaskList from "@tiptap/extension-task-list";
 import Youtube from "@tiptap/extension-youtube";
-import StarterKit from "@tiptap/starter-kit";
 import Image from "next/image";
 import { cn } from "@/utils/cn";
 import useSocket from "@/socket";
@@ -19,6 +14,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { UserNotificationInputValidation } from "@/types/notification";
+import tiptapExtensions from "@/utils/tiptapExt";
 
 type CommentBoxProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -46,14 +42,13 @@ export default function CommentBox({
     const { data: session, status } = useSession();
     const [submitState, setSubmitState] = useState<boolean>(false);
     const socket = useSocket();
+    const extensions = tiptapExtensions();
     const editor = useEditor({
         extensions: [
+            ...extensions,
             Placeholder.configure({
                 placeholder: "Type something in here",
             }),
-            Highlight,
-            TaskItem,
-            TaskList,
             TiptapImage.configure({
                 HTMLAttributes: {
                     class: "mx-auto",
@@ -67,8 +62,6 @@ export default function CommentBox({
                     class: "mx-auto",
                 },
             }),
-            CharacterCount,
-            StarterKit,
         ],
         content: "",
         editorProps: {

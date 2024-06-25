@@ -43,18 +43,15 @@ const PostTypeSelector = ({
             ) : (
                 <div className="flex md:flex-row flex-col w-full  justify-center gap-20 mt-40 items-center md:items-stretch">
                     <div className="card card-compact md:w-96 w-72 bg-base-100 shadow-xl py-5">
-                        <h1 className="font-bold text-lg mx-5">
-                            Post for Organization
-                        </h1>
                         <div className="card-body">
                             <h3 className="card-title">
                                 Promote Your Business or Cause
                             </h3>
                             <p>
-                            Create engaging content to share your
-                                organization&apos;s updates, insights, and events.
-                                Connect with your professional audience and
-                                enhance your brand&apos;s presence.
+                                Create engaging content to share your
+                                organization&apos;s updates, insights, and
+                                events. Connect with your professional audience
+                                and enhance your brand&apos;s presence.
                             </p>
                             <div className="dropdown">
                                 <div
@@ -98,9 +95,6 @@ const PostTypeSelector = ({
                     </div>
 
                     <div className="card card-compact  md:w-96 w-72  bg-base-100 shadow-xl py-5">
-                        <h1 className="font-bold text-lg mx-5">
-                            Post for Personal
-                        </h1>
                         <div className="card-body">
                             <h2 className="card-title">Post for Personal</h2>
                             <p>

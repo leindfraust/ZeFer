@@ -5,29 +5,29 @@ import { getServerSession } from "next-auth";
 import { User } from "@prisma/client";
 //Promise<any> is a temporary fix
 export async function GET(req: Request): Promise<any> {
-    const url = new URL(req.url)
-    const lastCursor = url.searchParams.get("cursor")
-    const keyword = url.searchParams.get("q")?.split(" ").join("&")
+    const url = new URL(req.url);
+    const lastCursor = url.searchParams.get("cursor");
+    const keyword = url.searchParams.get("q")?.split(" ").join("&");
 
     const prismaQuery = {
         where: {
             name: {
-                search: keyword
+                search: keyword,
             },
             username: {
-                search: keyword
+                search: keyword,
             },
             bio: {
-                search: keyword
+                search: keyword,
             },
             address: {
-                search: keyword
+                search: keyword,
             },
             occupation: {
-                search: keyword
-            }
-        }
-    }
+                search: keyword,
+            },
+        },
+    };
 
     try {
         const users = await prisma.user.findMany({
@@ -36,70 +36,77 @@ export async function GET(req: Request): Promise<any> {
                 skip: 1,
                 cursor: {
                     id: lastCursor,
-                }
+                },
             }),
-            take: 1
-        })
+            take: 1,
+        });
 
         if (users.length === 0) {
-            return NextResponse.json({
-                data: [],
-                metaData: {
-                    lastCursor: null,
-                    hasNextPost: false
+            return NextResponse.json(
+                {
+                    data: [],
+                    metaData: {
+                        lastCursor: null,
+                        hasNextPost: false,
+                    },
                 },
-            }, { status: 200 })
+                { status: 200 },
+            );
         }
 
         const lastPost: User = users[users.length - 1];
-        const cursor: string = lastPost.id
+        const cursor: string = lastPost.id;
 
         const nextPost = await prisma.user.findMany({
             ...prismaQuery,
             take: 1,
             skip: 1,
             cursor: {
-                id: cursor
-            }
+                id: cursor,
+            },
         });
 
         const data = {
             data: users,
             metaData: {
                 lastCursor: cursor !== undefined ? cursor : null,
-                hasNextPost: nextPost.length > 0
-            }
-        }
+                hasNextPost: nextPost.length > 0,
+            },
+        };
 
-        return NextResponse.json({ data }, { status: 200 })
+        return NextResponse.json({ data }, { status: 200 });
     } catch (err) {
-        return NextResponse.json({ err }, { status: 500 })
+        return NextResponse.json({ err }, { status: 500 });
     }
 }
 
 export async function PATCH(req: Request): Promise<any> {
-    const body = await req.json()
-    const session = await getServerSession(authConfig)
+    const body = await req.json();
+    const session = await getServerSession(authConfig);
     try {
         const user = await prisma.user.update({
             where: { id: session?.user.id },
             data: {
                 ...body,
-                username: body.username.replace(/\s/g, '')
-            }
-        })
+                ...(body.username && {
+                    username: body.username.replace(/\s/g, ""),
+                }),
+            },
+        });
         const updatePosts = await prisma.post.updateMany({
             where: { userId: session?.user.id },
             data: {
                 author: body.name,
-                authorUsername: body.username.replace(/\s/g, '')
-            }
-        })
+                authorUsername: body.username
+                    ? body.username.replace(/\s/g, "")
+                    : session?.user.id,
+            },
+        });
         if (user && updatePosts) {
-            return NextResponse.json({ status: 200 })
+            return NextResponse.json({ status: 200 });
         }
     } catch (err) {
-        console.log(err)
-        return NextResponse.json({ error: err }, { status: 500 })
+        console.log(err);
+        return NextResponse.json({ error: err }, { status: 500 });
     }
 }

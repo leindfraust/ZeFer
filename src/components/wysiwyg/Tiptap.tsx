@@ -3,14 +3,10 @@
 import "./custom_css/placeholder.css";
 import { useEditor, EditorContent, JSONContent } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
-import TaskList from "@tiptap/extension-task-list";
-import TaskItem from "@tiptap/extension-task-item";
-import HighLight from "@tiptap/extension-highlight";
 import StarterKit from "@tiptap/starter-kit";
 import TiptapImage from "../wysiwyg/custom_extensions/Image";
 import TiptapLink from "@tiptap/extension-link";
 import Youtube from "@tiptap/extension-youtube";
-import CharacterCount from "@tiptap/extension-character-count";
 import NextImage from "next/image";
 import MenuBar from "./menu/MenuBar";
 import parse from "html-react-parser";
@@ -25,6 +21,7 @@ import { validateTag } from "@/utils/actions/tag";
 import Modal from "../ui/Modal";
 import { autocompleteGemini } from "@/utils/actions/wysiwyg";
 import { AutocompleteGemini } from "./custom_extensions/autocomplete";
+import tiptapExtensions from "@/utils/tiptapExt";
 
 export default function Tiptap({
     userId,
@@ -127,13 +124,11 @@ export default function Tiptap({
             </section>
         );
     }
-
+    const extensions = tiptapExtensions();
     const editor = useEditor({
         extensions: [
+            ...extensions,
             Placeholder,
-            HighLight,
-            TaskItem,
-            TaskList,
             AutocompleteGemini,
             TiptapImage.configure({
                 HTMLAttributes: {
@@ -148,8 +143,6 @@ export default function Tiptap({
                     class: "mx-auto",
                 },
             }),
-            CharacterCount,
-            StarterKit,
         ],
         content: (editOrDraft?.content as JSONContent) ?? "",
         editorProps: {
@@ -492,7 +485,7 @@ export default function Tiptap({
         formData.append("tags", JSON.stringify(inputTags));
         formData.append("readPerMinute", readPerMinute as unknown as string);
         formData.append("published", publish ? "true" : "false");
-        formData.append("orgId", selectedOrg?.id ?? "")
+        formData.append("orgId", selectedOrg?.id ?? "");
 
         const passedRequirements = await checkPostRequirements();
         if (passedRequirements) {

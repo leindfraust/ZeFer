@@ -1,13 +1,5 @@
 import prisma from "@/db";
 import type { JSONContent } from "@tiptap/react";
-import TaskList from "@tiptap/extension-task-list";
-import TaskItem from "@tiptap/extension-task-item";
-import HighLight from "@tiptap/extension-highlight";
-import StarterKit from "@tiptap/starter-kit";
-import TiptapImage from "@tiptap/extension-image";
-import TiptapLink from "@tiptap/extension-link";
-import Youtube from "@tiptap/extension-youtube";
-import CharacterCount from "@tiptap/extension-character-count";
 import { generateHTML } from "@tiptap/html";
 import parse from "html-react-parser";
 import Image from "next/image";
@@ -32,6 +24,7 @@ import NextAuthProvider from "@/components/provider/NextAuthProvider";
 import PostReactionButton from "@/components/reactions/actions/PostReactionButton";
 import { PostShareButton } from "@/components/post/PostShareButton";
 import { cn } from "@/utils/cn";
+import tiptapExtensions from "@/utils/tiptapExt";
 
 export async function generateMetadata({
     params,
@@ -107,16 +100,9 @@ export default async function PostPage({
         where: { id: session?.user.id ?? "" },
     });
 
-    const postContent = generateHTML(post?.content as JSONContent, [
-        TaskList,
-        TaskItem,
-        HighLight,
-        StarterKit,
-        TiptapImage,
-        TiptapLink,
-        Youtube,
-        CharacterCount,
-    ]);
+    const extensions = tiptapExtensions();
+
+    const postContent = generateHTML(post?.content as JSONContent, extensions);
     return (
         <PostSlugWatcher postId={post.id}>
             <main className={prose}>

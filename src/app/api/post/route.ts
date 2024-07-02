@@ -8,6 +8,7 @@ import { Post } from "@prisma/client";
 import { getCloudinaryImage, uploadCloudinary } from "@/lib/cloudinary";
 import { revalidatePath } from "next/cache";
 import { postContainerInclude } from "@/utils/prismaQuery";
+import { TagRank } from "@/types/tag";
 //Promise<any> is a temporary fix
 
 export async function GET(req: NextRequest): Promise<any> {
@@ -17,6 +18,7 @@ export async function GET(req: NextRequest): Promise<any> {
         const keyword = url.searchParams.get("q")?.split(" ").join("&");
         const tag = url.searchParams.get("tag");
         const userId = url.searchParams.get("userId");
+        const orgId = url.searchParams.get("orgId")
         const published = url.searchParams.get("published");
         const orderBy = url.searchParams.get("orderBy"); //either latest or most-popular
         interface PrismaQuery {
@@ -29,8 +31,9 @@ export async function GET(req: NextRequest): Promise<any> {
                 author?: {};
                 tags?: {};
                 OR?: [{}, {}];
+                organizationId?:{};
             };
-            orderBy?: {};
+            orderBy?: {} | [];
         }
 
         const prismaQuery: PrismaQuery = {
@@ -43,8 +46,8 @@ export async function GET(req: NextRequest): Promise<any> {
                     published === "true"
                         ? true
                         : published === "false"
-                            ? false
-                            : true, //strict checking of false so when published params is anything but true or false, it always returns true
+                        ? false
+                        : true, //strict checking of false so when published params is anything but true or false, it always returns true
             },
             //when orderBy is not defined as latest or most-popular, default to latest
             orderBy: {
@@ -89,6 +92,13 @@ export async function GET(req: NextRequest): Promise<any> {
                 ],
             };
         }
+        if(orgId){
+            prismaQuery.where = {
+                ...prismaQuery.where,
+                organizationId:orgId
+            
+            }
+        }
 
         if (orderBy === "latest") {
             prismaQuery.orderBy = {
@@ -102,6 +112,154 @@ export async function GET(req: NextRequest): Promise<any> {
                     _count: "desc",
                 },
             };
+        }
+
+        if (orderBy === "relevance") {
+            const session = await getServerSession(authConfig);
+            const tags: string[] = [];
+            const postTitleDesc: string[] = [];
+            const authors: string[] = [];
+            if (session && session.user) {
+                const user = await prisma.user.findUnique({
+                    where: { id: session?.user.id },
+                    include: {
+                        readingHistory: {
+                            take: 100,
+                            include: {
+                                post: true,
+                            },
+                            orderBy: [
+                                {
+                                    readingLength: {
+                                        readingLength: "desc",
+                                    },
+                                },
+                                {
+                                    updatedAt: "desc",
+                                },
+                            ],
+                        },
+                        postReactions: {
+                            take: 100,
+                            include: {
+                                post: true,
+                            },
+                            orderBy: {
+                                updatedAt: "desc",
+                            },
+                        },
+                    },
+                });
+                if (user?.interests) tags.push(...user?.interests);
+                user?.readingHistory.forEach(async (history) => {
+                    tags.push(...history.post.tags);
+                    postTitleDesc.push(history.post.title.toLowerCase());
+                    postTitleDesc.push(history.post.description.toLowerCase());
+                    authors.push(history.post.author);
+                });
+                user?.postReactions.forEach((postReact) => {
+                    tags.push(...postReact.post.tags);
+                    postTitleDesc.push(postReact.post.title.toLowerCase());
+                    postTitleDesc.push(
+                        postReact.post.description.toLowerCase(),
+                    );
+                    authors.push(postReact.post.author);
+                });
+            } else {
+                const tagRankings = await prisma.tagsRanking.findFirst({
+                    orderBy: {
+                        createdAt: "desc",
+                    },
+                });
+                const tagRanks = ((tagRankings?.data as TagRank[]) || []).map(
+                    (tagRank) => tagRank.tag,
+                );
+                const topPosts = await prisma.post.findMany({
+                    take: 100,
+                    orderBy: [
+                        {
+                            views: {
+                                _count: "desc",
+                            },
+                        },
+                        {
+                            postReadingHistories: {
+                                _count: "desc",
+                            },
+                        },
+                        {
+                            postReadingLength: {
+                                _count: "desc",
+                            },
+                        },
+                        {
+                            reactions: {
+                                _count: "desc",
+                            },
+                        },
+                        {
+                            activities: {
+                                _count: "desc",
+                            },
+                        },
+                        {
+                            updatedAt: "desc",
+                        },
+                    ],
+                });
+                topPosts.forEach(async (post) => {
+                    tags.push(...post.tags, ...tagRanks);
+                    postTitleDesc.push(post.title.toLowerCase());
+                    postTitleDesc.push(post.description.toLowerCase());
+                    authors.push(post.author);
+                });
+            }
+            const tagCount: { tag: string; count: number }[] = [];
+            tags.forEach((tag) => {
+                tagCount.push({
+                    tag,
+                    count:
+                        (tagCount.find((count) => count.tag === tag)?.count ||
+                            0) + 1,
+                });
+            });
+            function sortTagsRanking() {
+                const tagList: string[] = [];
+                if (tagCount.length >= 10) {
+                    tagCount
+                        .sort((a, b) => b.count - a.count)
+                        .slice(-10)
+                        .forEach((tag) => tagList.push(tag.tag));
+                } else {
+                    tagCount
+                        .sort((a, b) => b.count - a.count)
+                        .forEach((tag) => tagList.push(tag.tag));
+                }
+                return tagList;
+            }
+            const rankedTags = sortTagsRanking();
+            const compiledInterests = [
+                ...rankedTags,
+                ...postTitleDesc,
+                ...authors,
+            ];
+            const interests = [...new Set(compiledInterests)]
+                .map((interest) => interest.replace(/\s/g, "").toLowerCase())
+                .toString()
+                .split(",")
+                .join("&");
+            prismaQuery.orderBy = [
+                {
+                    _relevance: {
+                        fields: ["tags", "title", "description", "author"],
+                        search: interests,
+                        sort: "desc",
+                    },
+                },
+                {
+                    updatedAt: "desc",
+                },
+            ];
         }
 
         const posts = await prisma.post.findMany({
@@ -150,6 +308,7 @@ export async function GET(req: NextRequest): Promise<any> {
 
         return NextResponse.json({ data }, { status: 200 });
     } catch (err) {
+        console.log(err);
         return NextResponse.json({ err }, { status: 500 });
     }
 }
@@ -160,7 +319,7 @@ export async function POST(req: NextRequest): Promise<any> {
         ? (body.get("image_total") as unknown as number)
         : (0 as number);
     const images = () => {
-        let imageFiles: FormDataEntryValue[] = [];
+        const imageFiles: FormDataEntryValue[] = [];
         if (image_total > 0) {
             for (let i = 0; i < image_total; i++) {
                 const image = body.get(`image_${i}`);
@@ -249,7 +408,7 @@ export async function POST(req: NextRequest): Promise<any> {
             const contentImages = content.content?.filter(
                 (image) => image.type === "image",
             ) as JSONContent[];
-            let uploaded: Array<Record<string, any>> = [];
+            const uploaded: Array<Record<string, any>> = [];
             for (const [index, image] of Object.entries(images())) {
                 const cloudinary = await uploadCloudinary({
                     file: image,
@@ -263,9 +422,9 @@ export async function POST(req: NextRequest): Promise<any> {
             if (uploaded) {
                 if (
                     Object.keys(uploaded).length ===
-                    Object.keys(images()).length &&
+                        Object.keys(images()).length &&
                     Object.keys(contentImages).length ===
-                    Object.keys(uploaded).length
+                        Object.keys(uploaded).length
                 ) {
                     if (contentImages) {
                         for (const [index, image] of Object.entries(

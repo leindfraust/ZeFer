@@ -65,6 +65,7 @@
     "typescript": "5.4.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.45.0",
     "@tailwindcss/typography": "^0.5.13",
     "daisyui": "^4.11.1",
     "prisma": "^5.14.0",

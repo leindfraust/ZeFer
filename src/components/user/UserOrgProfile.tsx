@@ -78,7 +78,7 @@ const UserOrgProfile = async ({
                                     </span>
                                 ) : org ? (
                                     <span>
-                                        Created on
+                                        Created on {" "}
                                         {new Date(org.createdAt).toDateString()}{" "}
                                     </span>
                                 ) : null}
@@ -115,9 +115,9 @@ const UserOrgProfile = async ({
                                 size="lg"
                             />
                             <p className="text-lg ">
-                                {user && followers
+                                {user 
                                     ? `${followers} followers`
-                                    : `${members} members`}{" "}
+                                    : `${members} members`}
                             </p>
                         </div>
                         {user && user.occupation && (

@@ -22,3 +22,5 @@ jobs:
                   name: playwright-report
                   path: playwright-report/
                   retention-days: 30
+              env:
+                  BASE_URL: ${{ github.event.deployment_status.environment_url }}

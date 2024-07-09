@@ -14,10 +14,12 @@ export default function PostList({
     tag,
     userId,
     published,
+    orgId
 }: {
     keyword?: string;
     tag?: string;
     userId?: string;
+    orgId?:string;
     published?: boolean;
 }) {
     const [refetchAllowed, setRefetchAllowed] = useState<boolean>(false);
@@ -33,8 +35,9 @@ export default function PostList({
             q: keyword ?? "",
             tag: tag ?? "",
             userId: userId ?? "",
-            orderBy: feed ?? "latest", //we set the default value to desc for our sorting so that is latest in our feed
-            published: published ? published.toString() : "true", //we set the default value to true as to reduce the possibilities of showing unpublished bloigss
+            orgId:orgId ?? "",
+            orderBy: feed ?? "relevance", //we set the default value to desc for our sorting so that is latest in our feed
+            published: published ? published.toString() : "true", //we set the default value to true as to reduce the possibilities of showing unpublished blogs
             cursor: cursor,
         });
         const response = await fetch(`/api/post?${params}`);
@@ -80,7 +83,7 @@ export default function PostList({
             );
         replace(
             `${pathName}?${keyword ? `q=${keyword}&` : ""}feed=${
-                feed ?? "latest"
+                feed ?? "relevance"
             }`,
             { scroll: false },
         );
@@ -96,7 +99,7 @@ export default function PostList({
     ]);
 
     useEffect(() => {
-        if (feed !== "latest" && feed) setRefetchAllowed(true);
+        if (feed !== "relevance" && feed) setRefetchAllowed(true);
     }, [feed]);
 
     useEffect(() => {
@@ -114,6 +117,14 @@ export default function PostList({
                         keyword ? "justify-end" : "justify-start"
                     } space-x-4`}
                 >
+                    <h3
+                        className={`text-xl cursor-pointer hover:underline ${
+                            feed === "relevance" ? "underline" : ""
+                        }`}
+                        onClick={() => setFeed("relevance")}
+                    >
+                        Relevant
+                    </h3>
                     <h3
                         className={`text-xl cursor-pointer hover:underline ${
                             feed === "latest" ? "underline" : ""
@@ -141,8 +152,10 @@ export default function PostList({
                                 (
                                     post: Post & {
                                         organization: {
+                                            id:string;
                                             name: string;
                                             image: string;
+                                            username:string;
                                         } | null;
                                     },
                                     index: string,

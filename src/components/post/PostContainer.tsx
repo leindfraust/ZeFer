@@ -30,8 +30,10 @@ export default function PostContainer({
         comments: number;
     };
     organization: {
+        id:string;
         name: string;
         image: string;
+        username:string;
     } | null;
 }) {
     const timeDiffCalc = useMemo(() => {
@@ -67,6 +69,7 @@ export default function PostContainer({
                                     </div>
                                 </div>
                                 {organizationId && organization && (
+                                    <Link href={`/organization/${organization.username ?? organization.id}`}>   
                                     <div className="avatar">
                                         <div className="w-12 rounded">
                                             <Image
@@ -81,14 +84,17 @@ export default function PostContainer({
                                             />
                                         </div>
                                     </div>
+                                    </Link>
                                 )}
                             </div>
                             <div className="container">
-                                <p className="text-xs ml-1">
-                                    {organizationId && organization
-                                        ? `${author} for ${organization.name}`
-                                        : author}
-                                </p>
+                             {organizationId && organization ? (
+                                 <Link href={`/organization/${organization.username ?? organization.id}`}>   
+                                {`${author} for ${organization.name}`}
+                                </Link>
+                             ) :  (
+                                <p>{author}</p>
+                             )}
                                 <p className="text-xs ml-1">
                                     {new Date(createdAt).toLocaleDateString(
                                         undefined,

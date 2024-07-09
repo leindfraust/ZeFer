@@ -1,15 +1,7 @@
 "use client";
 
 import { CommentReaction, PostComment } from "@prisma/client";
-import CharacterCount from "@tiptap/extension-character-count";
-import TaskItem from "@tiptap/extension-task-item";
-import TaskList from "@tiptap/extension-task-list";
-import Youtube from "@tiptap/extension-youtube";
-import HighLight from "@tiptap/extension-highlight";
-import TiptapImage from "@tiptap/extension-image";
-import TiptapLink from "@tiptap/extension-link";
 import { generateHTML, JSONContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
 import Image from "next/image";
 import parse from "html-react-parser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,6 +20,7 @@ import { useSession } from "next-auth/react";
 import { isCommentOwner } from "@/utils/actions/comments";
 import { deleteComments } from "@/utils/actions/comments";
 import Modal from "@/components/ui/Modal";
+import tiptapExtensions from "@/utils/tiptapExt";
 export default function CommentContainer({
     id,
     userId,
@@ -53,16 +46,8 @@ export default function CommentContainer({
     const [ownComment, setOwnComment] = useState<string>();
     const [ownPost, setOwnPost] = useState<string>();
     const prose = "prose prose-sm sm:prose lg:prose-lg";
-    const postCommentContent = generateHTML(content as JSONContent, [
-        TaskList,
-        TaskItem,
-        HighLight,
-        StarterKit,
-        TiptapImage,
-        TiptapLink,
-        Youtube,
-        CharacterCount,
-    ]);
+    const extensions = tiptapExtensions();
+    const postCommentContent = generateHTML(content as JSONContent, extensions);
 
     const getReplyComments = async () => {
         const params = new URLSearchParams({

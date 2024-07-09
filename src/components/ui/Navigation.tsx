@@ -157,7 +157,7 @@ export default function Navigation({
                             >
                                 <li>
                                     <Link
-                                        href={`/${username ?? id}`}
+                                        href={`/${username || id}`}
                                         className="!block justify-between"
                                     >
                                         <p className="text-lg font-bold">

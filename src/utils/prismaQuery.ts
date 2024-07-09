@@ -8,8 +8,10 @@ export function postContainerInclude() {
         },
         organization: {
             select: {
+                id:true,
                 name: true,
                 image: true,
+                username:true,
             },
         },
     }

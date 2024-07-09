@@ -18,7 +18,7 @@ export async function GET(req: NextRequest): Promise<any> {
         const keyword = url.searchParams.get("q")?.split(" ").join("&");
         const tag = url.searchParams.get("tag");
         const userId = url.searchParams.get("userId");
-        const orgId = url.searchParams.get("orgId")
+        const orgId = url.searchParams.get("orgId");
         const published = url.searchParams.get("published");
         const orderBy = url.searchParams.get("orderBy"); //either latest or most-popular
         interface PrismaQuery {
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest): Promise<any> {
                 author?: {};
                 tags?: {};
                 OR?: [{}, {}];
-                organizationId?:{};
+                organizationId?: {};
             };
             orderBy?: {} | [];
         }
@@ -92,12 +92,11 @@ export async function GET(req: NextRequest): Promise<any> {
                 ],
             };
         }
-        if(orgId){
+        if (orgId) {
             prismaQuery.where = {
                 ...prismaQuery.where,
-                organizationId:orgId
-            
-            }
+                organizationId: orgId,
+            };
         }
 
         if (orderBy === "latest") {
@@ -244,7 +243,9 @@ export async function GET(req: NextRequest): Promise<any> {
                 ...authors,
             ];
             const interests = [...new Set(compiledInterests)]
-                .map((interest) => interest.replace(/\s/g, "").toLowerCase())
+                .map((interest) =>
+                    interest.replace(/[\s\W]/g, "").toLowerCase(),
+                )
                 .toString()
                 .split(",")
                 .join("&");

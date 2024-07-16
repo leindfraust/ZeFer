@@ -31,5 +31,6 @@ Sentry.init({
             maskAllText: true,
             blockAllMedia: true,
         }),
+        Sentry.rewriteFramesIntegration(),
     ],
 });

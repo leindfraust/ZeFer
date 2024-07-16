@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.1.0",
+    "@ducanh2912/next-pwa": "^10.2.7",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/free-brands-svg-icons": "^6.5.2",
     "@fortawesome/free-regular-svg-icons": "^6.5.2",
@@ -68,6 +69,7 @@
     "@tailwindcss/typography": "^0.5.13",
     "daisyui": "^4.11.1",
     "prisma": "^5.14.0",
-    "tailwind-scrollbar": "^3.1.0"
+    "tailwind-scrollbar": "^3.1.0",
+    "webpack": "^5.93.0"
   }
 }

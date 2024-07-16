@@ -31,7 +31,7 @@ export async function generateMetadata({
     )?.url;
 
     return {
-        title: `${user?.name} - ZeFer`,
+        title: `${user?.name}`,
         description: user?.bio,
         openGraph: { images: [user?.image as string] },
         twitter: { site: websiteUrl },
@@ -98,7 +98,13 @@ export default async function ProfilePage({
 
     return (
         <Fragment>
-        <UserOrgProfile user={user} followers={followers as number} posts={posts as number} userId={userId} checkIfUserAlreadyFollowed={checkIfUserAlreadyFollowed}/>
+            <UserOrgProfile
+                user={user}
+                followers={followers as number}
+                posts={posts as number}
+                userId={userId}
+                checkIfUserAlreadyFollowed={checkIfUserAlreadyFollowed}
+            />
         </Fragment>
     );
 }

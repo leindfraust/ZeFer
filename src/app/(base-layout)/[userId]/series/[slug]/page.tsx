@@ -30,7 +30,7 @@ export async function generateMetadata({
         },
     });
     return {
-        title: `${user?.name}'s Series ${postSeries?.title} - ZeFer`,
+        title: `${user?.name}'s Series ${postSeries?.title}`,
         description: postSeries?.description,
         authors: [{ name: user?.name as string }],
     };

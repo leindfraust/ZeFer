@@ -27,7 +27,7 @@ export async function generateMetadata({
         },
     });
     return {
-        title: `Edit Post: ${post?.title} - ZeFer`,
+        title: `Edit Post: ${post?.title}`,
         description: post?.description,
         openGraph: { images: [post?.coverImage as string] },
         authors: [{ name: post?.author }],

@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import LinkMenu from "@/components/ui/LinkMenu";
 
 export const metadata: Metadata = {
-    title: "Notifications - ZeFer",
+    title: "Notifications",
 };
 
 export default async function ManageLayout({

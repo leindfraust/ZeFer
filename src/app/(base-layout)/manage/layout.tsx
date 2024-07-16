@@ -2,7 +2,7 @@ import LinkMenu from "@/components/ui/LinkMenu";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Manage - ZeFer",
+    title: "Manage",
 };
 
 export default async function ManageLayout({

@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 import socketURL from "./src/utils/socketURL.mjs";
+import withPWAInit from "@ducanh2912/next-pwa";
+
+const withPWA = withPWAInit({
+    dest: "public",
+});
+
 const nextConfig = {
     experimental: {
         instrumentationHook: true,
@@ -61,7 +67,7 @@ const nextConfig = {
     },
 };
 
-export { nextConfig };
+export { nextConfig, withPWA };
 
 // Injected content via Sentry wizard below
 
@@ -69,6 +75,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const sentryConfig = withSentryConfig(
     nextConfig,
+    withPWA,
     {
         // For all available options, see:
         // https://github.com/getsentry/sentry-webpack-plugin#options

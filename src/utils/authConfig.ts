@@ -8,7 +8,6 @@ import generateRandom4DigitNumber from "./randomNumberGen4Digit";
 
 export const authConfig: AuthOptions = {
     adapter: PrismaAdapter(prisma) as Adapter,
-    secret: process.env.NEXTAUTH_SECRET as string,
     session: {
         strategy: "jwt",
     },
@@ -44,6 +43,7 @@ export const authConfig: AuthOptions = {
             },
         }),
     ],
+    secret: process.env.NEXTAUTH_SECRET as string,
     callbacks: {
         session: ({ session, token }) => ({
             ...session,

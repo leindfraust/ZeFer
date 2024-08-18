@@ -5,6 +5,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { AuthOptions } from "next-auth";
 import { Adapter } from "next-auth/adapters";
 import generateRandom4DigitNumber from "./randomNumberGen4Digit";
+import EmailProvider from "next-auth/providers/email";
 
 export const authConfig: AuthOptions = {
     adapter: PrismaAdapter(prisma) as Adapter,
@@ -12,6 +13,17 @@ export const authConfig: AuthOptions = {
         strategy: "jwt",
     },
     providers: [
+        EmailProvider({
+            server: {
+                host: process.env.EMAIL_SERVER_HOST,
+                port: process.env.EMAIL_SERVER_PORT as unknown as number,
+                auth: {
+                    user: process.env.EMAIL_SERVER_USER,
+                    pass: process.env.RESEND_API_KEY,
+                },
+            },
+            from: "no-reply@zefer.blog",
+        }),
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID as string,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,

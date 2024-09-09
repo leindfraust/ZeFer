@@ -1,10 +1,12 @@
 .bgzefergradient {
     background: linear-gradient(
         278deg,
-        #191e24 5.31%,
-        rgba(25, 30, 36, 0.49) 32.76%,
-        rgba(103, 49, 26, 0.51) 69.2%,
-        #fb5607 101.14%
+        #002b36 5.31%,
+        /* Deep green, reminiscent of Christmas trees */ rgba(0, 51, 102, 0.49)
+            32.76%,
+        /* Dark blue, like a wintry night sky */ rgba(255, 0, 0, 0.51) 69.2%,
+        /* Festive red, evoking holiday cheer */ #fff5f0 101.14%
+            /* Soft off-white, like snow */
     );
     /* Add other styles if needed */
 }

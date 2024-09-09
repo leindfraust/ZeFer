@@ -53,7 +53,7 @@ export default function ZeFerBgHomepage({
             {!isLoggedIn && (
                 <div
                     ref={ref}
-                    className={`hero min-h-[60vh] ${zeferCss.bgzefergradient}`}
+                    className={`hero min-h-[70vh] ${zeferCss.bgzefergradient}`}
                 >
                     <div className="hero-content text-center">
                         {!isLoggedIn && navBackgroundTransparent && (
@@ -66,15 +66,17 @@ export default function ZeFerBgHomepage({
                                 </NextAuthProvider>
                             </QueryWrapper>
                         )}
-                        <div className="max-w-md space-y-4">
+                        <div className="max-w-fit space-y-4">
                             <Image
                                 src={"/zefer-text.svg"}
                                 width={500}
                                 height={500}
                                 alt="zefer logo with text zefer"
+                                style={{ display: "block", margin: "0 auto" }}
                             />
-                            <h1 className="text-xl lg:text-3xl text-white">
-                                Tell your story to the world.
+                            <h1 className=" text text-white text-xl lg:text-3xl">
+                                Craft and tell your holiday stories, poems and
+                                articles to the world.
                             </h1>
                         </div>
                     </div>

@@ -119,7 +119,6 @@ export async function GET(req: NextRequest): Promise<any> {
             const tags: string[] = [];
             const postTitleDesc: string[] = [];
             const authors: string[] = [];
-            console.log("POST ID", postId);
             if (postId) {
                 const currentPost = await prisma.post.findUnique({
                     where: {

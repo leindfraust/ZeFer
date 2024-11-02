@@ -25,6 +25,7 @@ import PostReactionButton from "@/components/reactions/actions/PostReactionButto
 import { PostShareButton } from "@/components/post/PostShareButton";
 import { cn } from "@/utils/cn";
 import tiptapExtensions from "@/utils/tiptapExt";
+import PostList from "@/components/post/PostList";
 
 export async function generateMetadata({
     params,
@@ -331,6 +332,13 @@ export default async function PostPage({
                     </NextAuthProvider>
                 </div>
             </main>
+            <section className="lg:max-w-[70vw] lg:mx-auto ml-4 mr-4">
+                <div className="divider divider-vertical"></div>
+                <h3 className="text-2xl font-bold mb-8">Read Next</h3>
+                <QueryWrapper>
+                    <PostList postId={post.id} isHideFeedOpts={true} />
+                </QueryWrapper>
+            </section>
         </PostSlugWatcher>
     );
 }

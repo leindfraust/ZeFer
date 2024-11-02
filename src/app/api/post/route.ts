@@ -17,6 +17,7 @@ export async function GET(req: NextRequest): Promise<any> {
         const lastCursor = url.searchParams.get("cursor");
         const keyword = url.searchParams.get("q")?.split(" ").join("&");
         const tag = url.searchParams.get("tag");
+        const postId = url.searchParams.get("postId");
         const userId = url.searchParams.get("userId");
         const orgId = url.searchParams.get("orgId");
         const published = url.searchParams.get("published");
@@ -118,6 +119,26 @@ export async function GET(req: NextRequest): Promise<any> {
             const tags: string[] = [];
             const postTitleDesc: string[] = [];
             const authors: string[] = [];
+            if (postId) {
+                const currentPost = await prisma.post.findUnique({
+                    where: {
+                        id: postId,
+                    },
+                });
+                if (currentPost) {
+                    if (currentPost.title)
+                        postTitleDesc.push(currentPost.title.toLowerCase());
+                    if (currentPost?.description)
+                        postTitleDesc.push(
+                            currentPost.description.toLowerCase(),
+                        );
+                    if (currentPost?.author) authors.push(currentPost.author);
+                    if (currentPost?.tags && currentPost.tags.length > 0)
+                        for (const currentPostTag of currentPost?.tags) {
+                            tags.push(currentPostTag);
+                        }
+                }
+            }
             if (session && session.user) {
                 const user = await prisma.user.findUnique({
                     where: { id: session?.user.id },

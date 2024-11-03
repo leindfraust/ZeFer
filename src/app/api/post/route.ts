@@ -26,6 +26,7 @@ export async function GET(req: NextRequest): Promise<any> {
             include: {};
             where: {
                 NOT: {};
+                id?: {};
                 published: boolean;
                 title?: {};
                 description?: {};
@@ -43,6 +44,11 @@ export async function GET(req: NextRequest): Promise<any> {
                 NOT: {
                     coverImage: null, //this is a safety mechanism as that all posts requires a coverImage
                 },
+                ...(postId && {
+                    id: {
+                        not: postId,
+                    },
+                }),
                 published:
                     published === "true"
                         ? true

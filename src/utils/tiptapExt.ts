@@ -7,16 +7,44 @@ import Link from "@tiptap/extension-link";
 import Youtube from "@tiptap/extension-youtube";
 import CharacterCount from "@tiptap/extension-character-count";
 
-export default function tiptapExtensions() {
+type exclusionList =
+    | "TaskList"
+    | "TaskItem"
+    | "HighLight"
+    | "StarterKit"
+    | "Image"
+    | "Link"
+    | "Youtube"
+    | "CharacterCount";
+
+export default function tiptapExtensions(
+    toExclude?: exclusionList | exclusionList[],
+) {
     const extensions = [
-        TaskList,
-        TaskItem,
-        HighLight,
-        StarterKit,
-        Image,
-        Link,
-        Youtube,
-        CharacterCount,
+        { name: "TaskList", ext: TaskList },
+        { name: "TaskItem", ext: TaskItem },
+        { name: "HighLight", ext: HighLight },
+        { name: "StarterKit", ext: StarterKit },
+        { name: "Image", ext: Image },
+        { name: "Link", ext: Link },
+        { name: "Youtube", ext: Youtube },
+        { name: "CharacterCount", ext: CharacterCount },
     ];
-    return extensions;
+
+    if (toExclude) {
+        if (Array.isArray(toExclude)) {
+            return extensions
+                .filter(
+                    (extension) =>
+                        !toExclude.includes(extension.name as exclusionList),
+                )
+                .map((extension) => extension.ext);
+        } else {
+            return extensions
+                .filter((extension) => extension.name !== toExclude)
+                .map((extension) => extension.ext);
+        }
+    }
+
+    return extensions.map((extension) => extension.ext);
 }

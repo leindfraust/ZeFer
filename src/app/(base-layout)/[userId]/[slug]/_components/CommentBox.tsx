@@ -42,8 +42,9 @@ export default function CommentBox({
     const { data: session, status } = useSession();
     const [submitState, setSubmitState] = useState<boolean>(false);
     const socket = useSocket();
-    const extensions = tiptapExtensions();
+    const extensions = tiptapExtensions(["Image", "Link", "Youtube"]);
     const editor = useEditor({
+        immediatelyRender: false,
         extensions: [
             ...extensions,
             Placeholder.configure({

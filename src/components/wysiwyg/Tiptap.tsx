@@ -113,7 +113,7 @@ export default function Tiptap({
                         {inputTags.map((tag: string, index: number) => (
                             <Fragment key={index}>
                                 <Link href="/">
-                                    <p className="text-sm">#{tag}</p>
+                                    <p className="text-sm">#{tags}</p>
                                 </Link>
                             </Fragment>
                         ))}
@@ -124,8 +124,9 @@ export default function Tiptap({
             </section>
         );
     }
-    const extensions = tiptapExtensions();
+    const extensions = tiptapExtensions(["Image", "Link", "Youtube"]);
     const editor = useEditor({
+        immediatelyRender: false,
         extensions: [
             ...extensions,
             Placeholder,
@@ -212,6 +213,7 @@ export default function Tiptap({
     ]);
 
     const editorTitle = useEditor({
+        immediatelyRender: false,
         extensions: [
             Placeholder.configure({
                 placeholder: "Your title here",
@@ -227,6 +229,7 @@ export default function Tiptap({
     });
 
     const editorDescription = useEditor({
+        immediatelyRender: false,
         extensions: [
             Placeholder.configure({
                 placeholder: "A discerning description",
@@ -239,13 +242,6 @@ export default function Tiptap({
                 class: prose,
             },
         },
-    });
-
-    useEffect(() => {
-        if (editorTitle?.isEmpty || editorDescription?.isEmpty) {
-            editorTitle?.commands.setHeading({ level: 1 });
-            editorDescription?.commands.setHeading({ level: 4 });
-        }
     });
 
     useEffect(() => {

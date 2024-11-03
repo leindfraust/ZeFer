@@ -14,13 +14,19 @@ export default function PostList({
     tag,
     userId,
     published,
-    orgId
+    orgId,
+    postId,
+    isHideCurrentPost = false,
+    isHideFeedOpts = false,
 }: {
     keyword?: string;
     tag?: string;
     userId?: string;
-    orgId?:string;
+    orgId?: string;
+    postId?: string;
     published?: boolean;
+    isHideCurrentPost?: boolean;
+    isHideFeedOpts?: boolean;
 }) {
     const [refetchAllowed, setRefetchAllowed] = useState<boolean>(false);
     const pathName = usePathname();
@@ -29,13 +35,14 @@ export default function PostList({
         searchParams.get("feed") as "relevance" | "latest" | "most-popular",
     );
     const { replace } = useRouter();
-
     const getPosts = async ({ cursor }: { cursor: string }) => {
         const params = new URLSearchParams({
             q: keyword ?? "",
             tag: tag ?? "",
             userId: userId ?? "",
-            orgId:orgId ?? "",
+            orgId: orgId ?? "",
+            postId: postId ?? "",
+            isHideCurrentPost: isHideCurrentPost.toString(),
             orderBy: feed ?? "relevance", //we set the default value to desc for our sorting so that is latest in our feed
             published: published ? published.toString() : "true", //we set the default value to true as to reduce the possibilities of showing unpublished blogs
             cursor: cursor,
@@ -111,38 +118,39 @@ export default function PostList({
 
     return (
         <>
-            {data?.pageParams.filter((param) => param !== "").length !== 0 && (
-                <div
-                    className={`flex items-center mb-6 ${
-                        keyword ? "justify-end" : "justify-start"
-                    } space-x-4`}
-                >
-                    <h3
-                        className={`text-xl cursor-pointer hover:underline ${
-                            feed === "relevance" ? "underline" : ""
-                        }`}
-                        onClick={() => setFeed("relevance")}
+            {data?.pageParams.filter((param) => param !== "").length !== 0 &&
+                !isHideFeedOpts && (
+                    <div
+                        className={`flex items-center mb-6 ${
+                            keyword ? "justify-end" : "justify-start"
+                        } space-x-4`}
                     >
-                        Relevant
-                    </h3>
-                    <h3
-                        className={`text-xl cursor-pointer hover:underline ${
-                            feed === "latest" ? "underline" : ""
-                        }`}
-                        onClick={() => setFeed("latest")}
-                    >
-                        Latest
-                    </h3>
-                    <h3
-                        className={`text-xl cursor-pointer hover:underline ${
-                            feed === "most-popular" ? "underline" : ""
-                        }`}
-                        onClick={() => setFeed("most-popular")}
-                    >
-                        Most Popular
-                    </h3>
-                </div>
-            )}
+                        <h3
+                            className={`text-xl cursor-pointer hover:underline ${
+                                feed === "relevance" ? "underline" : ""
+                            }`}
+                            onClick={() => setFeed("relevance")}
+                        >
+                            Relevant
+                        </h3>
+                        <h3
+                            className={`text-xl cursor-pointer hover:underline ${
+                                feed === "latest" ? "underline" : ""
+                            }`}
+                            onClick={() => setFeed("latest")}
+                        >
+                            Latest
+                        </h3>
+                        <h3
+                            className={`text-xl cursor-pointer hover:underline ${
+                                feed === "most-popular" ? "underline" : ""
+                            }`}
+                            onClick={() => setFeed("most-popular")}
+                        >
+                            Most Popular
+                        </h3>
+                    </div>
+                )}
             <div className="space-y-4">
                 {isSuccess && !isLoading && !isRefetching ? (
                     data?.pages.map(
@@ -152,10 +160,10 @@ export default function PostList({
                                 (
                                     post: Post & {
                                         organization: {
-                                            id:string;
+                                            id: string;
                                             name: string;
                                             image: string;
-                                            username:string;
+                                            username: string;
                                         } | null;
                                     },
                                     index: string,

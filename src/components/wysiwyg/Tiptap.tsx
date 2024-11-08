@@ -244,6 +244,13 @@ export default function Tiptap({
         },
     });
 
+    // temporarily fixes the title and desc heading when cleared by the user, only sets heading again when there is a content
+    useEffect(() => {
+        editorTitle?.commands.setHeading({ level: 1 });
+        editorDescription?.commands.setHeading({ level: 4 });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [editorDescription?.$doc.textContent, editorTitle?.$doc.textContent]);
+
     useEffect(() => {
         const savePostDraft = async () => {
             if (publishState) return;

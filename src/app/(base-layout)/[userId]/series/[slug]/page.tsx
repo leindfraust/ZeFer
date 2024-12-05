@@ -8,9 +8,9 @@ import { Fragment } from "react";
 export async function generateMetadata({
     params,
 }: {
-    params: { userId: string; slug: string };
+    params: Promise<{ userId: string; slug: string }>;
 }): Promise<Metadata> {
-    const { userId, slug } = params;
+    const { userId, slug } = await params;
     const user = await prisma.user.findFirst({
         where: {
             OR: [
@@ -39,9 +39,9 @@ export async function generateMetadata({
 export default async function SeriesUserPage({
     params,
 }: {
-    params: { userId: string; slug: string };
+    params: Promise<{ userId: string; slug: string }>;
 }) {
-    const { userId, slug } = params;
+    const { userId, slug } = await params;
     const user = await prisma.user.findFirst({
         where: {
             OR: [

@@ -10,9 +10,9 @@ import UserOrgProfile from "@/components/user/UserOrgProfile";
 export async function generateMetadata({
     params,
 }: {
-    params: { userId: string };
+    params: Promise<{ userId: string }>;
 }): Promise<Metadata> {
-    const { userId } = params;
+    const { userId } = await params;
     const user = await prisma.user.findFirst({
         where: {
             OR: [
@@ -41,9 +41,9 @@ export async function generateMetadata({
 export default async function ProfilePage({
     params,
 }: {
-    params: { userId: string };
+    params: Promise<{ userId: string }>;
 }) {
-    const { userId } = params;
+    const { userId } = await params;
     const session = await getServerSession(authConfig);
     const user = await prisma.user.findFirst({
         where: {

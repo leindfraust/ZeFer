@@ -4,9 +4,9 @@ import { notFound } from "next/navigation";
 export default async function EmailVeritification({
     params,
 }: {
-    params: { code: string; userId: string };
+    params: Promise<{ code: string; userId: string }>;
 }) {
-    const { code, userId } = params;
+    const { code, userId } = await params;
     if (!code || !userId) notFound();
     const verify = await verifyEmail(code, userId);
 

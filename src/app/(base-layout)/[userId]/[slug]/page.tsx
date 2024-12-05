@@ -30,9 +30,9 @@ import PostList from "@/components/post/PostList";
 export async function generateMetadata({
     params,
 }: {
-    params: { userId: string; slug: string };
+    params: Promise<{ userId: string; slug: string }>;
 }): Promise<Metadata> {
-    const { userId, slug } = params;
+    const { userId, slug } = await params;
     const post = await prisma.post.findUnique({
         where: {
             titleId: slug,
@@ -58,11 +58,11 @@ export async function generateMetadata({
 export default async function PostPage({
     params,
 }: {
-    params: { userId: string; slug: string };
+    params: Promise<{ userId: string; slug: string }>;
 }) {
     const prose =
         "min-h-screen prose prose-sm sm:prose lg:prose-lg mx-auto mt-12 mb-12 mr-4 ml-4 sm:mr-auto sm:ml-auto max-w-md focus:outline-none";
-    const { slug, userId } = params;
+    const { slug, userId } = await params;
     const post = await prisma.post.findUnique({
         where: {
             titleId: slug,

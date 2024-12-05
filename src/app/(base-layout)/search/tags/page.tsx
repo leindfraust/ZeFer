@@ -1,12 +1,13 @@
 import QueryWrapper from "@/components/provider/QueryWrapper";
 import TagList from "@/components/tag/TagList";
 
-export default function SearchTags({
+export default async function SearchTags({
     searchParams,
 }: {
-    searchParams: { q?: string };
+    searchParams: Promise<{ q?: string }>;
 }) {
-    const keyword = searchParams.q;
+    const { q } = await searchParams;
+    const keyword = q;
     return (
         <QueryWrapper>
             <TagList keyword={keyword as string} />

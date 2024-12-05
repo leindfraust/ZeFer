@@ -13,8 +13,9 @@ import { Fragment, Suspense } from "react";
 export default async function TagPosts({
     params,
 }: {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }) {
+    const { slug } = await params;
     const session = await getServerSession(authConfig);
     const getTags = await prisma.tagsRanking.findFirst({
         take: 1,
@@ -28,7 +29,7 @@ export default async function TagPosts({
             post: {
                 some: {
                     tags: {
-                        has: params.slug,
+                        has: slug,
                     },
                 },
             },
@@ -46,7 +47,7 @@ export default async function TagPosts({
         },
     });
     const tag = getTags?.data.find(
-        (tag) => (tag as TagRank).tag === params.slug,
+        (tag) => (tag as TagRank).tag === slug,
     ) as TagRank;
     if (!tag) {
         notFound();
@@ -85,7 +86,7 @@ export default async function TagPosts({
                 <div className="flex-1 ml-4 mr-4">
                     <QueryWrapper>
                         <Suspense>
-                            <PostList tag={params.slug} />
+                            <PostList tag={slug} />
                         </Suspense>
                     </QueryWrapper>
                 </div>

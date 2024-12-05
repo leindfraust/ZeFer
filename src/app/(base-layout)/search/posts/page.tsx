@@ -2,12 +2,13 @@ import PostList from "@/components/post/PostList";
 import QueryWrapper from "@/components/provider/QueryWrapper";
 import { Suspense } from "react";
 
-export default function SearchPosts({
+export default async function SearchPosts({
     searchParams,
 }: {
-    searchParams: { q?: string };
+    searchParams: Promise<{ q?: string }>;
 }) {
-    const keyword = searchParams.q;
+    const { q } = await searchParams;
+    const keyword = q;
     return (
         <QueryWrapper>
             <Suspense>

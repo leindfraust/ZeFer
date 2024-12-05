@@ -25,6 +25,7 @@ export async function autocompleteGemini(words: string) {
         if (text.includes("false") || text.includes("False")) return false;
         return text;
     } catch (err) {
+        console.error(err);
         return false;
     }
 }

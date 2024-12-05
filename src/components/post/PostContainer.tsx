@@ -30,10 +30,10 @@ export default function PostContainer({
         comments: number;
     };
     organization: {
-        id:string;
+        id: string;
         name: string;
         image: string;
-        username:string;
+        username: string;
     } | null;
 }) {
     const timeDiffCalc = useMemo(() => {
@@ -69,32 +69,42 @@ export default function PostContainer({
                                     </div>
                                 </div>
                                 {organizationId && organization && (
-                                    <Link href={`/organization/${organization.username ?? organization.id}`}>   
-                                    <div className="avatar">
-                                        <div className="w-12 rounded">
-                                            <Image
-                                                src={
-                                                    organization.image as string
-                                                }
-                                                alt={
-                                                    organization.name as string
-                                                }
-                                                width={64}
-                                                height={64}
-                                            />
+                                    <Link
+                                        href={`/organization/${
+                                            organization.username ??
+                                            organization.id
+                                        }`}
+                                    >
+                                        <div className="avatar">
+                                            <div className="w-12 rounded">
+                                                <Image
+                                                    src={
+                                                        organization.image as string
+                                                    }
+                                                    alt={
+                                                        organization.name as string
+                                                    }
+                                                    width={64}
+                                                    height={64}
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
                                     </Link>
                                 )}
                             </div>
                             <div className="container">
-                             {organizationId && organization ? (
-                                 <Link href={`/organization/${organization.username ?? organization.id}`}>   
-                                {`${author} for ${organization.name}`}
-                                </Link>
-                             ) :  (
-                                <p>{author}</p>
-                             )}
+                                {organizationId && organization ? (
+                                    <Link
+                                        href={`/organization/${
+                                            organization.username ??
+                                            organization.id
+                                        }`}
+                                    >
+                                        {`${author} for ${organization.name}`}
+                                    </Link>
+                                ) : (
+                                    <p>{author}</p>
+                                )}
                                 <p className="text-xs ml-1">
                                     {new Date(createdAt).toLocaleDateString(
                                         undefined,

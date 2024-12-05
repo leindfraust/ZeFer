@@ -113,7 +113,7 @@ export default function Tiptap({
                         {inputTags.map((tag: string, index: number) => (
                             <Fragment key={index}>
                                 <Link href="/">
-                                    <p className="text-sm">#{tags}</p>
+                                    <p className="text-sm">#{tag}</p>
                                 </Link>
                             </Fragment>
                         ))}

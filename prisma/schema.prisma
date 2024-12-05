@@ -82,6 +82,7 @@ model User {
 
   @@unique([id, name, image])
   @@unique([id, name, username, image])
+  @@index([name])
   @@schema("users")
 }
 
@@ -148,6 +149,7 @@ model Post {
   organizationId       String?
   organization         Organization?        @relation(fields: [organizationId], references: [id])
 
+  @@index([author, title, description, content, tags, readPerMinute])
   @@schema("posts")
 }
 
@@ -173,6 +175,7 @@ model PostSeries {
   author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   updatedAt   DateTime @default(now()) @updatedAt
 
+  @@index([title, description])
   @@schema("posts")
 }
 
@@ -318,5 +321,6 @@ model Organization {
   updatedAt DateTime @updatedAt
   posts     Post[]
 
+  @@index([name])
   @@schema("organizations")
 }

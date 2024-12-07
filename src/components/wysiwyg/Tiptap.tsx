@@ -74,8 +74,8 @@ export default function Tiptap({
     const [insertContentState, setInsertContentState] =
         useState<boolean>(false);
 
-    const postDraftTimeout = useRef<NodeJS.Timeout>();
-    const insertContentTimeout = useRef<NodeJS.Timeout>();
+    const postDraftTimeout = useRef<NodeJS.Timeout>(undefined);
+    const insertContentTimeout = useRef<NodeJS.Timeout>(undefined);
 
     const [tagValidateResult, setTagValidateResult] = useState<boolean>();
 
@@ -550,8 +550,8 @@ export default function Tiptap({
                               (item) => item !== "wordsRequired",
                           )} cannot be blank.`
                         : !wordsRequired
-                        ? "Insufficient words, need a minimum of 50 words to publish."
-                        : "",
+                          ? "Insufficient words, need a minimum of 50 words to publish."
+                          : "",
             });
             return false;
         }
@@ -612,10 +612,10 @@ export default function Tiptap({
                                     ? "Updating"
                                     : "Publishing..."
                                 : mode === "edit"
-                                ? "Update"
-                                : isAutoSavingDraft
-                                ? "Saving..."
-                                : "Publish"}
+                                  ? "Update"
+                                  : isAutoSavingDraft
+                                    ? "Saving..."
+                                    : "Publish"}
                         </button>
                     </div>
                 </div>
@@ -720,8 +720,8 @@ export default function Tiptap({
                                                 {tagValidateResult === undefined
                                                     ? "Click here to add your custom tag"
                                                     : !tagValidateResult
-                                                    ? "Tag contains malicious or nonsense word. Try again."
-                                                    : "Click here to add your custom tag"}
+                                                      ? "Tag contains malicious or nonsense word. Try again."
+                                                      : "Click here to add your custom tag"}
                                             </a>
                                         </li>
                                     )}

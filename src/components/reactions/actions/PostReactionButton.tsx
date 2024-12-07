@@ -5,7 +5,6 @@ import {
     deletePostReaction,
     updateCreatePostReaction,
 } from "@/utils/actions/reactions";
-import { checkUserLoggedIn } from "@/utils/actions/user";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as FaRegHeart } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -32,17 +31,9 @@ export default function PostReactionButton({
     const [postReactionCount, setPostReactionCount] =
         useState<number>(initialReactionCount);
     const [postReaction, setPostReaction] = useState<string>();
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-
-    //get initial post reaction
-    useEffect(() => {
-        checkUserLoggedIn().then((response) =>
-            setIsLoggedIn(response.valueOf()),
-        );
-    }, []);
 
     useEffect(() => {
-        if (isLoggedIn) {
+        if (session) {
             getUserInitialPostReaction(id).then((response) => {
                 const value = response?.valueOf();
 
@@ -51,7 +42,7 @@ export default function PostReactionButton({
                 }
             });
         }
-    }, [id, isLoggedIn]);
+    }, [id, session]);
 
     async function updatePostReaction() {
         if (typeof postReaction !== "undefined") {
@@ -83,7 +74,7 @@ export default function PostReactionButton({
     }
     return (
         <>
-            {isLoggedIn ? (
+            {session ? (
                 <>
                     <FontAwesomeIcon
                         icon={postReaction !== undefined ? faHeart : FaRegHeart}

@@ -1,7 +1,6 @@
 "use client";
 
 import { TagRank } from "@/types/tag";
-// import useTags from '@/utils/useTags'
 import { Fragment, useEffect, useState } from "react";
 import TagContainer from "./TagContainer";
 import TagContainerLoader from "./TagContainerLoader";

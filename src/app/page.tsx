@@ -24,7 +24,7 @@ export default async function Home() {
 
     return (
         <>
-            <ZeFerBgHomepage user={user} isLoggedIn={session ? true : false} />
+            <ZeFerBgHomepage user={user} />
             <div className="mx-auto mt-12 mb-12 lg:mr-28 lg:ml-28">
                 <div className="flex justify-center">
                     <div className="hidden lg:block w-1/4">

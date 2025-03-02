@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next lint && next dev",
     "build": "prisma generate && prisma db push && next build",
+    "postbuild": "next-sitemap",
     "start": "next start",
     "lint": "next lint"
   },
@@ -47,6 +48,7 @@
     "html-react-parser": "^5.2.0",
     "next": "15.1.2",
     "next-auth": "^4.24.11",
+    "next-sitemap": "^4.2.3",
     "nextjs-toploader": "^3.7.15",
     "nodemailer": "^6.9.16",
     "postcss": "8.4.49",

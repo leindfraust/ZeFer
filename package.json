@@ -52,7 +52,7 @@
     "postcss": "8.4.49",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-email": "3.0.3",
+    "react-email": "3.0.7",
     "react-hook-form": "^7.54.0",
     "react-hot-toast": "^2.4.1",
     "react-intersection-observer": "^9.13.1",

@@ -53,8 +53,8 @@ export async function GET(req: NextRequest): Promise<any> {
                     published === "true"
                         ? true
                         : published === "false"
-                        ? false
-                        : true, //strict checking of false so when published params is anything but true or false, it always returns true
+                          ? false
+                          : true, //strict checking of false so when published params is anything but true or false, it always returns true
             },
             //when orderBy is not defined as latest or most-popular, default to latest
             orderBy: {
@@ -298,7 +298,7 @@ export async function GET(req: NextRequest): Promise<any> {
                     id: lastCursor,
                 },
             }),
-            take: 1,
+            take: 10,
         });
 
         if (posts.length === 0) {
@@ -319,7 +319,7 @@ export async function GET(req: NextRequest): Promise<any> {
 
         const nextPost = await prisma.post.findMany({
             ...prismaQuery,
-            take: 1,
+            take: 10,
             skip: 1,
             cursor: {
                 id: cursor,

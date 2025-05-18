@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-const baseUrl = process.env.BASE_URL || "https://staging.zefer.blog/";
+const baseUrl = process.env.BASE_URL || "https://zefer.vercel.app/";
 
 test("can load default to relevance feed", async ({ page }) => {
     await page.goto(`${baseUrl}?feed=relevance`);

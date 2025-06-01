@@ -7,9 +7,6 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig = {
-    experimental: {
-        instrumentationHook: true,
-    },
     async headers() {
         console.log("Listening notifications from:", socketURL);
         return [

@@ -45,6 +45,8 @@ model Session {
 
 model User {
   id                    String                 @id @default(cuid())
+  profileTheme          String?
+  backgroundImage       String?
   username              String                 @unique
   name                  String?
   bio                   String?

@@ -104,7 +104,7 @@ function SignInContent() {
             }
 
             return extractedUrl.startsWith("/") ? extractedUrl : "/";
-        } catch (error) {
+        } catch {
             // If anything goes wrong, default to home
             return "/";
         }

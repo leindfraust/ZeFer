@@ -138,7 +138,7 @@ export const authConfig: AuthOptions = {
 
                 // Default to baseUrl for external URLs
                 return baseUrl;
-            } catch (error) {
+            } catch {
                 // If anything goes wrong, default to baseUrl
                 return baseUrl;
             }

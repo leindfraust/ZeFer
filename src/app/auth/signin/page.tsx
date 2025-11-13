@@ -18,11 +18,99 @@ function SignInContent() {
     > | null>(null);
     const [email, setEmail] = useState("");
     const searchParams = useSearchParams();
-    const rawCallbackUrl = searchParams.get("callbackUrl") || "/";
-    // Prevent redirect loops by ensuring callbackUrl is not the signin page
-    const callbackUrl = rawCallbackUrl.includes("/auth/signin")
-        ? "/"
-        : rawCallbackUrl;
+
+    // Helper function to sanitize callbackUrl and prevent redirect loops
+    const sanitizeCallbackUrl = (url: string | null): string => {
+        if (!url) return "/";
+
+        try {
+            // Decode the URL to handle encoded callbackUrls (may need multiple decodes)
+            let decodedUrl = url;
+            let previousUrl = "";
+            let decodeAttempts = 0;
+
+            // Keep decoding until no more changes (handles multiple levels of encoding)
+            while (decodedUrl !== previousUrl && decodeAttempts < 10) {
+                previousUrl = decodedUrl;
+                try {
+                    decodedUrl = decodeURIComponent(decodedUrl);
+                } catch {
+                    break;
+                }
+                decodeAttempts++;
+            }
+
+            // Extract actual destination from nested callbackUrl parameters
+            // Keep extracting until we find the innermost callbackUrl
+            let extractedUrl = decodedUrl;
+            let extractionAttempts = 0;
+            while (
+                extractedUrl.includes("callbackUrl=") &&
+                extractionAttempts < 10
+            ) {
+                // Try to match callbackUrl parameter (handles both encoded and decoded)
+                const match = extractedUrl.match(/[?&]callbackUrl=([^&]+)/);
+                if (match) {
+                    try {
+                        extractedUrl = decodeURIComponent(match[1]);
+                    } catch {
+                        extractedUrl = match[1];
+                    }
+                } else {
+                    break;
+                }
+                extractionAttempts++;
+            }
+
+            // Parse as URL to handle absolute URLs
+            let parsedUrl: URL;
+            try {
+                parsedUrl = new URL(extractedUrl);
+                extractedUrl = parsedUrl.pathname + parsedUrl.search;
+            } catch {
+                // If it's not a valid absolute URL, treat as relative
+                try {
+                    parsedUrl = new URL(extractedUrl, window.location.origin);
+                    extractedUrl = parsedUrl.pathname + parsedUrl.search;
+                } catch {
+                    // If still fails, treat as relative path
+                    extractedUrl = extractedUrl.startsWith("/")
+                        ? extractedUrl
+                        : `/${extractedUrl}`;
+                }
+            }
+
+            // Remove any remaining callbackUrl parameters
+            try {
+                const urlObj = new URL(extractedUrl, window.location.origin);
+                urlObj.searchParams.delete("callbackUrl");
+                extractedUrl = urlObj.pathname + urlObj.search;
+            } catch {
+                // If URL parsing fails, manually remove callbackUrl param
+                extractedUrl = extractedUrl.replace(
+                    /[?&]callbackUrl=[^&]*/g,
+                    "",
+                );
+            }
+
+            // Prevent redirect loops - never redirect to signin or auth API routes
+            if (
+                extractedUrl.includes("/auth/signin") ||
+                extractedUrl.includes("/api/auth/signin") ||
+                extractedUrl === "/auth/signin" ||
+                extractedUrl === "/api/auth/signin"
+            ) {
+                return "/";
+            }
+
+            return extractedUrl.startsWith("/") ? extractedUrl : "/";
+        } catch (error) {
+            // If anything goes wrong, default to home
+            return "/";
+        }
+    };
+
+    const callbackUrl = sanitizeCallbackUrl(searchParams.get("callbackUrl"));
 
     useEffect(() => {
         const fetchProviders = async () => {

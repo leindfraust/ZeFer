@@ -64,91 +64,11 @@ export const authConfig: AuthOptions = {
                 id: token.sub,
             },
         }),
-        redirect: ({ url, baseUrl }) => {
-            try {
-                // Decode URL to handle encoded callbackUrls (may need multiple decodes)
-                let decodedUrl = url;
-                let previousUrl = "";
-                let decodeAttempts = 0;
-
-                // Keep decoding until no more changes (handles multiple levels of encoding)
-                while (decodedUrl !== previousUrl && decodeAttempts < 10) {
-                    previousUrl = decodedUrl;
-                    try {
-                        decodedUrl = decodeURIComponent(decodedUrl);
-                    } catch {
-                        break;
-                    }
-                    decodeAttempts++;
-                }
-
-                // Extract actual destination from nested callbackUrl parameters
-                let extractedUrl = decodedUrl;
-                let extractionAttempts = 0;
-                while (
-                    extractedUrl.includes("callbackUrl=") &&
-                    extractionAttempts < 10
-                ) {
-                    // Try to match callbackUrl parameter (handles both encoded and decoded)
-                    const match = extractedUrl.match(/[?&]callbackUrl=([^&]+)/);
-                    if (match) {
-                        try {
-                            extractedUrl = decodeURIComponent(match[1]);
-                        } catch {
-                            extractedUrl = match[1];
-                        }
-                    } else {
-                        break;
-                    }
-                    extractionAttempts++;
-                }
-
-                // Parse the URL
-                let parsedUrl: URL;
-                try {
-                    parsedUrl = new URL(extractedUrl);
-                } catch {
-                    // If relative, make absolute
-                    parsedUrl = new URL(extractedUrl, baseUrl);
-                }
-
-                // Remove callbackUrl parameters to prevent nesting
-                parsedUrl.searchParams.delete("callbackUrl");
-                const cleanPath = parsedUrl.pathname + parsedUrl.search;
-
-                // Prevent redirect loops - never redirect to signin or auth API routes
-                if (
-                    cleanPath.includes("/auth/signin") ||
-                    cleanPath.includes("/api/auth/signin") ||
-                    cleanPath === "/auth/signin" ||
-                    cleanPath === "/api/auth/signin"
-                ) {
-                    return baseUrl;
-                }
-
-                // If url is relative, make it absolute
-                if (extractedUrl.startsWith("/")) {
-                    return `${baseUrl}${cleanPath}`;
-                }
-
-                // If url is on same origin, allow it (with cleaned path)
-                if (parsedUrl.origin === baseUrl) {
-                    return `${baseUrl}${cleanPath}`;
-                }
-
-                // Default to baseUrl for external URLs
-                return baseUrl;
-            } catch {
-                // If anything goes wrong, default to baseUrl
-                return baseUrl;
-            }
-        },
     },
     theme: {
         logo: "/zefer.svg",
     },
     pages: {
-        signIn: "/auth/signin",
         newUser: "/settings/profile",
     },
 };

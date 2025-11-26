@@ -34,11 +34,6 @@ export default function OrganizationManageContainer({
         | undefined
     >(organizations[0]);
     const [userRole, setUserRole] = useState<"Owner" | "Admin" | "Member">();
-    const [isRerollingSk, setIsRerollingSk] = useState<boolean>(false);
-    const [isPromoting, setIsPromoting] = useState<boolean>(false);
-    const [isDemoting, setIsDemoting] = useState<boolean>(false);
-    const [isRemovingAdmin, setIsRemovingAdmin] = useState<boolean>(false);
-    const [isRemovingMember, setIsRemovingMember] = useState<boolean>(false);
 
     const checkIfAdmin = useCallback(() => {
         const isAdmin = selectedOrganization?.admins?.find(
@@ -81,7 +76,6 @@ export default function OrganizationManageContainer({
 
     async function rerollSk() {
         if (!selectedOrganization || !sessionUserId) return;
-        setIsRerollingSk(true);
         const secret = await rerollSecretKey(selectedOrganization.id);
         if (secret) {
             setSelectedOrganization({
@@ -92,11 +86,9 @@ export default function OrganizationManageContainer({
                 id: "org",
             });
         }
-        setIsRerollingSk(false);
     }
     async function promoteToAdmin({ id, name }: User) {
         if (!selectedOrganization || !sessionUserId || !id) return;
-        setIsPromoting(true);
         const isUserAdmin = selectedOrganization?.admins?.find(
             (admin) => admin.id === id,
         );
@@ -125,12 +117,10 @@ export default function OrganizationManageContainer({
                 }
             }
         }
-        setIsPromoting(false);
     }
 
     async function demoteToMember({ id, name }: User) {
         if (!selectedOrganization || !sessionUserId || !id) return;
-        setIsDemoting(true);
         const isUserMember = selectedOrganization?.members.find(
             (member) => member.id === id,
         );
@@ -159,7 +149,6 @@ export default function OrganizationManageContainer({
                 }
             }
         }
-        setIsDemoting(false);
     }
 
     // async function addOrgMmeber({ id, name }: User) {
@@ -183,7 +172,6 @@ export default function OrganizationManageContainer({
 
     async function removeOrgAdmin({ id, name }: User) {
         if (!selectedOrganization || !sessionUserId || id) return;
-        setIsRemovingAdmin(true);
         const newAdmins = await removeAdmin(selectedOrganization?.id, id);
         if (newAdmins) {
             setSelectedOrganization({
@@ -199,12 +187,10 @@ export default function OrganizationManageContainer({
                 },
             );
         }
-        setIsRemovingAdmin(false);
     }
 
     async function removeOrgMember({ id, name }: User) {
         if (!selectedOrganization || !sessionUserId || id) return;
-        setIsRemovingMember(true);
         const newMembers = await removeMember(selectedOrganization?.id, id);
         if (newMembers) {
             setSelectedOrganization({
@@ -220,7 +206,6 @@ export default function OrganizationManageContainer({
                 },
             );
         }
-        setIsRemovingMember(false);
     }
 
     return (
@@ -319,9 +304,7 @@ export default function OrganizationManageContainer({
                                                                                         admin,
                                                                                     )
                                                                                 }
-                                                                                disabled={isRemovingAdmin}
                                                                             >
-                                                                                {isRemovingAdmin && <span className="loading loading-spinner loading-xs"></span>}
                                                                                 Remove
                                                                             </button>
                                                                             <div className="dropdown dropdown-left">
@@ -351,9 +334,7 @@ export default function OrganizationManageContainer({
                                                                                                     admin,
                                                                                                 )
                                                                                             }
-                                                                                            disabled={isDemoting}
                                                                                         >
-                                                                                            {isDemoting && <span className="loading loading-spinner loading-xs"></span>}
                                                                                             Demote
                                                                                             to
                                                                                             Member
@@ -399,9 +380,7 @@ export default function OrganizationManageContainer({
                                                                                             member,
                                                                                         )
                                                                                     }
-                                                                                    disabled={isRemovingMember}
                                                                                 >
-                                                                                    {isRemovingMember && <span className="loading loading-spinner loading-xs"></span>}
                                                                                     Remove
                                                                                 </button>
                                                                                 <div className="dropdown dropdown-left">
@@ -431,9 +410,7 @@ export default function OrganizationManageContainer({
                                                                                                         member,
                                                                                                     )
                                                                                                 }
-                                                                                                disabled={isPromoting}
                                                                                             >
-                                                                                                {isPromoting && <span className="loading loading-spinner loading-xs"></span>}
                                                                                                 Promote
                                                                                                 to
                                                                                                 Admin
@@ -488,9 +465,7 @@ export default function OrganizationManageContainer({
                                     <button
                                         className="btn btn-neutral"
                                         onClick={rerollSk}
-                                        disabled={isRerollingSk}
                                     >
-                                        {isRerollingSk && <span className="loading loading-spinner"></span>}
                                         Generate new secret key
                                     </button>
                                     <p className=" text-lg text-red-600">

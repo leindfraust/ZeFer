@@ -31,7 +31,6 @@ export default function PostReactionButton({
     const [postReactionCount, setPostReactionCount] =
         useState<number>(initialReactionCount);
     const [postReaction, setPostReaction] = useState<string>();
-    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     useEffect(() => {
         if (session) {
@@ -46,7 +45,6 @@ export default function PostReactionButton({
     }, [id, session]);
 
     async function updatePostReaction() {
-        setIsLoading(true);
         if (typeof postReaction !== "undefined") {
             const removePostReaction = await deletePostReaction(id);
             if (removePostReaction) {
@@ -73,7 +71,6 @@ export default function PostReactionButton({
                 socket.emit("submitNotification", reactionNotification);
             }
         }
-        setIsLoading(false);
     }
     return (
         <>
@@ -82,8 +79,8 @@ export default function PostReactionButton({
                     <FontAwesomeIcon
                         icon={postReaction !== undefined ? faHeart : FaRegHeart}
                         title="Reactions"
-                        className={`cursor-pointer ${isLoading ? 'opacity-50 cursor-wait' : ''}`}
-                        onClick={isLoading ? undefined : updatePostReaction}
+                        className="cursor-pointer"
+                        onClick={updatePostReaction}
                     />
                     <div>{postReactionCount}</div>
                 </>

@@ -37,8 +37,6 @@ export default function OrganizationManageCreateContainer({
     const joinOrgForm = useForm();
     const createOrgForm = useForm();
     const [imgFile, setImgFile] = useState<File | string>();
-    const [isJoining, setIsJoining] = useState<boolean>(false);
-    const [isCreating, setIsCreating] = useState<boolean>(false);
 
     function handleImage(event: React.ChangeEvent<HTMLInputElement>) {
         if (!event.target.files) return;
@@ -46,7 +44,6 @@ export default function OrganizationManageCreateContainer({
     }
 
     const joinOrganization = joinOrgForm.handleSubmit(async (data) => {
-        setIsJoining(true);
         const secret = data["Secret key"];
         const join = await joinOrganizationWithSK(secret);
         if (join.status) {
@@ -54,11 +51,9 @@ export default function OrganizationManageCreateContainer({
         } else {
             toast.error(join.message);
         }
-        setIsJoining(false);
     });
 
     const createOrganization = createOrgForm.handleSubmit(async (data) => {
-        setIsCreating(true);
         const image = data["Profile Image"][0];
         let socials: FormSocials[] = [];
         socialForms.forEach((social) =>
@@ -113,7 +108,6 @@ export default function OrganizationManageCreateContainer({
                 createOrgForm.setFocus(fieldError);
             });
         }
-        setIsCreating(false);
     });
     const sk_validation: FormContext = {
         name: "Secret key",
@@ -212,8 +206,7 @@ export default function OrganizationManageCreateContainer({
                     <Input {...sk_validation} />
                 </div>
             </FormProvider>
-            <button className="btn btn-info w-full" onClick={joinOrganization} disabled={isJoining}>
-                {isJoining && <span className="loading loading-spinner"></span>}
+            <button className="btn btn-info w-full" onClick={joinOrganization}>
                 Join Organization
             </button>
             <div className="divider divider-horizontal"></div>
@@ -259,9 +252,7 @@ export default function OrganizationManageCreateContainer({
             <button
                 className="btn btn-info w-full"
                 onClick={createOrganization}
-                disabled={isCreating}
             >
-                {isCreating && <span className="loading loading-spinner"></span>}
                 {id ? "Update Organization" : "Create Organization"}
             </button>
         </>

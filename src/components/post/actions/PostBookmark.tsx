@@ -18,7 +18,6 @@ export default function PostBookmark({
 }) {
     const [bookmarkStatus, setBookmarkStatus] = useState<boolean>();
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     //get initial bookmark status
     useEffect(() => {
@@ -42,7 +41,6 @@ export default function PostBookmark({
     }, [isLoggedIn, titleId]);
 
     async function updateBookmarkStatus() {
-        setIsLoading(true);
         const response = await setBookmarkPost(titleId);
         if (response === "bookmarked") {
             setBookmarkStatus(true);
@@ -50,7 +48,6 @@ export default function PostBookmark({
         if (response === "unbookmarked") {
             setBookmarkStatus(false);
         }
-        setIsLoading(false);
     }
     return (
         <>
@@ -59,8 +56,8 @@ export default function PostBookmark({
                     icon={!bookmarkStatus ? FaRegBookmark : faBookmark}
                     size={faSize}
                     width={20}
-                    className={`cursor-pointer ${isLoading ? 'opacity-50 cursor-wait' : ''}`}
-                    onClick={isLoading ? undefined : updateBookmarkStatus}
+                    className="cursor-pointer"
+                    onClick={updateBookmarkStatus}
                 />
             ) : (
                 <FontAwesomeIcon

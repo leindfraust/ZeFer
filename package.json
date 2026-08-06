@@ -59,7 +59,7 @@
     "next-auth": "5.0.0-beta.32",
     "nextjs-toploader": "^3.9.17",
     "nodemailer": "^8.0.5",
-    "postcss": "8.5.10",
+    "postcss": "8.5.23",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-email": "4.0.15",

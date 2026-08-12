@@ -63,3 +63,33 @@ export async function toggleFollowUser(userId: string) {
     if (!checkUserFollowed) return await followUser(userId)
     return await unfollowUser(userId)
 }
+
+export async function updateNotificationPreferences(data: {
+    sendNotificationEmail?: boolean;
+    sendNotificationPhone?: boolean;
+}) {
+    const session = await getServerSession(authConfig);
+    
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    try {
+        const updatedUser = await prisma.user.update({
+            where: { id: session.user.id },
+            data: {
+                sendNotificationEmail: data.sendNotificationEmail,
+                sendNotificationPhone: data.sendNotificationPhone,
+            },
+            select: {
+                sendNotificationEmail: true,
+                sendNotificationPhone: true,
+            },
+        });
+
+        return { success: true, data: updatedUser };
+    } catch (error) {
+        console.error("Error updating notification preferences:", error);
+        return { success: false, error: "Failed to update preferences" };
+    }
+}
